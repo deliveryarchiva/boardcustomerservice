@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Customer Service Board — Archiva Group</title>
+<style>
+  :root {
+    --archiva-primary:     #00417A;
+    --archiva-navy:        #1B3A6B;
+    --archiva-accent:      #1E8BC3;
+    --archiva-mid:         #1C6BB0;
+    --archiva-grey-light:  #D0D8E4;
+    --archiva-grey-mid:    #6B7A93;
+    --archiva-grey-dark:   #8096B0;
+    --archiva-bg-light:    #F4F7FA;
+    --archiva-bg-alt:      #EBF4FD;
+    --archiva-text:        #262626;
+    --archiva-white:       #FFFFFF;
+    --archiva-green:       #1A9E5C;
+    --archiva-orange:      #E8820C;
+    --archiva-red:         #C0392B;
+    --archiva-cyan:        #2AC0CE;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--archiva-text);
+    background: var(--archiva-bg-light);
+    font-size: 14px;
+  }
+
+  a { color: var(--archiva-mid); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ========= Header ========= */
+  header.app-header {
+    background: var(--archiva-primary);
+    color: var(--archiva-white);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    border-bottom: 3px solid var(--archiva-navy);
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.3px;
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--archiva-white);
+    color: var(--archiva-primary);
+    display: grid; place-items: center;
+    font-weight: 800;
+    font-size: 16px;
+  }
+  .app-title {
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.85;
+    border-left: 1px solid rgba(255,255,255,0.3);
+    padding-left: 16px;
+  }
+  .app-title strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    opacity: 1;
+  }
+  .header-spacer { flex: 1; }
+  .last-update {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.10);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+  }
+  .last-update .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--archiva-green);
+    box-shadow: 0 0 0 0 rgba(26,158,92,0.6);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(26,158,92,0.6); }
+    70%  { box-shadow: 0 0 0 10px rgba(26,158,92,0); }
+    100% { box-shadow: 0 0 0 0 rgba(26,158,92,0); }
+  }
+  .user-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.12);
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+  .avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--archiva-accent);
+    color: var(--archiva-white);
+    display: grid; place-items: center;
+    font-weight: 700; font-size: 12px;
+  }
+  .user-meta { line-height: 1.1; }
+  .user-meta .name { font-weight: 600; font-size: 13px; }
+  .user-meta .role { font-size: 11px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ========= Banner degrado ========= */
+  .banner {
+    background: #FFF3E0;
+    color: #8A4B00;
+    border-bottom: 1px solid #F0B879;
+    padding: 8px 24px;
+    font-size: 13px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .banner .ico { font-weight: 700; }
+
+  /* ========= Container ========= */
+  main {
+    padding: 20px 24px 48px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  /* ========= KPI ========= */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .kpi {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-left: 4px solid var(--archiva-primary);
+    border-radius: 8px;
+    padding: 14px 14px 12px;
+    box-shadow: 0 1px 2px rgba(0,65,122,0.04);
+    transition: transform 0.15s ease;
+  }
+  .kpi:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,65,122,0.08); }
+  .kpi .label {
+    font-size: 11px;
+    color: var(--archiva-grey-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    line-height: 1.25;
+    min-height: 28px;
+  }
+  .kpi .value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--archiva-primary);
+    line-height: 1.1;
+    margin-top: 6px;
+  }
+  .kpi .sub {
+    font-size: 11px;
+    color: var(--archiva-grey-mid);
+    margin-top: 4px;
+  }
+  .kpi.accent-navy   { border-left-color: var(--archiva-navy); }
+  .kpi.accent-cyan   { border-left-color: var(--archiva-cyan); }
+  .kpi.accent-orange { border-left-color: var(--archiva-orange); }
+  .kpi.accent-red    { border-left-color: var(--archiva-red); }
+  .kpi.accent-green  { border-left-color: var(--archiva-green); }
+  .kpi.accent-orange .value { color: var(--archiva-orange); }
+  .kpi.accent-red    .value { color: var(--archiva-red); }
+  .kpi.accent-cyan   .value { color: var(--archiva-accent); }
+
+  /* ========= Tabs + toolbar ========= */
+  .board {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--archiva-grey-light);
+    background: var(--archiva-bg-alt);
+  }
+  .tab {
+    padding: 12px 20px;
+    font-weight: 600;
+    color: var(--archiva-grey-mid);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    user-select: none;
+  }
+  .tab.active {
+    color: var(--archiva-primary);
+    background: var(--archiva-white);
+    border-bottom-color: var(--archiva-primary);
+  }
+  .tab .count {
+    display: inline-block;
+    margin-left: 6px;
+    background: var(--archiva-grey-light);
+    color: var(--archiva-text);
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 1px 8px;
+  }
+  .tab.active .count { background: var(--archiva-primary); color: var(--archiva-white); }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--archiva-grey-light);
+    background: var(--archiva-bg-light);
+  }
+  .toolbar .group {
+    display: flex; gap: 6px; align-items: center;
+  }
+  .toolbar label.lbl {
+    font-size: 12px; color: var(--archiva-grey-mid);
+    text-transform: uppercase; letter-spacing: 0.4px;
+    margin-right: 4px;
+  }
+  .filter-pill {
+    border: 1px solid var(--archiva-grey-light);
+    background: var(--archiva-white);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--archiva-text);
+  }
+  .filter-pill:hover { border-color: var(--archiva-accent); }
+  .filter-pill.active {
+    background: var(--archiva-primary);
+    color: var(--archiva-white);
+    border-color: var(--archiva-primary);
+  }
+  .search-box {
+    position: relative;
+    margin-left: auto;
+  }
+  .search-box input {
+    width: 280px;
+    padding: 7px 12px 7px 32px;
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 6px;
+    font-size: 13px;
+    background: var(--archiva-white);
+  }
+  .search-box input:focus {
+    outline: none;
+    border-color: var(--archiva-accent);
+    box-shadow: 0 0 0 3px rgba(30,139,195,0.15);
+  }
+  .search-box::before {
+    content: "🔍";
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    font-size: 12px; opacity: 0.6;
+  }
+
+  .toggle {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; cursor: pointer;
+    user-select: none;
+  }
+  .toggle input { display: none; }
+  .toggle .switch {
+    width: 34px; height: 18px;
+    background: var(--archiva-grey-light);
+    border-radius: 999px;
+    position: relative;
+    transition: background 0.15s;
+  }
+  .toggle .switch::after {
+    content: "";
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 14px; height: 14px;
+    background: var(--archiva-white);
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    transition: transform 0.15s;
+  }
+  .toggle input:checked + .switch { background: var(--archiva-primary); }
+  .toggle input:checked + .switch::after { transform: translateX(16px); }
+
+  /* ========= Table ========= */
+  .table-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead th {
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--archiva-white);
+    background: var(--archiva-navy);
+    padding: 10px 10px;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--archiva-navy);
+    position: sticky;
+    top: 0;
+    cursor: pointer;
+  }
+  thead th .sort { opacity: 0.4; margin-left: 4px; font-size: 10px; }
+  thead th:hover .sort { opacity: 1; }
+
+  tbody td {
+    padding: 10px 10px;
+    border-bottom: 1px solid var(--archiva-grey-light);
+    vertical-align: middle;
+  }
+  tbody tr:nth-child(even) td { background: var(--archiva-bg-alt); }
+  tbody tr:hover td { background: #DDEBFB; }
+
+  /* Riga colorata sui giorni senza riscontro */
+  tr.row-green   td:first-child { box-shadow: inset 4px 0 0 var(--archiva-green); }
+  tr.row-orange  td:first-child { box-shadow: inset 4px 0 0 var(--archiva-orange); }
+  tr.row-red     td:first-child { box-shadow: inset 4px 0 0 var(--archiva-red); }
+
+  .key-cell {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-weight: 600;
+  }
+  .key-cell a { color: var(--archiva-primary); }
+  .key-cell .ext { font-size: 10px; opacity: 0.5; margin-left: 2px; }
+
+  .customer .name { font-weight: 600; }
+  .customer .code { font-size: 11px; color: var(--archiva-grey-mid); }
+
+  .summary {
+    max-width: 320px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  /* ========= Badges ========= */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+  .badge-status {
+    background: var(--archiva-bg-alt);
+    color: var(--archiva-navy);
+    border: 1px solid var(--archiva-grey-light);
+  }
+  .badge-status.s-progress { background: #DCEEFD; color: #0A4A7A; border-color: #A8D2F0; }
+  .badge-status.s-wfr      { background: #FFF1D6; color: #8A4B00; border-color: #F5C26B; }
+  .badge-status.s-wfson    { background: #E8E1FB; color: #4A2B8A; border-color: #C5B4F0; }
+  .badge-status.s-open     { background: #E0F5E9; color: #0F5A33; border-color: #A8DCBC; }
+  .badge-status.s-resolved { background: #E5E5E5; color: #555;    border-color: #C8C8C8; }
+
+  .cond {
+    display: inline-flex;
+    gap: 3px;
+  }
+  .cond .b {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    display: inline-grid; place-items: center;
+    font-size: 11px; font-weight: 800;
+    color: var(--archiva-white);
+  }
+  .cond .b.h { background: var(--archiva-red); }
+  .cond .b.e { background: var(--archiva-orange); }
+  .cond .b.s { background: var(--archiva-accent); }
+  .cond .b.dim { opacity: 0.18; background: var(--archiva-grey-mid); }
+
+  .days-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .days-pill.green  { background: #E0F5E9; color: #0F5A33; }
+  .days-pill.orange { background: #FFE9CC; color: #8A4B00; }
+  .days-pill.red    { background: #FBDDD9; color: #7E1B11; }
+  .days-pill .fb {
+    font-size: 10px;
+    opacity: 0.85;
+    cursor: help;
+  }
+
+  .leaf-cell {
+    font-size: 12px;
+  }
+  .leaf-cell .arrow { color: var(--archiva-grey-mid); margin: 0 4px; }
+  .leaf-cell .leaf-key {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-weight: 600;
+    color: var(--archiva-primary);
+  }
+  .leaf-cell .stall {
+    display: block;
+    font-size: 11px;
+    color: var(--archiva-grey-mid);
+    margin-top: 2px;
+  }
+  .leaf-cell .chain-warn {
+    display: inline-block;
+    font-size: 10px;
+    background: #FBDDD9;
+    color: #7E1B11;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .sla {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+  .sla.ok       { background: #E0F5E9; color: #0F5A33; }
+  .sla.warn     { background: #FFE9CC; color: #8A4B00; }
+  .sla.breached { background: #FBDDD9; color: #7E1B11; }
+  .sla.none     { background: var(--archiva-bg-alt); color: var(--archiva-grey-mid); font-weight: 500; }
+
+  .assignee {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .assignee .av {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--archiva-accent);
+    color: var(--archiva-white);
+    display: grid; place-items: center;
+    font-size: 11px; font-weight: 700;
+  }
+  .assignee.unassigned .av { background: var(--archiva-grey-light); color: var(--archiva-grey-mid); }
+  .assignee.unassigned .name { color: var(--archiva-grey-mid); font-style: italic; }
+
+  /* ========= Footer ========= */
+  footer {
+    margin-top: 16px;
+    padding: 12px 24px;
+    color: var(--archiva-grey-mid);
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  footer .legend {
+    display: flex; gap: 14px; flex-wrap: wrap;
+  }
+  footer .legend .lg {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  footer .legend .sw {
+    width: 10px; height: 10px; border-radius: 3px; display: inline-block;
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">
+    <div class="logo-mark">A</div>
+    <span>Archiva Group</span>
+  </div>
+  <div class="app-title">
+    <strong>Customer Service Board</strong>
+    Monitoraggio ticket ad alta priorità — Customer Care
+  </div>
+  <div class="header-spacer"></div>
+  <div class="last-update" title="I dati vengono aggiornati ogni 10 minuti dal backend">
+    <span class="dot"></span>
+    Ultimo aggiornamento: <strong>27/04/2026 14:32:10</strong> · prossimo poll tra <strong>4m 18s</strong>
+  </div>
+  <div class="user-chip">
+    <div class="avatar">MS</div>
+    <div class="user-meta">
+      <div class="name">Michael Seren</div>
+      <div class="role">Amministratore</div>
+    </div>
+  </div>
+</header>
+
+<div class="banner" style="display:none;">
+  <span class="ico">⚠</span>
+  Atlassian rate limit raggiunto (429) — backoff in corso. Dato non aggiornato da <strong>3m 12s</strong>.
+</div>
+
+<main>
+
+  <!-- ============ KPI ============ -->
+  <section class="kpi-grid" aria-label="Indicatori principali">
+    <div class="kpi accent-red">
+      <div class="label">Totale TC urgenti aperti<br><small>Highest OR Spoccato OR In Escalation · attivi</small></div>
+      <div class="value">21</div>
+      <div class="sub">priorità top in board</div>
+    </div>
+    <div class="kpi accent-navy">
+      <div class="label">Totale TC in corso<br><small>statusCategory ≠ Done</small></div>
+      <div class="value">38</div>
+      <div class="sub">su 142 totali nel periodo</div>
+    </div>
+    <div class="kpi accent-cyan">
+      <div class="label">Totale TC Waiting for reporter<br><small>WFR / In attesa cliente</small></div>
+      <div class="value">17</div>
+      <div class="sub">44% dei TC in corso</div>
+    </div>
+    <div class="kpi accent-orange">
+      <div class="label">Totale TC Waiting for son<br><small>palla nelle mani di un HDX figlio</small></div>
+      <div class="value">9</div>
+      <div class="sub">24% dei TC in corso</div>
+    </div>
+  </section>
+
+  <!-- ============ Board ============ -->
+  <section class="board">
+
+    <div class="tabs">
+      <div class="tab active">Vista TC Attivi <span class="count">38</span></div>
+      <div class="tab">Tutti i TC <span class="count">142</span></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="group">
+        <span class="lbl">Condizione (OR):</span>
+        <button class="filter-pill active">Tutti</button>
+        <button class="filter-pill">Highest</button>
+        <button class="filter-pill">In Escalation</button>
+        <button class="filter-pill">Spoccato</button>
+      </div>
+      <div class="group">
+        <label class="toggle">
+          <input type="checkbox" />
+          <span class="switch"></span>
+          Nascondi TC in <em>Waiting for reporter</em>
+        </label>
+      </div>
+      <div class="search-box">
+        <input type="text" placeholder="Cerca per key, summary, assegnatario, cliente…" />
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-sort="key">TC Key <span class="sort">⇅</span></th>
+            <th data-sort="customer">Cliente <span class="sort">⇅</span></th>
+            <th data-sort="summary">Summary <span class="sort">⇅</span></th>
+            <th data-sort="status">Stato <span class="sort">⇅</span></th>
+            <th>Condizioni</th>
+            <th data-sort="assignee">Assegnatario <span class="sort">⇅</span></th>
+            <th data-sort="created">Creato il <span class="sort">⇅</span></th>
+            <th data-sort="days">Giorni s/Risc. <span class="sort">⇅</span></th>
+            <th data-sort="lastResp">Ultima Risposta <span class="sort">⇅</span></th>
+            <th data-sort="lastRespAuthor">Autore Risposta <span class="sort">⇅</span></th>
+            <th>Ticket Figlio Attivo</th>
+            <th>SLA</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <!-- Riga 1: rosso, breached SLA, escalation -->
+          <tr class="row-red">
+            <td class="key-cell"><a href="#" target="_blank">TC-1042 <span class="ext">↗</span></a></td>
+            <td class="customer"><div class="name">Rossi S.p.A.</div><div class="code">CL-00231</div></td>
+            <td><div class="summary">Errore esportazione fatture passive — blocco chiusura mese contabile, urgente per scadenza 30/04</div></td>
+            <td><span class="badge badge-status s-wfson">Waiting for son</span></td>
+            <td>
+              <div class="cond">
+                <span class="b h" title="Highest">H</span>
+                <span class="b e" title="In Escalation">E</span>
+                <span class="b s" title="Spoccato">S</span>
+              </div>
+            </td>
+            <td><div class="assignee"><div class="av">GN</div><div class="name">Giulia Nogara</div></div></td>
+            <td>14/04/2026</td>
+            <td><span class="days-pill red">11 gg</span></td>
+            <td>16/04/2026</td>
+            <td>Marco Bianchi</td>
+            <td class="leaf-cell">
+              <a href="#" class="leaf-key">HDX-3318</a>
+              <span class="arrow">➜</span>
+              <a href="#" class="leaf-key">HDX-3401</a>
+              <span class="stall">⏱ 9gg fermo · L. Verdi (Sviluppo)</span>
+            </td>
+            <td><span class="sla breached">⚠ Breached -2g 4h</span></td>
+          </tr>
+
+          <!-- Riga 2: rosso, fallback su updated -->
+          <tr class="row-red">
+            <td class="key-cell"><a href="#" target="_blank">TC-1037 <span class="ext">↗</span></a></td>
+            <td class="customer"><div class="name">Banca Veneta Holding</div><div class="code">CL-00088</div></td>
+            <td><div class="summary">Anomalia conservazione sostitutiva lotti Q1 2026 — necessario intervento prima dell'audit</div></td>
+            <td><span class="badge badge-status s-progress">In Progress</span></td>
+            <td>
+              <div class="cond">
+                <span class="b h" title="Highest">H</span>
+                <span class="b dim">E</span>
+                <span class="b s" title="Spoccato">S</span>
+              </div>
+            </td>
+            <td><div class="assignee"><div class="av">PR</div><div class="name">Paolo Russo</div></div></td>
+            <td>10/04/2026</td>
+            <td><span class="days-pill red">13 gg <span class="fb" title="Valore derivato dal fallback su issue.updated — nessuna risposta operatore identificata">⚠</span></span></td>
+            <td>—</td>
+            <td><em style="color:var(--archiva-grey-mid)">nessuna risposta</em></td>
+            <td><span style="color:var(--archiva-grey-mid)">—</span></td>
+            <td><span class="sla breached">⚠ Breached -5g 18h</span></td>
+          </tr>
+
+          <!-- Riga 3: arancione, WFS catena profonda -->
+          <tr class="row-orange">
+            <td class="key-cell"><a href="#" target="_blank">TC-1029 <span class="ext">↗</span></a></td>
+            <td class="customer"><div class="name">Mediterranea Logistics</div><div class="code">CL-00412</div></td>
+            <td><div class="summary">Workflow approvazione DDT non si chiude su step finale — riproducibile su 3 utenti</div></td>
+            <td><span class="badge badge-status s-wfson">Waiting for son</span></td>
+            <td>
+              <div class="cond">
+                <span class="b h" title="Highest">H</span>
+                <span class="b e" title="In Escalation">E</span>
+                <span class="b dim">S</span>
+              </div>
+            </td>
+            <td><div class="assignee"><div class="av">CP</div><div class="name">Chiara Pettenuzzo</div></div></td>
+            <td>06/04/2026</td>
+            <td><span class="days-pill orange">6 gg</span></td>
+            <td>20/04/2026</td>
+            <td>Chiara Pettenuzzo</td>
+            <td class="leaf-cell">
+              <a href="#" class="leaf-key">HDX-3267</a>
+              <span class="chain-warn">catena troppo profonda</span>
+              <span class="stall">fallback applicato al ticket di partenza</span>
+            </td>
+            <td><span class="sla warn">⏱ 12h 04m</span></td>
+          </tr>
+
+          <!-- Riga 4: arancione, multipli figli (riga A) -->
+          <tr class="row-orange">
+            <td class="key-cell"><a href="#" target="_blank">TC-1024 <span class="ext">↗</span></a></td>
+            <td class="customer"><div class="name">Fabbrica Veneta SRL</div><div class="code">CL-00305</div></td>
+            <td><div class="summary">Migrazione storico documenti pre-2024 verso nuovo storage — perimetro multi-modulo</div></td>
+            <td><span class="badge badge-status s-wfson">Waiting for son</span></td>
+            <td>
+              <div class="cond">
+                <span class="b h" title="Highest">H</span>
+                <span class="b dim">E</span>
+                <span class="b dim">S</span>
+              </div>
+            </td>
+            <td><div class="assignee"><div class="av">SG</div><div class="name">Stefano Gazzani</div></div></td>
+            <td>02/04/2026</td>
+            <td><span class="days-pill orange">5 gg</span></td>
+            <td>21/04/2026</td>
+            <td>Stefano Gazzani</td>
+            <td class="leaf-cell">
+              <a href="#" class="leaf-key">HDX-3301</a>
+              <span class="stall">⏱ 5gg fermo · M. Carraro (Storage)</span>
+            </td>
+            <td><span class="sla warn">⏱ 1g 03h</span></td>
+          </tr>
+
+          <!-- Riga 4 bis: stesso TC, secondo figlio -->
+          <tr class="row-orange">
+            <td class="key-cell"><a href="#" target="_blank">TC-1024 <span class="ext">↗</span></a></td>
+            <td class="customer"><div class="name">Fabbrica Veneta SRL</div><div class="code">CL-00305</div></td>
+            <td><div class="summary">Migrazione storico documenti pre-2024 verso nuovo storage — perimetro multi-modulo</div></td>
+            <td><span class="badge badge-status s-wfson">Waiting for son</span></td>
+            <td>
+              <div class="cond">
+                <span class="b h" title="Highest">H</span>
+                <span class="b dim">E</span>
+                <span class="b dim">S</span>
+              </div>
+            </td>
+            <td><div class="assignee"><div class="av">SG</div><div class="name">Stefano Gazzani</div></div></td>
+            <td>02/04/2026</td>
+            <td><span class="days-pill orange">7 gg</span></td>
+            <td>17/04/2026</td>
+            <td>Stefano Gazzani</td>
+            <td class="leaf-cell">
+              <a href="#" class="leaf-key">HDX-3302</a>
+              <span class="stall">⏱ 7gg fermo · A. Lugli (Migration)</span>
+            </td>
+            <td><span class="sla warn">⏱ 4h 12m</span></td>
+          </tr>
+
+          <!-- Riga 5: verde, in attesa cliente -->
+          <tr class="row-green">
+            <td class="key-cell"><a href="#" target="_blank">TC-1019 <span class="ext">↗</span></a></td>
+            <td class="customer"><div class="name">Gruppo Brescia Industrie</div><div class="code">CL-00501</div></td>
+            <td><div class="summary">Richiesta integrazione SDI per nuova sede — attesa codice destinatario</div></td>
+            <td><span class="badge badge-status s-wfr">Waiting for reporter</span></td>
+            <td>
+              <div class="cond">
+                <span class="b dim">H</span>
+                <span class="b dim">E</span>
+                <span class="b s" title="Spoccato">S</span>
+              </div>
+            </td>
+            <td><div class="assignee"><div class="av">GN</div><div class="name">Giulia Nogara</div></div></td>
+            <td>22/04/2026</td>
+            <td><span class="days-pill green">2 gg</span></td>
+            <td>24/04/2026</td>
+            <td>Giulia Nogara</td>
+            <td class="leaf-cell"><span style="color:var(--archiva-grey-mid)">—</span></td>
+            <td><span class="sla ok">✓ 18h 42m</span></td>
+          </tr>
+
+          <!-- Riga 6: verde, semplice -->
+          <tr class="row-green">
+            <td class="key-cell"><a href="#" target="_blank">TC-1015 <span class="ext">↗</span></a></td>
+            <td class="customer"><div class="name">Studio Legale Conti & Partners</div><div class="code">CL-00177</div></td>
+            <td><div class="summary">Configurazione utente amministratore aggiuntivo per portale collaboratori</div></td>
+            <td><span class="badge badge-status s-progress">In Progress</span></td>
+            <td>
+              <div class="cond">
+                <span class="b h" title="Highest">H</span>
+                <span class="b dim">E</span>
+                <span class="b dim">S</span>
+              </div>
+            </td>
+            <td><div class="assignee unassigned"><div class="av">?</div><div class="name">Non assegnato</div></div></td>
+            <td>26/04/2026</td>
+            <td><span class="days-pill green">1 gg</span></td>
+            <td>26/04/2026</td>
+            <td>Marco Bianchi</td>
+            <td class="leaf-cell"><span style="color:var(--archiva-grey-mid)">—</span></td>
+            <td><span class="sla ok">✓ 1g 22h</span></td>
+          </tr>
+
+          <!-- Riga 7: arancione, attesa cliente al figlio diretto -->
+          <tr class="row-orange">
+            <td class="key-cell"><a href="#" target="_blank">TC-1011 <span class="ext">↗</span></a></td>
+            <td class="customer"><div class="name">CoopAlimentari Nord-Est</div><div class="code">CL-00622</div></td>
+            <td><div class="summary">Errore intermittente API webhook ordini — log mostrano timeout su endpoint partner</div></td>
+            <td><span class="badge badge-status s-wfson">Waiting for son</span></td>
+            <td>
+              <div class="cond">
+                <span class="b h" title="Highest">H</span>
+                <span class="b dim">E</span>
+                <span class="b dim">S</span>
+              </div>
+            </td>
+            <td><div class="assignee"><div class="av">PR</div><div class="name">Paolo Russo</div></div></td>
+            <td>18/04/2026</td>
+            <td><span class="days-pill orange">4 gg</span></td>
+            <td>22/04/2026</td>
+            <td>Paolo Russo</td>
+            <td class="leaf-cell">
+              <a href="#" class="leaf-key">HDX-3290</a>
+              <span class="stall" style="color:#8A4B00">📨 Attesa Cliente / Helpdesk</span>
+            </td>
+            <td><span class="sla none">— pausa</span></td>
+          </tr>
+
+          <!-- Riga 8: verde, solo SPOCCATO (non Highest) -->
+          <tr class="row-green">
+            <td class="key-cell"><a href="#" target="_blank">TC-1008 <span class="ext">↗</span></a></td>
+            <td class="customer"><div class="name">PharmaItalia Distribuzione</div><div class="code">CL-00094</div></td>
+            <td><div class="summary">Anomalia su report mensile fatturazione elettronica — differenza €1,2k vs Jira contabile</div></td>
+            <td><span class="badge badge-status s-open">Open</span></td>
+            <td>
+              <div class="cond">
+                <span class="b dim">H</span>
+                <span class="b dim">E</span>
+                <span class="b s" title="Spoccato — entra in board anche se priorità non Highest">S</span>
+              </div>
+            </td>
+            <td><div class="assignee"><div class="av">CP</div><div class="name">Chiara Pettenuzzo</div></div></td>
+            <td>25/04/2026</td>
+            <td><span class="days-pill green">0 gg</span></td>
+            <td>27/04/2026</td>
+            <td>Chiara Pettenuzzo</td>
+            <td class="leaf-cell"><span style="color:var(--archiva-grey-mid)">—</span></td>
+            <td><span class="sla ok">✓ 3g 12h</span></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+  <footer>
+    <div class="legend">
+      <span class="lg"><span class="sw" style="background:var(--archiva-green)"></span>0–2 gg lavorativi</span>
+      <span class="lg"><span class="sw" style="background:var(--archiva-orange)"></span>3–7 gg lavorativi</span>
+      <span class="lg"><span class="sw" style="background:var(--archiva-red)"></span>≥ 8 gg lavorativi</span>
+      <span class="lg"><span class="sw" style="background:var(--archiva-red); border-radius:50%"></span>H = Highest</span>
+      <span class="lg"><span class="sw" style="background:var(--archiva-orange); border-radius:50%"></span>E = In Escalation</span>
+      <span class="lg"><span class="sw" style="background:var(--archiva-accent); border-radius:50%"></span>S = Spoccato</span>
+      <span class="lg">⚠ = giorni da fallback <code>updated</code></span>
+    </div>
+    <div>
+      Customer Service Board v0.1 — Archiva Group · Polling JSM ogni 10 min · Sola lettura · Ultimo aggiornamento <strong>27/04/2026 14:32:10</strong>
+    </div>
+  </footer>
+
+</main>
+
+</body>
+</html>

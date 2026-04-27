@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login — Customer Service Board</title>
+<link rel="stylesheet" href="/static/css/archiva.css" />
+<style>
+  body {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, var(--archiva-primary) 0%, var(--archiva-navy) 100%);
+  }
+  .login-card {
+    background: var(--archiva-white);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+    padding: 32px 36px;
+    width: 380px;
+    max-width: calc(100vw - 32px);
+  }
+  .login-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .login-logo .logo-mark {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: var(--archiva-primary);
+    color: var(--archiva-white);
+    font-size: 18px;
+  }
+  .login-logo .name {
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--archiva-primary);
+  }
+  h1 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 18px 0 6px;
+    color: var(--archiva-text);
+  }
+  .sub {
+    color: var(--archiva-grey-mid);
+    font-size: 13px;
+    margin-bottom: 22px;
+  }
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--archiva-grey-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 6px;
+  }
+  input[type=text], input[type=password] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 14px;
+    font-family: inherit;
+  }
+  input:focus {
+    outline: none;
+    border-color: var(--archiva-accent);
+    box-shadow: 0 0 0 3px rgba(30,139,195,0.15);
+  }
+  button[type=submit] {
+    width: 100%;
+    padding: 11px;
+    background: var(--archiva-primary);
+    color: var(--archiva-white);
+    border: 0;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 6px;
+    font-family: inherit;
+  }
+  button[type=submit]:hover { background: var(--archiva-navy); }
+  button[type=submit]:disabled { opacity: 0.6; cursor: not-allowed; }
+  .err {
+    color: var(--archiva-red);
+    font-size: 13px;
+    background: #FBDDD9;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    display: none;
+  }
+  .err.show { display: block; }
+</style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-mark">A</div>
+      <div class="name">Archiva Group</div>
+    </div>
+    <h1>Customer Service Board</h1>
+    <div class="sub">Accedi con le credenziali aziendali.</div>
+
+    <div class="err" id="err"></div>
+
+    <form id="loginForm" autocomplete="on">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required autofocus />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required />
+
+      <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:13px;font-weight:500;color:var(--archiva-grey-mid);margin:6px 0 14px;cursor:pointer;">
+        <input type="checkbox" id="keepLoggedIn" style="margin:0;width:auto;height:16px;cursor:pointer;" />
+        Mantieni accesso (kiosk mode da monitor di sala)
+      </label>
+
+      <button type="submit" id="submitBtn">Accedi</button>
+    </form>
+  </div>
+
+<script src="/static/js/auth.js"></script>
+<script>
+  // Se già loggato (session o local), vai alla home
+  if (sessionStorage.getItem("archiva_token") || localStorage.getItem("archiva_token")) {
+    window.location.href = "/";
+  }
+
+  const form = document.getElementById("loginForm");
+  const errBox = document.getElementById("err");
+  const btn = document.getElementById("submitBtn");
+
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    errBox.classList.remove("show");
+    btn.disabled = true;
+    btn.textContent = "Accesso in corso…";
+    try {
+      await doLogin(
+        document.getElementById("username").value.trim(),
+        document.getElementById("password").value,
+        { keepLoggedIn: document.getElementById("keepLoggedIn").checked }
+      );
+    } catch (e) {
+      errBox.textContent = e.message;
+      errBox.classList.add("show");
+      btn.disabled = false;
+      btn.textContent = "Accedi";
+    }
+  });
+</script>
+</body>
+</html>

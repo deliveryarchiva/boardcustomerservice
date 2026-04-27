@@ -1,0 +1,242 @@
+"""Trasformazioni issue Jira → row UI e calcolo KPI.
+
+Implementa (M2 + M3):
+- normalizzazione status (case-insensitive EN+IT) — PRD §4.2.1, Q&A §2.10
+- flag condizioni Highest / In Escalation / Spoccato
+- mapping campi base
+- KPI 1-4
+- severity riga (0-2 verde / 3-7 arancione / ≥8 rosso) — PRD §4.2.4
+
+In M4 verrà aggiunto il render delle tabelle con filtri/ordinamento.
+"""
+from __future__ import annotations
+
+import os
+from typing import Any, Optional
+
+JIRA_BASE_URL = os.getenv("JIRA_BASE_URL", "").rstrip("/")
+FIELD_TICKET_SPOCCATO = os.getenv("JIRA_FIELD_TICKET_SPOCCATO", "")
+FIELD_IN_ESCALATION = os.getenv("JIRA_FIELD_IN_ESCALATION", "")
+
+# Status normalizzati (lowercase) → famiglia per badge UI
+# PRD §4.2.1 + Q&A §2.10: confronto case-insensitive su EN + IT.
+STATUS_FAMILIES: dict[str, str] = {
+    # Waiting for reporter / In attesa cliente → wfr
+    "waiting for reporter": "wfr",
+    "waiting for customer": "wfr",
+    "in attesa cliente": "wfr",
+    "in attesa del cliente": "wfr",
+    "attesa cliente": "wfr",
+    # Waiting for son / In attesa del figlio → wfson
+    "waiting for son": "wfson",
+    "waiting for child": "wfson",
+    "in attesa del figlio": "wfson",
+    "in attesa figlio": "wfson",
+    # In progress
+    "in progress": "progress",
+    "in lavorazione": "progress",
+    "in corso": "progress",
+    # Open / To Do
+    "open": "open",
+    "to do": "open",
+    "aperto": "open",
+    "nuovo": "open",
+    # Resolved / Done
+    "done": "resolved",
+    "resolved": "resolved",
+    "closed": "resolved",
+    "completato": "resolved",
+    "risolto": "resolved",
+    "chiuso": "resolved",
+}
+
+
+def status_family(status_name: str) -> str:
+    """Famiglia di stato per il badge (progress/wfr/wfson/open/resolved)."""
+    if not status_name:
+        return "open"
+    return STATUS_FAMILIES.get(status_name.strip().lower(), "open")
+
+
+def is_waiting_for_reporter(status_name: str) -> bool:
+    return status_family(status_name) == "wfr"
+
+
+def is_waiting_for_son(status_name: str) -> bool:
+    return status_family(status_name) == "wfson"
+
+
+def is_active_status(status_category_key: str) -> bool:
+    """statusCategory ≠ Done. Atlassian usa key: 'new' | 'indeterminate' | 'done'."""
+    return (status_category_key or "").lower() != "done"
+
+
+_TRUTHY_VALUES = {"yes", "true", "si", "sì", "1"}
+
+
+def _read_custom_yes_no(fields: dict, custom_id: str) -> bool:
+    """Legge un custom field Yes/No senza assumere se è option, boolean o multicheckbox.
+
+    Atlassian può restituire:
+      - ``true`` / ``false`` (checkbox)
+      - ``"Yes"`` / ``"No"`` (stringa)
+      - ``{"value": "Yes"}`` (option singola)
+      - ``[{"value": "Yes"}, {"value": "Altro"}]`` (multicheckboxes — verificato
+        sull'istanza Archiva: ``customfield_11787`` SPOCCATO e ``customfield_12384``
+        IN ESCALATION sono entrambi ``multicheckboxes``)
+    Per il caso multicheckbox restituisce True se UN qualunque elemento ha
+    ``value`` truthy (l'utente ha "checkato" Yes anche se ha selezionato altro).
+    """
+    if not custom_id:
+        return False
+    raw = fields.get(custom_id)
+    if raw is None:
+        return False
+    if isinstance(raw, bool):
+        return raw
+    if isinstance(raw, str):
+        return raw.strip().lower() in _TRUTHY_VALUES
+    if isinstance(raw, dict):
+        v = raw.get("value")
+        return isinstance(v, str) and v.strip().lower() in _TRUTHY_VALUES
+    if isinstance(raw, list):
+        for item in raw:
+            if isinstance(item, dict):
+                v = item.get("value")
+                if isinstance(v, str) and v.strip().lower() in _TRUTHY_VALUES:
+                    return True
+            elif isinstance(item, str) and item.strip().lower() in _TRUTHY_VALUES:
+                return True
+        return False
+    return False
+
+
+def _initials(full_name: str) -> str:
+    if not full_name:
+        return "?"
+    parts = [p for p in full_name.split() if p]
+    return ("".join(p[0] for p in parts[:2]) or "?").upper()
+
+
+def _build_url(key: str) -> str:
+    return f"{JIRA_BASE_URL}/browse/{key}" if JIRA_BASE_URL and key else "#"
+
+
+def issue_to_row(issue: dict) -> dict:
+    """Mappa una issue Jira nel dict riga UI (versione M2 — sarà arricchita in M3/M4)."""
+    fields = issue.get("fields") or {}
+    key = issue.get("key", "")
+    status = fields.get("status") or {}
+    status_name = status.get("name", "")
+    status_category = (status.get("statusCategory") or {}).get("key", "")
+    priority_name = (fields.get("priority") or {}).get("name", "") or ""
+    assignee = fields.get("assignee") or None
+    assignee_name = (assignee or {}).get("displayName") if assignee else None
+    return {
+        "key": key,
+        "issueId": issue.get("id"),
+        "project": (fields.get("project") or {}).get("key") or key.split("-")[0],
+        "summary": fields.get("summary") or "",
+        "status": status_name,
+        "statusFamily": status_family(status_name),
+        "statusCategory": status_category,
+        "isActive": is_active_status(status_category),
+        "isHighest": priority_name.strip().lower() == "highest",
+        "isEscalation": _read_custom_yes_no(fields, FIELD_IN_ESCALATION),
+        "isSpoccato": _read_custom_yes_no(fields, FIELD_TICKET_SPOCCATO),
+        "assignee": (
+            {
+                "displayName": assignee_name,
+                "initials": _initials(assignee_name or ""),
+            }
+            if assignee_name
+            else None
+        ),
+        "customer": _extract_customer(fields),
+        "createdAt": fields.get("created"),
+        "resolutionDate": fields.get("resolutiondate"),
+        "url": _build_url(key),
+        # Campi M3 — popolati in snapshot.py durante l'orchestrazione.
+        "lastResponseToClient": None,
+        "lastResponseAuthor": None,
+        "daysWithoutResponse": None,
+        "daysFromFallback": False,
+        "severity": "green",
+        "leaf": None,            # dict da LeafInfo.to_dict() oppure None
+        "leafStallDays": None,   # gg lavorativi dall'ultimo commento del leaf
+        "sla": {"state": "none", "label": "—", "remainingMs": None},
+    }
+
+
+def _extract_customer(fields: dict) -> Optional[dict]:
+    """Estrae cliente dal reporter (organization se disponibile, altrimenti displayName).
+
+    In M3/M4 si potrà raffinare con un custom field dedicato se disponibile.
+    """
+    reporter = fields.get("reporter") or {}
+    name = reporter.get("displayName")
+    if not name:
+        return None
+    return {"name": name, "code": ""}
+
+
+def severity_class(days_without_response: Optional[int]) -> str:
+    """Mappa giorni → classe colore riga (PRD §4.2.4)."""
+    if days_without_response is None:
+        return "green"
+    if days_without_response <= 2:
+        return "green"
+    if days_without_response <= 7:
+        return "orange"
+    return "red"
+
+
+def is_orphan_hdx(issue: dict, parent_keys_in_dataset: set[str]) -> bool:
+    """Un HDX è orfano se non ha un Parent valido verso un TC del dataset (PRD §4.1)."""
+    fields = issue.get("fields") or {}
+    project_key = (fields.get("project") or {}).get("key")
+    if project_key != "HDX":
+        return False
+    parent = fields.get("parent")
+    if isinstance(parent, dict) and parent.get("key"):
+        return parent["key"] not in parent_keys_in_dataset
+    # Fallback: cerca tra issuelinks un link parent verso un TC
+    for link in fields.get("issuelinks") or []:
+        for side in ("inwardIssue", "outwardIssue"):
+            target = link.get(side) or {}
+            if target.get("key", "").startswith("TC-"):
+                return target["key"] not in parent_keys_in_dataset
+    return True
+
+
+# ============================================================
+#  KPI
+# ============================================================
+
+def compute_kpi(rows_urgent_dataset: list[dict], rows_all_tc: list[dict]) -> dict:
+    """Calcola i 4 KPI (PRD §4.2.1).
+
+    - rows_urgent_dataset: TC + HDX dal dataset OR-conditional (post-dedupe HDX orfani)
+    - rows_all_tc:         tutti i TC del periodo (anche chiusi, anche fuori dall'OR)
+    """
+    # KPI 1 — TC urgenti aperti (TC del dataset OR-conditional, attivi)
+    kpi_1 = sum(
+        1
+        for r in rows_urgent_dataset
+        if r["project"] == "TC" and r["isActive"]
+    )
+
+    # I KPI 2/3/4 si misurano su TUTTI i TC del periodo (esclusi chiusi)
+    tc_active = [r for r in rows_all_tc if r["project"] == "TC" and r["isActive"]]
+    kpi_2 = len(tc_active)
+    kpi_3 = sum(1 for r in tc_active if is_waiting_for_reporter(r["status"]))
+    kpi_4 = sum(1 for r in tc_active if is_waiting_for_son(r["status"]))
+
+    tc_total_period = sum(1 for r in rows_all_tc if r["project"] == "TC")
+    return {
+        "tcUrgentiAperti": kpi_1,
+        "tcInCorso": kpi_2,
+        "tcTotaliPeriodo": tc_total_period,
+        "tcWaitingForReporter": kpi_3,
+        "tcWaitingForSon": kpi_4,
+    }

@@ -1,0 +1,909 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Customer Service Board — Archiva Group</title>
+<link rel="stylesheet" href="/static/css/archiva.css" />
+<style>
+  /* ========= Container ========= */
+  main {
+    padding: 20px 24px 48px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  /* ========= KPI ========= */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .kpi {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-left: 4px solid var(--archiva-primary);
+    border-radius: 8px;
+    padding: 14px 14px 12px;
+    box-shadow: 0 1px 2px rgba(0,65,122,0.04);
+    transition: transform 0.15s ease;
+  }
+  .kpi:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,65,122,0.08); }
+  .kpi .label {
+    font-size: 11px;
+    color: var(--archiva-grey-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    line-height: 1.25;
+    min-height: 28px;
+  }
+  .kpi .value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--archiva-primary);
+    line-height: 1.1;
+    margin-top: 6px;
+  }
+  .kpi .sub {
+    font-size: 11px;
+    color: var(--archiva-grey-mid);
+    margin-top: 4px;
+  }
+  .kpi.accent-navy   { border-left-color: var(--archiva-navy); }
+  .kpi.accent-cyan   { border-left-color: var(--archiva-cyan); }
+  .kpi.accent-orange { border-left-color: var(--archiva-orange); }
+  .kpi.accent-red    { border-left-color: var(--archiva-red); }
+  .kpi.accent-green  { border-left-color: var(--archiva-green); }
+  .kpi.accent-orange .value { color: var(--archiva-orange); }
+  .kpi.accent-red    .value { color: var(--archiva-red); }
+  .kpi.accent-cyan   .value { color: var(--archiva-accent); }
+
+  /* ========= Tabs + toolbar ========= */
+  .board {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--archiva-grey-light);
+    background: var(--archiva-bg-alt);
+  }
+  .tab {
+    padding: 12px 20px;
+    font-weight: 600;
+    color: var(--archiva-grey-mid);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    user-select: none;
+  }
+  .tab.active {
+    color: var(--archiva-primary);
+    background: var(--archiva-white);
+    border-bottom-color: var(--archiva-primary);
+  }
+  .tab .count {
+    display: inline-block;
+    margin-left: 6px;
+    background: var(--archiva-grey-light);
+    color: var(--archiva-text);
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 1px 8px;
+  }
+  .tab.active .count { background: var(--archiva-primary); color: var(--archiva-white); }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--archiva-grey-light);
+    background: var(--archiva-bg-light);
+  }
+  .toolbar .group {
+    display: flex; gap: 6px; align-items: center;
+  }
+  .toolbar label.lbl {
+    font-size: 12px; color: var(--archiva-grey-mid);
+    text-transform: uppercase; letter-spacing: 0.4px;
+    margin-right: 4px;
+  }
+  .filter-pill {
+    border: 1px solid var(--archiva-grey-light);
+    background: var(--archiva-white);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--archiva-text);
+    font-family: inherit;
+  }
+  .filter-pill:hover { border-color: var(--archiva-accent); }
+  .filter-pill.active {
+    background: var(--archiva-primary);
+    color: var(--archiva-white);
+    border-color: var(--archiva-primary);
+  }
+  .search-box {
+    position: relative;
+    margin-left: auto;
+  }
+  .search-box input {
+    width: 280px;
+    padding: 7px 12px 7px 32px;
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 6px;
+    font-size: 13px;
+    background: var(--archiva-white);
+    font-family: inherit;
+  }
+  .search-box input:focus {
+    outline: none;
+    border-color: var(--archiva-accent);
+    box-shadow: 0 0 0 3px rgba(30,139,195,0.15);
+  }
+  .search-box::before {
+    content: "🔍";
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    font-size: 12px; opacity: 0.6;
+  }
+
+  .toggle {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; cursor: pointer;
+    user-select: none;
+  }
+  .toggle input { display: none; }
+  .toggle .switch {
+    width: 34px; height: 18px;
+    background: var(--archiva-grey-light);
+    border-radius: 999px;
+    position: relative;
+    transition: background 0.15s;
+  }
+  .toggle .switch::after {
+    content: "";
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 14px; height: 14px;
+    background: var(--archiva-white);
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    transition: transform 0.15s;
+  }
+  .toggle input:checked + .switch { background: var(--archiva-primary); }
+  .toggle input:checked + .switch::after { transform: translateX(16px); }
+
+  /* ========= Table ========= */
+  .table-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead th {
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--archiva-white);
+    background: var(--archiva-navy);
+    padding: 10px 10px;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--archiva-navy);
+    position: sticky;
+    top: 0;
+    cursor: pointer;
+  }
+  thead th .sort { opacity: 0.4; margin-left: 4px; font-size: 10px; }
+  thead th:hover .sort { opacity: 1; }
+
+  tbody td {
+    padding: 10px 10px;
+    border-bottom: 1px solid var(--archiva-grey-light);
+    vertical-align: middle;
+  }
+  tbody tr:nth-child(even) td { background: var(--archiva-bg-alt); }
+  tbody tr:hover td { background: #DDEBFB; }
+
+  tr.row-green   td:first-child { box-shadow: inset 4px 0 0 var(--archiva-green); }
+  tr.row-orange  td:first-child { box-shadow: inset 4px 0 0 var(--archiva-orange); }
+  tr.row-red     td:first-child { box-shadow: inset 4px 0 0 var(--archiva-red); }
+
+  .key-cell {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-weight: 600;
+  }
+  .key-cell a { color: var(--archiva-primary); }
+  .key-cell .ext { font-size: 10px; opacity: 0.5; margin-left: 2px; }
+
+  .customer .name { font-weight: 600; }
+  .customer .code { font-size: 11px; color: var(--archiva-grey-mid); }
+
+  .summary {
+    max-width: 320px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+  .badge-status {
+    background: var(--archiva-bg-alt);
+    color: var(--archiva-navy);
+    border: 1px solid var(--archiva-grey-light);
+  }
+  .badge-status.s-progress { background: #DCEEFD; color: #0A4A7A; border-color: #A8D2F0; }
+  .badge-status.s-wfr      { background: #FFF1D6; color: #8A4B00; border-color: #F5C26B; }
+  .badge-status.s-wfson    { background: #E8E1FB; color: #4A2B8A; border-color: #C5B4F0; }
+  .badge-status.s-open     { background: #E0F5E9; color: #0F5A33; border-color: #A8DCBC; }
+  .badge-status.s-resolved { background: #E5E5E5; color: #555;    border-color: #C8C8C8; }
+
+  .cond { display: inline-flex; gap: 3px; }
+  .cond .b {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    display: inline-grid; place-items: center;
+    font-size: 11px; font-weight: 800;
+    color: var(--archiva-white);
+  }
+  .cond .b.h { background: var(--archiva-red); }
+  .cond .b.e { background: var(--archiva-orange); }
+  .cond .b.s { background: var(--archiva-accent); }
+  .cond .b.dim { opacity: 0.18; background: var(--archiva-grey-mid); }
+
+  .days-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .days-pill.green  { background: #E0F5E9; color: #0F5A33; }
+  .days-pill.orange { background: #FFE9CC; color: #8A4B00; }
+  .days-pill.red    { background: #FBDDD9; color: #7E1B11; }
+  .days-pill .fb { font-size: 10px; opacity: 0.85; cursor: help; }
+
+  .leaf-cell { font-size: 12px; }
+  .leaf-cell .arrow { color: var(--archiva-grey-mid); margin: 0 4px; }
+  .leaf-cell .leaf-key {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-weight: 600;
+    color: var(--archiva-primary);
+  }
+  .leaf-cell .stall {
+    display: block;
+    font-size: 11px;
+    color: var(--archiva-grey-mid);
+    margin-top: 2px;
+  }
+  .leaf-cell .chain-warn {
+    display: inline-block;
+    font-size: 10px;
+    background: #FBDDD9;
+    color: #7E1B11;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .sla {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+  .sla.ok       { background: #E0F5E9; color: #0F5A33; }
+  .sla.warn     { background: #FFE9CC; color: #8A4B00; }
+  .sla.breached { background: #FBDDD9; color: #7E1B11; }
+  .sla.none     { background: var(--archiva-bg-alt); color: var(--archiva-grey-mid); font-weight: 500; }
+
+  .assignee { display: flex; align-items: center; gap: 6px; }
+  .assignee .av {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--archiva-accent);
+    color: var(--archiva-white);
+    display: grid; place-items: center;
+    font-size: 11px; font-weight: 700;
+  }
+  .assignee.unassigned .av { background: var(--archiva-grey-light); color: var(--archiva-grey-mid); }
+  .assignee.unassigned .name { color: var(--archiva-grey-mid); font-style: italic; }
+
+  footer .legend {
+    display: flex; gap: 14px; flex-wrap: wrap;
+  }
+  footer .legend .lg {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  footer .legend .sw {
+    width: 10px; height: 10px; border-radius: 3px; display: inline-block;
+  }
+
+  /* ========= Vista ospite (kiosk mode da monitor di sala — PRD §4.3) =========
+     Nasconde tabella/toolbar/tabs e ingrandisce i KPI per la lettura a distanza. */
+  body.role-ospite .board,
+  body.role-ospite .toolbar,
+  body.role-ospite .table-wrap,
+  body.role-ospite .tabs { display: none; }
+
+  body.role-ospite main {
+    padding: 48px 32px;
+    max-width: 1800px;
+  }
+  body.role-ospite .kpi-grid {
+    gap: 28px;
+    margin-bottom: 32px;
+  }
+  body.role-ospite .kpi {
+    padding: 32px 28px 28px;
+    border-left-width: 8px;
+    box-shadow: 0 4px 20px rgba(0,65,122,0.10);
+  }
+  body.role-ospite .kpi .label {
+    font-size: 16px;
+    letter-spacing: 0.6px;
+    min-height: 48px;
+    line-height: 1.4;
+  }
+  body.role-ospite .kpi .label small {
+    font-size: 13px;
+    text-transform: none;
+    opacity: 0.75;
+    display: block;
+    margin-top: 4px;
+  }
+  body.role-ospite .kpi .value {
+    font-size: 88px;
+    margin-top: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  body.role-ospite .kpi .sub {
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  body.role-ospite footer .legend { display: none; }
+  body.role-ospite main::after {
+    content: "Vista ridotta — solo KPI aggregati. Per il dettaglio dei ticket rivolgersi al Team Lead Customer Care.";
+    display: block;
+    text-align: center;
+    color: var(--archiva-grey-mid);
+    font-size: 14px;
+    margin-top: 32px;
+    font-style: italic;
+  }
+
+  .empty-row td {
+    text-align: center;
+    color: var(--archiva-grey-mid);
+    padding: 32px;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">
+    <div class="logo-mark">A</div>
+    <span>Archiva Group</span>
+  </div>
+  <div class="app-title">
+    <strong>Customer Service Board</strong>
+    Monitoraggio ticket ad alta priorità — Customer Care
+  </div>
+  <div class="header-spacer"></div>
+  <div class="last-update" title="I dati vengono aggiornati ogni 10 minuti dal backend">
+    <span class="dot"></span>
+    Ultimo aggiornamento: <strong id="lastUpdate">—</strong>
+    · prossimo poll tra <strong id="nextPoll">—</strong>
+  </div>
+  <div class="user-chip" id="userChip"></div>
+</header>
+
+<div class="banner" id="degradeBanner" style="display:none;">
+  <span class="ico">⚠</span>
+  <span id="degradeMsg">Atlassian rate limit raggiunto (429) — backoff in corso. Dato non aggiornato da <strong>—</strong>.</span>
+</div>
+
+<main>
+
+  <section class="kpi-grid" aria-label="Indicatori principali">
+    <div class="kpi accent-red">
+      <div class="label">Totale TC urgenti aperti<br><small>Highest OR Spoccato OR In Escalation · attivi</small></div>
+      <div class="value" id="kpi-1">—</div>
+      <div class="sub">priorità top in board</div>
+    </div>
+    <div class="kpi accent-navy">
+      <div class="label">Totale TC in corso<br><small>statusCategory ≠ Done</small></div>
+      <div class="value" id="kpi-2">—</div>
+      <div class="sub" id="kpi-2-sub">su — totali nel periodo</div>
+    </div>
+    <div class="kpi accent-cyan">
+      <div class="label">Totale TC Waiting for reporter<br><small>WFR / In attesa cliente</small></div>
+      <div class="value" id="kpi-3">—</div>
+      <div class="sub" id="kpi-3-sub">— dei TC in corso</div>
+    </div>
+    <div class="kpi accent-orange">
+      <div class="label">Totale TC Waiting for son<br><small>palla nelle mani di un HDX figlio</small></div>
+      <div class="value" id="kpi-4">—</div>
+      <div class="sub" id="kpi-4-sub">— dei TC in corso</div>
+    </div>
+  </section>
+
+  <section class="board">
+
+    <div class="tabs">
+      <div class="tab active" data-tab="active" role="tab">Vista TC Attivi <span class="count" id="count-active">—</span></div>
+      <div class="tab" data-tab="all" role="tab">Tutti i TC <span class="count" id="count-all">—</span></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="group">
+        <span class="lbl">Condizione (OR):</span>
+        <button type="button" class="filter-pill active" data-cond="all">Tutti</button>
+        <button type="button" class="filter-pill" data-cond="highest">Highest</button>
+        <button type="button" class="filter-pill" data-cond="escalation">In Escalation</button>
+        <button type="button" class="filter-pill" data-cond="spoccato">Spoccato</button>
+      </div>
+      <div class="group">
+        <label class="toggle">
+          <input type="checkbox" id="hideWfr" />
+          <span class="switch"></span>
+          Nascondi TC in <em>Waiting for reporter</em>
+        </label>
+      </div>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Cerca per key, summary, assegnatario, cliente…" />
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead id="thead"></thead>
+        <tbody id="tbody">
+          <tr class="empty-row"><td colspan="12">In attesa del primo polling JSM…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+  <footer>
+    <div class="legend">
+      <span class="lg"><span class="sw" style="background:var(--archiva-green)"></span>0–2 gg lavorativi</span>
+      <span class="lg"><span class="sw" style="background:var(--archiva-orange)"></span>3–7 gg lavorativi</span>
+      <span class="lg"><span class="sw" style="background:var(--archiva-red)"></span>≥ 8 gg lavorativi</span>
+      <span class="lg"><span class="sw" style="background:var(--archiva-red); border-radius:50%"></span>H = Highest</span>
+      <span class="lg"><span class="sw" style="background:var(--archiva-orange); border-radius:50%"></span>E = In Escalation</span>
+      <span class="lg"><span class="sw" style="background:var(--archiva-accent); border-radius:50%"></span>S = Spoccato</span>
+      <span class="lg">⚠ = giorni da fallback <code>updated</code></span>
+    </div>
+    <div>
+      Customer Service Board v0.1 — Archiva Group · Polling JSM ogni 10 min · Sola lettura · Ultimo aggiornamento <strong id="lastUpdateFooter">—</strong>
+    </div>
+  </footer>
+
+</main>
+
+<script src="/static/js/auth.js"></script>
+<script>
+  // ============================================================
+  //  Stato UI globale (PRD §4.2.6)
+  // ============================================================
+  const view = {
+    tab: "active",            // "active" | "all"
+    filterCond: "all",        // "all" | "highest" | "escalation" | "spoccato"
+    hideWfr: false,
+    search: "",
+    sortKey: "created",
+    sortDir: "desc",          // "asc" | "desc"
+  };
+
+  let currentSnapshot = null;
+  let countdownTimer = null;
+
+  // ============================================================
+  //  Definizioni colonne
+  // ============================================================
+  const COLUMNS_ACTIVE = [
+    { id: "key",            label: "TC Key",          sort: "key",            render: cellKey },
+    { id: "customer",       label: "Cliente",         sort: "customer",       render: cellCustomer },
+    { id: "summary",        label: "Summary",         sort: "summary",        render: cellSummary },
+    { id: "status",         label: "Stato",           sort: "status",         render: cellStatus },
+    { id: "cond",           label: "Condizioni",      sort: null,             render: cellConditions },
+    { id: "assignee",       label: "Assegnatario",    sort: "assignee",       render: cellAssignee },
+    { id: "created",        label: "Creato il",       sort: "created",        render: r => formatDate(r.createdAt) },
+    { id: "days",           label: "Giorni s/Risc.",  sort: "days",           render: cellDaysWithoutResponse },
+    { id: "lastResp",       label: "Ultima Risposta", sort: "lastResp",       render: r => r.lastResponseToClient ? formatDate(r.lastResponseToClient) : "—" },
+    { id: "lastRespAuthor", label: "Autore Risposta", sort: "lastRespAuthor", render: r => r.lastResponseAuthor ? escapeHtml(r.lastResponseAuthor) : `<em style="color:var(--archiva-grey-mid)">nessuna risposta</em>` },
+    { id: "leaf",           label: "Ticket Figlio Attivo", sort: null, render: cellLeaf, cls: "leaf-cell" },
+    { id: "sla",            label: "SLA",             sort: null,             render: cellSla },
+  ];
+
+  // PRD §4.2.3: stesse colonne escluse Cliente e Ticket Figlio Attivo, aggiunte Data Chiusura e Tempo Risoluzione.
+  const COLUMNS_ALL = [
+    { id: "key",            label: "TC Key",          sort: "key",            render: cellKey },
+    { id: "summary",        label: "Summary",         sort: "summary",        render: cellSummary },
+    { id: "status",         label: "Stato",           sort: "status",         render: cellStatus },
+    { id: "cond",           label: "Condizioni",      sort: null,             render: cellConditions },
+    { id: "assignee",       label: "Assegnatario",    sort: "assignee",       render: cellAssignee },
+    { id: "created",        label: "Creato il",       sort: "created",        render: r => formatDate(r.createdAt) },
+    { id: "days",           label: "Giorni s/Risc.",  sort: "days",           render: cellDaysWithoutResponse },
+    { id: "lastResp",       label: "Ultima Risposta", sort: "lastResp",       render: r => r.lastResponseToClient ? formatDate(r.lastResponseToClient) : "—" },
+    { id: "lastRespAuthor", label: "Autore Risposta", sort: "lastRespAuthor", render: r => r.lastResponseAuthor ? escapeHtml(r.lastResponseAuthor) : `<em style="color:var(--archiva-grey-mid)">nessuna risposta</em>` },
+    { id: "resolution",     label: "Data Chiusura",   sort: "resolution",     render: r => r.resolutionDate ? formatDate(r.resolutionDate) : "—" },
+    { id: "resolveDays",    label: "Tempo Ris. (gg)", sort: "resolveDays",    render: cellResolutionDays },
+    { id: "sla",            label: "SLA",             sort: null,             render: cellSla },
+  ];
+
+  // ============================================================
+  //  Bootstrap
+  // ============================================================
+  authInit().then(user => {
+    if (!user) return;
+    if (user.ruolo === "ospite") document.body.classList.add("role-ospite");
+    attachToolbarHandlers();
+    loadSnapshot();
+    setInterval(loadSnapshot, 60_000);
+  });
+
+  async function loadSnapshot() {
+    try {
+      const r = await apiFetch("/api/snapshot");
+      if (!r) return;
+      const data = await r.json();
+      if (!r.ok) { showError(data.detail || "Errore caricamento snapshot"); return; }
+      currentSnapshot = data.snapshot;
+      renderSnapshot(currentSnapshot);
+    } catch (e) {
+      showError(e.message || String(e));
+    }
+  }
+
+  // ============================================================
+  //  Render snapshot
+  // ============================================================
+  function renderSnapshot(snap) {
+    const kpi = snap.kpi || {};
+    document.getElementById("kpi-1").textContent = fmt(kpi.tcUrgentiAperti);
+    document.getElementById("kpi-2").textContent = fmt(kpi.tcInCorso);
+    document.getElementById("kpi-3").textContent = fmt(kpi.tcWaitingForReporter);
+    document.getElementById("kpi-4").textContent = fmt(kpi.tcWaitingForSon);
+    document.getElementById("kpi-2-sub").textContent = `su ${fmt(kpi.tcTotaliPeriodo)} totali nel periodo`;
+    document.getElementById("kpi-3-sub").textContent = pct(kpi.tcWaitingForReporter, kpi.tcInCorso) + " dei TC in corso";
+    document.getElementById("kpi-4-sub").textContent = pct(kpi.tcWaitingForSon, kpi.tcInCorso) + " dei TC in corso";
+
+    document.getElementById("count-active").textContent = fmt((snap.rows || []).length);
+    document.getElementById("count-all").textContent = fmt((snap.rowsAll || []).length);
+
+    const ts = snap.fetchedAtMs ? new Date(snap.fetchedAtMs) : null;
+    const tsStr = ts ? formatTs(ts) : "—";
+    document.getElementById("lastUpdate").textContent = tsStr;
+    document.getElementById("lastUpdateFooter").textContent = tsStr;
+    startCountdown(snap.nextRefreshSeconds || 0);
+
+    const banner = document.getElementById("degradeBanner");
+    if (snap.degraded) {
+      const since = snap.degradedSinceMs ? new Date(snap.degradedSinceMs) : null;
+      document.getElementById("degradeMsg").innerHTML = since
+        ? `Atlassian rate limit / errore — backoff in corso. Dato non aggiornato da <strong>${humanDuration(Date.now() - since.getTime())}</strong>.`
+        : `Aggiornamento snapshot non riuscito. Servo l'ultimo dato disponibile.`;
+      banner.style.display = "flex";
+    } else if (snap.demo) {
+      document.getElementById("degradeMsg").innerHTML = "<strong>Modalità DEMO</strong> — dati di esempio, JIRA_API_TOKEN non configurato.";
+      banner.style.background = "#DCEEFD";
+      banner.style.color = "#0A4A7A";
+      banner.style.borderBottomColor = "#A8D2F0";
+      banner.style.display = "flex";
+    } else {
+      banner.style.display = "none";
+    }
+
+    renderTable();
+  }
+
+  // ============================================================
+  //  Tabella (filtro + ordinamento + render)
+  // ============================================================
+  function renderTable() {
+    if (!currentSnapshot) return;
+    const cols = view.tab === "active" ? COLUMNS_ACTIVE : COLUMNS_ALL;
+    const baseRows = view.tab === "active"
+      ? (currentSnapshot.rows || [])
+      : (currentSnapshot.rowsAll || []);
+
+    const filtered = applyFilters(baseRows);
+    const sorted = applySort(filtered);
+
+    document.getElementById("thead").innerHTML = `
+      <tr>${cols.map(c => `
+        <th ${c.sort ? `data-sort="${c.sort}"` : ""}>
+          ${escapeHtml(c.label)}
+          ${c.sort ? `<span class="sort">${sortIndicator(c.sort)}</span>` : ""}
+        </th>`).join("")}</tr>`;
+
+    const tbody = document.getElementById("tbody");
+    if (!sorted.length) {
+      const msg = baseRows.length === 0
+        ? (view.tab === "active" ? "Nessun ticket nel dataset urgent." : "Nessun TC nel periodo.")
+        : "Nessun risultato per i filtri applicati.";
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="${cols.length}">${msg}</td></tr>`;
+    } else {
+      tbody.innerHTML = sorted.map(r => `
+        <tr class="row-${escapeAttr(r.severity || "green")}">
+          ${cols.map(c => `<td${c.cls ? ` class="${c.cls}"` : ""}>${c.render(r)}</td>`).join("")}
+        </tr>
+      `).join("");
+    }
+
+    bindSortHandlers();
+  }
+
+  // PRD §4.2.6: filtri condizione (OR), toggle WFR (solo tabella), ricerca client-side
+  function applyFilters(rows) {
+    const q = view.search.trim().toLowerCase();
+    return rows.filter(r => {
+      if (view.filterCond === "highest"    && !r.isHighest)    return false;
+      if (view.filterCond === "escalation" && !r.isEscalation) return false;
+      if (view.filterCond === "spoccato"   && !r.isSpoccato)   return false;
+      if (view.hideWfr && r.statusFamily === "wfr") return false;
+      if (q) {
+        const hay = [
+          r.key, r.summary, r.status,
+          r.assignee?.displayName || "",
+          r.customer?.name || "",
+          r.customer?.code || "",
+          r.lastResponseAuthor || "",
+        ].join(" ").toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }
+
+  function applySort(rows) {
+    const key = view.sortKey;
+    const dir = view.sortDir === "asc" ? 1 : -1;
+    const get = sortAccessor(key);
+    // Ordinamento omogeneo per "days" anche col fallback (Q&A §5.28)
+    return [...rows].sort((a, b) => {
+      const va = get(a); const vb = get(b);
+      if (va === vb) return 0;
+      if (va === null || va === undefined) return 1;   // null in fondo, indip. da dir
+      if (vb === null || vb === undefined) return -1;
+      return va < vb ? -dir : dir;
+    });
+  }
+
+  function sortAccessor(key) {
+    switch (key) {
+      case "key":            return r => r.key || "";
+      case "customer":       return r => (r.customer?.name || "").toLowerCase();
+      case "summary":        return r => (r.summary || "").toLowerCase();
+      case "status":         return r => (r.status || "").toLowerCase();
+      case "assignee":       return r => (r.assignee?.displayName || "").toLowerCase();
+      case "created":        return r => r.createdAt || "";
+      case "days":           return r => r.daysWithoutResponse;
+      case "lastResp":       return r => r.lastResponseToClient || "";
+      case "lastRespAuthor": return r => (r.lastResponseAuthor || "").toLowerCase();
+      case "resolution":     return r => r.resolutionDate || "";
+      case "resolveDays":    return r => resolutionDaysOf(r);
+      default:               return r => "";
+    }
+  }
+
+  function sortIndicator(colKey) {
+    if (view.sortKey !== colKey) return "⇅";
+    return view.sortDir === "asc" ? "▲" : "▼";
+  }
+
+  function bindSortHandlers() {
+    document.querySelectorAll("#thead th[data-sort]").forEach(th => {
+      th.addEventListener("click", () => {
+        const k = th.dataset.sort;
+        if (view.sortKey === k) {
+          view.sortDir = view.sortDir === "asc" ? "desc" : "asc";
+        } else {
+          view.sortKey = k;
+          view.sortDir = (k === "days" || k === "created" || k === "lastResp" || k === "resolution") ? "desc" : "asc";
+        }
+        renderTable();
+      });
+    });
+  }
+
+  // ============================================================
+  //  Toolbar / tab handlers
+  // ============================================================
+  function attachToolbarHandlers() {
+    document.querySelectorAll(".tabs .tab").forEach(t => {
+      t.addEventListener("click", () => {
+        document.querySelectorAll(".tabs .tab").forEach(x => x.classList.remove("active"));
+        t.classList.add("active");
+        view.tab = t.dataset.tab;
+        // Reset di campi che non esistono nel tab "all"
+        if (view.tab === "all" && (view.sortKey === "customer")) view.sortKey = "key";
+        renderTable();
+      });
+    });
+
+    document.querySelectorAll(".filter-pill").forEach(p => {
+      p.addEventListener("click", () => {
+        document.querySelectorAll(".filter-pill").forEach(x => x.classList.remove("active"));
+        p.classList.add("active");
+        view.filterCond = p.dataset.cond;
+        renderTable();
+      });
+    });
+
+    document.getElementById("hideWfr").addEventListener("change", (ev) => {
+      view.hideWfr = ev.target.checked;
+      renderTable();
+    });
+
+    let searchTimer;
+    document.getElementById("searchInput").addEventListener("input", (ev) => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        view.search = ev.target.value;
+        renderTable();
+      }, 100);
+    });
+  }
+
+  // ============================================================
+  //  Cell renderers
+  // ============================================================
+  function cellKey(r) {
+    return `<span class="key-cell"><a href="${escapeAttr(r.url)}" target="_blank">${escapeHtml(r.key)} <span class="ext">↗</span></a></span>`;
+  }
+  function cellCustomer(r) {
+    return `<div class="customer">
+      <div class="name">${escapeHtml(r.customer?.name || "—")}</div>
+      <div class="code">${escapeHtml(r.customer?.code || "")}</div>
+    </div>`;
+  }
+  function cellSummary(r) {
+    return `<div class="summary" title="${escapeAttr(r.summary || "")}">${escapeHtml(r.summary || "")}</div>`;
+  }
+  function cellStatus(r) {
+    return `<span class="badge badge-status s-${escapeAttr(r.statusFamily || "open")}">${escapeHtml(r.status || "")}</span>`;
+  }
+  function cellConditions(r) {
+    return `<div class="cond">
+      <span class="b ${r.isHighest ? 'h' : 'dim'}" title="Highest">H</span>
+      <span class="b ${r.isEscalation ? 'e' : 'dim'}" title="In Escalation">E</span>
+      <span class="b ${r.isSpoccato ? 's' : 'dim'}" title="Spoccato">S</span>
+    </div>`;
+  }
+  function cellAssignee(r) {
+    if (!r.assignee) {
+      return `<div class="assignee unassigned"><div class="av">?</div><div class="name">Non assegnato</div></div>`;
+    }
+    return `<div class="assignee"><div class="av">${escapeHtml(r.assignee.initials || "?")}</div><div class="name">${escapeHtml(r.assignee.displayName || "")}</div></div>`;
+  }
+  function cellDaysWithoutResponse(r) {
+    const sev = r.severity || "green";
+    const days = r.daysWithoutResponse;
+    const fb = r.daysFromFallback
+      ? ` <span class="fb" title="Valore derivato dal fallback su issue.updated — nessuna risposta operatore identificata">⚠</span>`
+      : "";
+    if (days === null || days === undefined) return `<span class="days-pill ${sev}">— gg</span>`;
+    return `<span class="days-pill ${sev}">${days} gg${fb}</span>`;
+  }
+  function cellLeaf(r) {
+    const leaf = r.leaf;
+    if (!leaf) return `<span style="color:var(--archiva-grey-mid)">—</span>`;
+    if (leaf.attesaClienteHelpdesk) {
+      return `<a href="#" class="leaf-key">${escapeHtml(leaf.directChildKey)}</a>
+              <span class="stall" style="color:#8A4B00">📨 Attesa Cliente / Helpdesk</span>`;
+    }
+    if (leaf.chainTooDeep) {
+      return `<a href="#" class="leaf-key">${escapeHtml(leaf.leafKey)}</a>
+              <span class="chain-warn">catena troppo profonda</span>
+              <span class="stall">fallback applicato al ticket di partenza</span>`;
+    }
+    const chain = leaf.directChildKey === leaf.leafKey
+      ? `<a href="#" class="leaf-key">${escapeHtml(leaf.leafKey)}</a>`
+      : `<a href="#" class="leaf-key">${escapeHtml(leaf.directChildKey)}</a><span class="arrow">➜</span><a href="#" class="leaf-key">${escapeHtml(leaf.leafKey)}</a>`;
+    const stallParts = [];
+    if (r.leafStallDays !== null && r.leafStallDays !== undefined) stallParts.push(`⏱ ${r.leafStallDays}gg fermo`);
+    if (leaf.leafAssignee) stallParts.push(escapeHtml(leaf.leafAssignee));
+    return `${chain}<span class="stall">${stallParts.join(" · ")}</span>`;
+  }
+  function cellSla(r) {
+    const sla = r.sla;
+    if (!sla || sla.state === "none") return `<span class="sla none">— pausa</span>`;
+    return `<span class="sla ${escapeAttr(sla.state)}">${escapeHtml(sla.label)}</span>`;
+  }
+  function cellResolutionDays(r) {
+    const days = resolutionDaysOf(r);
+    return days === null ? "—" : `${days} gg`;
+  }
+  function resolutionDaysOf(r) {
+    if (!r.createdAt || !r.resolutionDate) return null;
+    const a = new Date(r.createdAt);
+    const b = new Date(r.resolutionDate);
+    if (isNaN(a) || isNaN(b)) return null;
+    return Math.max(0, Math.round((b - a) / 86_400_000));
+  }
+
+  function showError(msg) {
+    document.getElementById("degradeMsg").textContent = "Errore: " + msg;
+    document.getElementById("degradeBanner").style.display = "flex";
+  }
+
+  // ============================================================
+  //  Helpers
+  // ============================================================
+  function fmt(n) { return n === undefined || n === null ? "—" : String(n); }
+  function pct(num, den) {
+    if (!den || den <= 0) return "—";
+    return Math.round((num * 100) / den) + "%";
+  }
+  function pad(n) { return String(n).padStart(2, "0"); }
+  function formatTs(d) {
+    return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  }
+  function formatDate(iso) {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    if (isNaN(d)) return "—";
+    return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+  }
+  function humanDuration(ms) {
+    const s = Math.max(0, Math.floor(ms / 1000));
+    const m = Math.floor(s / 60);
+    const r = s % 60;
+    return m > 0 ? `${m}m ${pad(r)}s` : `${r}s`;
+  }
+  function startCountdown(seconds) {
+    if (countdownTimer) clearInterval(countdownTimer);
+    let remaining = Math.max(0, Math.floor(seconds));
+    const el = document.getElementById("nextPoll");
+    const tick = () => {
+      el.textContent = humanDuration(remaining * 1000);
+      if (remaining <= 0) {
+        clearInterval(countdownTimer);
+        loadSnapshot();
+        return;
+      }
+      remaining -= 1;
+    };
+    tick();
+    countdownTimer = setInterval(tick, 1000);
+  }
+  function escapeHtml(s) {
+    return String(s ?? "").replace(/[&<>"']/g, c => (
+      { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+    ));
+  }
+  function escapeAttr(s) { return escapeHtml(s); }
+</script>
+</body>
+</html>

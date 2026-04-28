@@ -17,6 +17,7 @@ from typing import Any, Optional
 JIRA_BASE_URL = os.getenv("JIRA_BASE_URL", "").rstrip("/")
 FIELD_TICKET_SPOCCATO = os.getenv("JIRA_FIELD_TICKET_SPOCCATO", "")
 FIELD_IN_ESCALATION = os.getenv("JIRA_FIELD_IN_ESCALATION", "")
+FIELD_CUSTOMER_NAME = os.getenv("JIRA_FIELD_CUSTOMER_NAME", "")
 
 # Status normalizzati (lowercase) → famiglia per badge UI
 # PRD §4.2.1 + Q&A §2.10: confronto case-insensitive su EN + IT.
@@ -169,15 +170,37 @@ def issue_to_row(issue: dict) -> dict:
 
 
 def _extract_customer(fields: dict) -> Optional[dict]:
-    """Estrae cliente dal reporter (organization se disponibile, altrimenti displayName).
+    """Estrae cliente dal custom field 'Customer name picking' (env
+    ``JIRA_FIELD_CUSTOMER_NAME``, default verificato su Archiva: customfield_12159,
+    type=option).
 
-    In M3/M4 si potrà raffinare con un custom field dedicato se disponibile.
+    Fallback su ``reporter.displayName`` se il custom field non è valorizzato
+    (utile per ticket vecchi dove il campo non era ancora compilato).
     """
-    reporter = fields.get("reporter") or {}
-    name = reporter.get("displayName")
+    name = _read_option_value(fields, FIELD_CUSTOMER_NAME)
+    if not name:
+        reporter = fields.get("reporter") or {}
+        name = reporter.get("displayName")
     if not name:
         return None
     return {"name": name, "code": ""}
+
+
+def _read_option_value(fields: dict, custom_id: str) -> str:
+    """Legge un custom field di tipo 'select' (option) → restituisce la stringa value.
+
+    Atlassian può restituire ``{"value": "Nome", "id": "..."}`` oppure ``None``.
+    """
+    if not custom_id:
+        return ""
+    raw = fields.get(custom_id)
+    if isinstance(raw, dict):
+        v = raw.get("value")
+        if isinstance(v, str):
+            return v.strip()
+    if isinstance(raw, str):
+        return raw.strip()
+    return ""
 
 
 def severity_class(days_without_response: Optional[int]) -> str:

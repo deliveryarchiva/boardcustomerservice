@@ -42,6 +42,7 @@ JIRA_PROJECT_KEY_HDX = os.getenv("JIRA_PROJECT_KEY_HDX", "HDX")
 JIRA_DATE_FROM = os.getenv("JIRA_DATE_FROM", "2026/01/01")
 FIELD_TICKET_SPOCCATO = os.getenv("JIRA_FIELD_TICKET_SPOCCATO", "")
 FIELD_IN_ESCALATION = os.getenv("JIRA_FIELD_IN_ESCALATION", "")
+FIELD_CUSTOMER_NAME = os.getenv("JIRA_FIELD_CUSTOMER_NAME", "")
 ENRICH_CONCURRENCY = int(os.getenv("JIRA_ENRICH_CONCURRENCY", "5"))
 
 BASE_FIELDS = [
@@ -84,10 +85,9 @@ def _build_all_tc_jql() -> str:
 
 def _fields_to_request() -> list[str]:
     fields = list(BASE_FIELDS)
-    if FIELD_TICKET_SPOCCATO:
-        fields.append(FIELD_TICKET_SPOCCATO)
-    if FIELD_IN_ESCALATION:
-        fields.append(FIELD_IN_ESCALATION)
+    for cf in (FIELD_TICKET_SPOCCATO, FIELD_IN_ESCALATION, FIELD_CUSTOMER_NAME):
+        if cf:
+            fields.append(cf)
     return fields
 
 

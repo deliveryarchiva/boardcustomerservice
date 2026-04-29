@@ -27,7 +27,12 @@ from dataclasses import dataclass
 from typing import Optional
 
 from .jira_client import JiraClient
-from .transform import is_active_status, is_waiting_for_reporter, is_waiting_for_son
+from .transform import (
+    is_active_status,
+    is_waiting_for_reporter,
+    is_waiting_for_son,
+    status_family,
+)
 
 log = logging.getLogger("csb.leaf")
 
@@ -47,10 +52,18 @@ class LeafInfo:
     leaf_issue: Optional[dict] = None  # issue Jira completa del leaf (per calcolo gg fermo)
 
     def to_dict(self) -> dict:
+        cat_key = ""
+        if self.leaf_issue:
+            cat_key = (
+                ((self.leaf_issue.get("fields") or {}).get("status") or {})
+                .get("statusCategory", {})
+                .get("key", "")
+            )
         return {
             "directChildKey": self.direct_child_key,
             "leafKey": self.leaf_key,
             "leafStatus": self.leaf_status,
+            "leafStatusFamily": status_family(self.leaf_status, cat_key),
             "leafAssignee": self.leaf_assignee,
             "chainTooDeep": self.chain_too_deep,
             "attesaClienteHelpdesk": self.attesa_cliente_helpdesk,
@@ -62,12 +75,23 @@ class LeafInfo:
 # ============================================================
 
 def _children_keys_from_issue(issue: dict) -> list[str]:
-    """Estrae i KEY dei figli di una issue dai field ``parent``/``issuelinks``.
+    """Estrae i KEY dei PARENT di una issue (non dei figli — il nome storico
+    è fuorviante).
 
-    Nota: per trovare i figli di X servirebbe normalmente una JQL `parent = X`,
-    NON i campi della issue X. Questa funzione è il *contrario*: leggere su X
-    quale è il SUO parent (per indicizzare). I figli si raccolgono quindi
-    invertendo l'indice (vedi build_parent_index).
+    L'invertimento avviene in ``build_parent_index``: per ogni issue I, leggiamo
+    chi è il SUO parent → l'indice diventa ``parent_key → [child_issue,...]``.
+
+    Su Jira Service Management Cloud (verificato 2026-04-28) la relazione
+    TC ↔ HDX è espressa via ``issuelinks`` di tipo "Parent":
+        - ``inward  = "Figlio DI"`` → ``inwardIssue``  è il PADRE dell'issue
+        - ``outward = "Padre DI"``  → ``outwardIssue`` è il FIGLIO dell'issue
+
+    Per ricavare i PARENT dell'issue corrente leggiamo SOLO ``inwardIssue``;
+    leggere anche outward causerebbe un'inversione sistematica della relazione
+    (TC-X verrebbe contato come child di HDX-Y invece che parent).
+
+    Manteniamo come prima fonte ``fields.parent`` per i progetti che usano il
+    campo nativo (es. epic→story).
     """
     fields = issue.get("fields") or {}
     parents: list[str] = []
@@ -75,11 +99,11 @@ def _children_keys_from_issue(issue: dict) -> list[str]:
     if isinstance(parent, dict) and parent.get("key"):
         parents.append(parent["key"])
     for link in fields.get("issuelinks") or []:
-        for side in ("inwardIssue", "outwardIssue"):
-            target = link.get(side) or {}
-            if (link.get("type") or {}).get("name", "").lower() in {"parent", "blocks", "is parent of"}:
-                if target.get("key"):
-                    parents.append(target["key"])
+        if (link.get("type") or {}).get("name", "").lower() != "parent":
+            continue
+        target = link.get("inwardIssue") or {}
+        if target.get("key"):
+            parents.append(target["key"])
     return parents
 
 
@@ -103,15 +127,19 @@ def _is_waiting_status(status_name: str) -> bool:
     return is_waiting_for_reporter(status_name) or is_waiting_for_son(status_name)
 
 
-def _filter_waiting_active(children: list[dict]) -> list[dict]:
-    """Solo figli ancora attivi e in stato waiting (qualunque waiting…)."""
+def _filter_active_children(children: list[dict]) -> list[dict]:
+    """Solo figli ancora attivi (statusCategory ≠ Done) — qualunque stato.
+
+    Il "leaf" della filiera è infatti il primo figlio NON in WFS, che può essere
+    perfettamente in lavorazione ("Aperto", "In Progress", ecc.). Filtrare solo
+    i waiting nasconde il leaf vero quando il TC è in WFS ma il figlio è già
+    in carico a uno sviluppatore.
+    """
     out = []
     for c in children:
         fields = c.get("fields") or {}
-        status = fields.get("status") or {}
-        status_name = status.get("name", "")
-        status_cat = (status.get("statusCategory") or {}).get("key", "")
-        if is_active_status(status_cat) and _is_waiting_status(status_name):
+        status_cat = ((fields.get("status") or {}).get("statusCategory") or {}).get("key", "")
+        if is_active_status(status_cat):
             out.append(c)
     return out
 
@@ -182,11 +210,10 @@ async def _resolve_one_chain(
             )
 
         children = parent_index.get(current.get("key", ""), [])
-        waiting_children = _filter_waiting_active(children)
+        active_children = _filter_active_children(children)
 
-        if not waiting_children:
-            # Nessun figlio waiting dentro il dataset: prova fetch supplementare?
-            # Per ora, se il dataset locale non li ha, consideriamo current il leaf.
+        if not active_children:
+            # Nessun figlio attivo dentro il dataset: current è il leaf.
             return LeafInfo(
                 direct_child_key=direct_child_key,
                 leaf_key=current.get("key", ""),
@@ -195,8 +222,14 @@ async def _resolve_one_chain(
                 leaf_issue=current,
             )
 
-        # Profondità ≥2: prendiamo il primo (PRD non duplica oltre il livello 1).
-        next_node = waiting_children[0]
+        # Profondità ≥2: prendiamo il primo figlio attivo (PRD non duplica oltre L1).
+        # Privilegiamo i figli in stato waiting (catena di stallo); se non ce ne sono,
+        # il primo figlio attivo va comunque bene perché lì la catena termina.
+        waiting_children = [
+            c for c in active_children
+            if _is_waiting_status(((c.get("fields") or {}).get("status") or {}).get("name", ""))
+        ]
+        next_node = waiting_children[0] if waiting_children else active_children[0]
         next_key = next_node.get("key", "")
 
         # Loop guard
@@ -232,7 +265,10 @@ async def resolve_for_tc(
     """Risolve i leaf per un singolo TC. Lista vuota se non si applica.
 
     - Se il TC NON è in waiting-for-son → []
-    - Altrimenti restituisce una LeafInfo per ogni figlio in stato waiting (Q&A §4.20).
+    - Se ha ≥2 figli ATTIVI in stato waiting → una LeafInfo per ogni figlio waiting
+      (Q&A §4.20: duplicazione a livello TC).
+    - Altrimenti → una sola LeafInfo, partendo dal primo figlio attivo (anche se
+      non in waiting: è il caso normale "TC in WFS, figlio già in lavorazione").
     """
     fields = tc_issue.get("fields") or {}
     status_name = (fields.get("status") or {}).get("name", "")
@@ -240,13 +276,19 @@ async def resolve_for_tc(
         return []
 
     children = parent_index.get(tc_issue.get("key", ""), [])
-    waiting_children = _filter_waiting_active(children)
-    if not waiting_children:
+    active_children = _filter_active_children(children)
+    if not active_children:
         return []
+
+    waiting_children = [
+        c for c in active_children
+        if _is_waiting_status(((c.get("fields") or {}).get("status") or {}).get("name", ""))
+    ]
+    targets = waiting_children if len(waiting_children) >= 2 else active_children[:1]
 
     additional_cache: dict[str, dict] = {}
     leaves = []
-    for child in waiting_children:
+    for child in targets:
         info = await _resolve_one_chain(
             child, parent_index, client, additional_cache, max_depth=max_depth
         )

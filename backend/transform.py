@@ -18,9 +18,13 @@ JIRA_BASE_URL = os.getenv("JIRA_BASE_URL", "").rstrip("/")
 FIELD_TICKET_SPOCCATO = os.getenv("JIRA_FIELD_TICKET_SPOCCATO", "")
 FIELD_IN_ESCALATION = os.getenv("JIRA_FIELD_IN_ESCALATION", "")
 FIELD_CUSTOMER_NAME = os.getenv("JIRA_FIELD_CUSTOMER_NAME", "")
+FIELD_CUSTOMER_CODE = os.getenv("JIRA_FIELD_CUSTOMER_CODE", "")
 
 # Status normalizzati (lowercase) → famiglia per badge UI
 # PRD §4.2.1 + Q&A §2.10: confronto case-insensitive su EN + IT.
+# Stati Archiva osservati su istanza reale 2026-04-28: "Aperto", "Work in progress",
+# "Waiting for reporter", "Waiting for son", "Replied from reporter",
+# "Replied from son", "Sleeping", "Assegnata", "In attesa di risposta dal cliente".
 STATUS_FAMILIES: dict[str, str] = {
     # Waiting for reporter / In attesa cliente → wfr
     "waiting for reporter": "wfr",
@@ -28,15 +32,23 @@ STATUS_FAMILIES: dict[str, str] = {
     "in attesa cliente": "wfr",
     "in attesa del cliente": "wfr",
     "attesa cliente": "wfr",
+    "in attesa di risposta dal cliente": "wfr",
+    "in attesa risposta cliente": "wfr",
+    "sleeping": "wfr",  # stato dormiente Archiva, concettualmente in attesa
     # Waiting for son / In attesa del figlio → wfson
     "waiting for son": "wfson",
     "waiting for child": "wfson",
     "in attesa del figlio": "wfson",
     "in attesa figlio": "wfson",
-    # In progress
+    # In progress / lavorazione attiva
     "in progress": "progress",
+    "work in progress": "progress",
     "in lavorazione": "progress",
     "in corso": "progress",
+    "assegnata": "progress",
+    "assegnato": "progress",
+    "replied from reporter": "progress",
+    "replied from son": "progress",
     # Open / To Do
     "open": "open",
     "to do": "open",
@@ -51,12 +63,30 @@ STATUS_FAMILIES: dict[str, str] = {
     "chiuso": "resolved",
 }
 
+# Fallback dalla statusCategory standard Atlassian (new/indeterminate/done) per
+# stati di workflow custom non mappati esplicitamente.
+_CATEGORY_FALLBACK = {
+    "done": "resolved",
+    "indeterminate": "progress",
+    "new": "open",
+}
 
-def status_family(status_name: str) -> str:
-    """Famiglia di stato per il badge (progress/wfr/wfson/open/resolved)."""
+
+def status_family(status_name: str, status_category_key: Optional[str] = None) -> str:
+    """Famiglia di stato per il badge (progress/wfr/wfson/open/resolved).
+
+    Cerca prima nella mappa esplicita per nome (case-insensitive); se non trovato
+    e ``status_category_key`` è valorizzato (``new``/``indeterminate``/``done``),
+    deriva il colore da quello — copertura per workflow custom.
+    """
     if not status_name:
         return "open"
-    return STATUS_FAMILIES.get(status_name.strip().lower(), "open")
+    fam = STATUS_FAMILIES.get(status_name.strip().lower())
+    if fam:
+        return fam
+    if status_category_key:
+        return _CATEGORY_FALLBACK.get(status_category_key.lower(), "open")
+    return "open"
 
 
 def is_waiting_for_reporter(status_name: str) -> bool:
@@ -170,20 +200,21 @@ def issue_to_row(issue: dict) -> dict:
 
 
 def _extract_customer(fields: dict) -> Optional[dict]:
-    """Estrae cliente dal custom field 'Customer name picking' (env
-    ``JIRA_FIELD_CUSTOMER_NAME``, default verificato su Archiva: customfield_12159,
-    type=option).
+    """Estrae cliente dai custom field configurati:
+      - ``JIRA_FIELD_CUSTOMER_NAME`` (option, default Archiva: ``customfield_12159``)
+      - ``JIRA_FIELD_CUSTOMER_CODE`` (textfield, default Archiva: ``customfield_12091``)
 
-    Fallback su ``reporter.displayName`` se il custom field non è valorizzato
-    (utile per ticket vecchi dove il campo non era ancora compilato).
+    Fallback su ``reporter.displayName`` se il name non è valorizzato (utile per
+    ticket vecchi dove il campo non era ancora compilato).
     """
     name = _read_option_value(fields, FIELD_CUSTOMER_NAME)
     if not name:
         reporter = fields.get("reporter") or {}
-        name = reporter.get("displayName")
-    if not name:
+        name = reporter.get("displayName") or ""
+    code = _read_option_value(fields, FIELD_CUSTOMER_CODE)
+    if not name and not code:
         return None
-    return {"name": name, "code": ""}
+    return {"name": name, "code": code}
 
 
 def _read_option_value(fields: dict, custom_id: str) -> str:
@@ -236,30 +267,20 @@ def is_orphan_hdx(issue: dict, parent_keys_in_dataset: set[str]) -> bool:
 #  KPI
 # ============================================================
 
-def compute_kpi(rows_urgent_dataset: list[dict], rows_all_tc: list[dict]) -> dict:
-    """Calcola i 4 KPI (PRD §4.2.1).
+def compute_kpi(rows_urgent_tc_all_period: list[dict]) -> dict:
+    """Calcola i 4 KPI sul **pool urgent** (TC con condizione OR Highest /
+    Spoccato / In Escalation). PRD §4.2.1, rivisto 2026-04-28: la board ha come
+    focus i soli ticket urgenti, quindi tutti i KPI si riferiscono a quel pool.
 
-    - rows_urgent_dataset: TC + HDX dal dataset OR-conditional (post-dedupe HDX orfani)
-    - rows_all_tc:         tutti i TC del periodo (anche chiusi, anche fuori dall'OR)
+    - KPI 1 — TC urgenti aperti (urgent + attivi)
+    - KPI 2 — TC urgenti totali nel periodo (urgent, attivi + chiusi) — denominatore
+    - KPI 3 — TC urgenti aperti in Waiting for reporter
+    - KPI 4 — TC urgenti aperti in Waiting for son
     """
-    # KPI 1 — TC urgenti aperti (TC del dataset OR-conditional, attivi)
-    kpi_1 = sum(
-        1
-        for r in rows_urgent_dataset
-        if r["project"] == "TC" and r["isActive"]
-    )
-
-    # I KPI 2/3/4 si misurano su TUTTI i TC del periodo (esclusi chiusi)
-    tc_active = [r for r in rows_all_tc if r["project"] == "TC" and r["isActive"]]
-    kpi_2 = len(tc_active)
-    kpi_3 = sum(1 for r in tc_active if is_waiting_for_reporter(r["status"]))
-    kpi_4 = sum(1 for r in tc_active if is_waiting_for_son(r["status"]))
-
-    tc_total_period = sum(1 for r in rows_all_tc if r["project"] == "TC")
+    urgent_active = [r for r in rows_urgent_tc_all_period if r["isActive"]]
     return {
-        "tcUrgentiAperti": kpi_1,
-        "tcInCorso": kpi_2,
-        "tcTotaliPeriodo": tc_total_period,
-        "tcWaitingForReporter": kpi_3,
-        "tcWaitingForSon": kpi_4,
+        "tcUrgentiAperti": len(urgent_active),
+        "tcUrgentiPeriodo": len(rows_urgent_tc_all_period),
+        "tcWaitingForReporter": sum(1 for r in urgent_active if is_waiting_for_reporter(r["status"])),
+        "tcWaitingForSon": sum(1 for r in urgent_active if is_waiting_for_son(r["status"])),
     }

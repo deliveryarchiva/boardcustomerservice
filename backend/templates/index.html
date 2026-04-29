@@ -283,6 +283,17 @@
   .days-pill.orange { background: #FFE9CC; color: #8A4B00; }
   .days-pill.red    { background: #FBDDD9; color: #7E1B11; }
   .days-pill .fb { font-size: 10px; opacity: 0.85; cursor: help; }
+  .days-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+  .days-cell .resp-date,
+  .days-cell .resp-author {
+    font-size: 11px;
+    color: var(--archiva-grey-mid);
+    font-style: italic;
+    white-space: nowrap;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   .leaf-cell { font-size: 12px; }
   .leaf-cell .arrow { color: var(--archiva-grey-mid); margin: 0 4px; }
@@ -434,24 +445,24 @@
 
   <section class="kpi-grid" aria-label="Indicatori principali">
     <div class="kpi accent-red">
-      <div class="label">Totale TC urgenti aperti<br><small>Highest OR Spoccato OR In Escalation · attivi</small></div>
+      <div class="label">TC urgenti aperti<br><small>Highest OR Spoccato OR In Escalation · attivi</small></div>
       <div class="value" id="kpi-1">—</div>
-      <div class="sub">priorità top in board</div>
+      <div class="sub" id="kpi-1-sub">— degli urgenti del periodo</div>
     </div>
     <div class="kpi accent-navy">
-      <div class="label">Totale TC in corso<br><small>statusCategory ≠ Done</small></div>
+      <div class="label">TC urgenti del periodo<br><small>OR · attivi + chiusi · da 01/01/2026</small></div>
       <div class="value" id="kpi-2">—</div>
-      <div class="sub" id="kpi-2-sub">su — totali nel periodo</div>
+      <div class="sub" id="kpi-2-sub">— completati</div>
     </div>
     <div class="kpi accent-cyan">
-      <div class="label">Totale TC Waiting for reporter<br><small>WFR / In attesa cliente</small></div>
+      <div class="label">TC urgenti in Waiting for reporter<br><small>WFR / In attesa cliente · sul pool urgenti aperti</small></div>
       <div class="value" id="kpi-3">—</div>
-      <div class="sub" id="kpi-3-sub">— dei TC in corso</div>
+      <div class="sub" id="kpi-3-sub">— degli urgenti aperti</div>
     </div>
     <div class="kpi accent-orange">
-      <div class="label">Totale TC Waiting for son<br><small>palla nelle mani di un HDX figlio</small></div>
+      <div class="label">TC urgenti in Waiting for son<br><small>palla a un HDX figlio · sul pool urgenti aperti</small></div>
       <div class="value" id="kpi-4">—</div>
-      <div class="sub" id="kpi-4-sub">— dei TC in corso</div>
+      <div class="sub" id="kpi-4-sub">— degli urgenti aperti</div>
     </div>
   </section>
 
@@ -539,9 +550,8 @@
     { id: "assignee",       label: "Assegnatario",    sort: "assignee",       render: cellAssignee },
     { id: "created",        label: "Creato il",       sort: "created",        render: r => formatDate(r.createdAt) },
     { id: "days",           label: "Giorni s/Risc.",  sort: "days",           render: cellDaysWithoutResponse },
-    { id: "lastResp",       label: "Ultima Risposta", sort: "lastResp",       render: r => r.lastResponseToClient ? formatDate(r.lastResponseToClient) : "—" },
-    { id: "lastRespAuthor", label: "Autore Risposta", sort: "lastRespAuthor", render: r => r.lastResponseAuthor ? escapeHtml(r.lastResponseAuthor) : `<em style="color:var(--archiva-grey-mid)">nessuna risposta</em>` },
     { id: "leaf",           label: "Ticket Figlio Attivo", sort: null, render: cellLeaf, cls: "leaf-cell" },
+    { id: "leafStatus",     label: "Stato Figlio",    sort: null,             render: cellLeafStatus },
     { id: "sla",            label: "SLA",             sort: null,             render: cellSla },
   ];
 
@@ -554,8 +564,6 @@
     { id: "assignee",       label: "Assegnatario",    sort: "assignee",       render: cellAssignee },
     { id: "created",        label: "Creato il",       sort: "created",        render: r => formatDate(r.createdAt) },
     { id: "days",           label: "Giorni s/Risc.",  sort: "days",           render: cellDaysWithoutResponse },
-    { id: "lastResp",       label: "Ultima Risposta", sort: "lastResp",       render: r => r.lastResponseToClient ? formatDate(r.lastResponseToClient) : "—" },
-    { id: "lastRespAuthor", label: "Autore Risposta", sort: "lastRespAuthor", render: r => r.lastResponseAuthor ? escapeHtml(r.lastResponseAuthor) : `<em style="color:var(--archiva-grey-mid)">nessuna risposta</em>` },
     { id: "resolution",     label: "Data Chiusura",   sort: "resolution",     render: r => r.resolutionDate ? formatDate(r.resolutionDate) : "—" },
     { id: "resolveDays",    label: "Tempo Ris. (gg)", sort: "resolveDays",    render: cellResolutionDays },
     { id: "sla",            label: "SLA",             sort: null,             render: cellSla },
@@ -591,12 +599,14 @@
   function renderSnapshot(snap) {
     const kpi = snap.kpi || {};
     document.getElementById("kpi-1").textContent = fmt(kpi.tcUrgentiAperti);
-    document.getElementById("kpi-2").textContent = fmt(kpi.tcInCorso);
+    document.getElementById("kpi-2").textContent = fmt(kpi.tcUrgentiPeriodo);
     document.getElementById("kpi-3").textContent = fmt(kpi.tcWaitingForReporter);
     document.getElementById("kpi-4").textContent = fmt(kpi.tcWaitingForSon);
-    document.getElementById("kpi-2-sub").textContent = `su ${fmt(kpi.tcTotaliPeriodo)} totali nel periodo`;
-    document.getElementById("kpi-3-sub").textContent = pct(kpi.tcWaitingForReporter, kpi.tcInCorso) + " dei TC in corso";
-    document.getElementById("kpi-4-sub").textContent = pct(kpi.tcWaitingForSon, kpi.tcInCorso) + " dei TC in corso";
+    const completati = (kpi.tcUrgentiPeriodo || 0) - (kpi.tcUrgentiAperti || 0);
+    document.getElementById("kpi-1-sub").textContent = pct(kpi.tcUrgentiAperti, kpi.tcUrgentiPeriodo) + " degli urgenti del periodo";
+    document.getElementById("kpi-2-sub").textContent = `${fmt(completati)} completati (${pct(completati, kpi.tcUrgentiPeriodo)})`;
+    document.getElementById("kpi-3-sub").textContent = pct(kpi.tcWaitingForReporter, kpi.tcUrgentiAperti) + " degli urgenti aperti";
+    document.getElementById("kpi-4-sub").textContent = pct(kpi.tcWaitingForSon, kpi.tcUrgentiAperti) + " degli urgenti aperti";
 
     document.getElementById("count-active").textContent = fmt((snap.rows || []).length);
     document.getElementById("count-all").textContent = fmt((snap.rowsAll || []).length);
@@ -810,11 +820,21 @@
   function cellDaysWithoutResponse(r) {
     const sev = r.severity || "green";
     const days = r.daysWithoutResponse;
-    const fb = r.daysFromFallback
-      ? ` <span class="fb" title="Valore derivato dal fallback su issue.updated — nessuna risposta operatore identificata">⚠</span>`
+    // Caso fallback: nessun commento operatore identificato. Pill esplicito,
+    // niente data/autore (sarebbero il timestamp di issue.updated, fuorvianti).
+    if (r.daysFromFallback) {
+      return `<div class="days-cell"><span class="days-pill ${sev}" title="Nessun commento operatore identificato; severity calcolata sul fallback issue.updated">nessuna risposta</span></div>`;
+    }
+    const pill = (days === null || days === undefined)
+      ? `<span class="days-pill ${sev}">— gg</span>`
+      : `<span class="days-pill ${sev}">${days} gg</span>`;
+    const date = r.lastResponseToClient
+      ? `<div class="resp-date">${formatDate(r.lastResponseToClient)}</div>`
       : "";
-    if (days === null || days === undefined) return `<span class="days-pill ${sev}">— gg</span>`;
-    return `<span class="days-pill ${sev}">${days} gg${fb}</span>`;
+    const author = r.lastResponseAuthor
+      ? `<div class="resp-author">${escapeHtml(r.lastResponseAuthor)}</div>`
+      : "";
+    return `<div class="days-cell">${pill}${date}${author}</div>`;
   }
   function cellLeaf(r) {
     const leaf = r.leaf;
@@ -840,6 +860,12 @@
     const sla = r.sla;
     if (!sla || sla.state === "none") return `<span class="sla none">— pausa</span>`;
     return `<span class="sla ${escapeAttr(sla.state)}">${escapeHtml(sla.label)}</span>`;
+  }
+  function cellLeafStatus(r) {
+    const leaf = r.leaf;
+    if (!leaf || !leaf.leafStatus) return `<span style="color:var(--archiva-grey-mid)">—</span>`;
+    const family = leaf.leafStatusFamily || "open";
+    return `<span class="badge badge-status s-${escapeAttr(family)}">${escapeHtml(leaf.leafStatus)}</span>`;
   }
   function cellResolutionDays(r) {
     const days = resolutionDaysOf(r);

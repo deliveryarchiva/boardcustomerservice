@@ -146,9 +146,9 @@ async def step_jql(client: JiraClient) -> list[dict]:
 
     or_clauses = ["priority = Highest"]
     if spoccato:
-        or_clauses.append('"TICKET SPOCCATO" = Yes')
+        or_clauses.append('"TICKET SPOCCATO" = SI')
     if escalation:
-        or_clauses.append('"IN ESCALATION" = Yes')
+        or_clauses.append('"IN ESCALATION" = SI')
 
     jql = (
         f"(project = {project_tc} OR project = {project_hdx}) "

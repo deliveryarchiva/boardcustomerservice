@@ -99,6 +99,13 @@ def seed_users() -> None:
             "role": "",
             "password": hash_password("D3fault!"),
         },
+        {
+            "nome": "Alessandra Donisi",
+            "username": "alessandra.donisi",
+            "ruolo": "user",
+            "role": "Customer Care Agent",
+            "password": hash_password("Alessandra1!"),
+        },
     ]
     existing = load_users()
     for u in seed:

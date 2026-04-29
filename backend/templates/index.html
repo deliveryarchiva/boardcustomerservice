@@ -131,6 +131,28 @@
     color: var(--archiva-white);
     border-color: var(--archiva-primary);
   }
+  .assignee-filter {
+    padding: 6px 12px;
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 999px;
+    font-size: 13px;
+    background: var(--archiva-white);
+    color: var(--archiva-text);
+    cursor: pointer;
+    font-family: inherit;
+    max-width: 240px;
+  }
+  .assignee-filter:hover { border-color: var(--archiva-accent); }
+  .assignee-filter:focus {
+    outline: none;
+    border-color: var(--archiva-accent);
+    box-shadow: 0 0 0 3px rgba(30,139,195,0.15);
+  }
+  .assignee-filter.filtering {
+    background: var(--archiva-primary);
+    color: var(--archiva-white);
+    border-color: var(--archiva-primary);
+  }
   .search-box {
     position: relative;
     margin-left: auto;
@@ -445,22 +467,22 @@
 
   <section class="kpi-grid" aria-label="Indicatori principali">
     <div class="kpi accent-red">
-      <div class="label">TC urgenti aperti<br><small>Highest OR Spoccato OR In Escalation · attivi</small></div>
+      <div class="label">TC urgenti aperti</div>
       <div class="value" id="kpi-1">—</div>
       <div class="sub" id="kpi-1-sub">— degli urgenti del periodo</div>
     </div>
     <div class="kpi accent-navy">
-      <div class="label">TC urgenti del periodo<br><small>OR · attivi + chiusi · da 01/01/2026</small></div>
+      <div class="label">TC urgenti del periodo</div>
       <div class="value" id="kpi-2">—</div>
       <div class="sub" id="kpi-2-sub">— completati</div>
     </div>
     <div class="kpi accent-cyan">
-      <div class="label">TC urgenti in Waiting for reporter<br><small>WFR / In attesa cliente · sul pool urgenti aperti</small></div>
+      <div class="label">TC urgenti in Waiting for reporter</div>
       <div class="value" id="kpi-3">—</div>
       <div class="sub" id="kpi-3-sub">— degli urgenti aperti</div>
     </div>
     <div class="kpi accent-orange">
-      <div class="label">TC urgenti in Waiting for son<br><small>palla a un HDX figlio · sul pool urgenti aperti</small></div>
+      <div class="label">TC urgenti in Waiting for son</div>
       <div class="value" id="kpi-4">—</div>
       <div class="sub" id="kpi-4-sub">— degli urgenti aperti</div>
     </div>
@@ -475,11 +497,15 @@
 
     <div class="toolbar">
       <div class="group">
-        <span class="lbl">Condizione (OR):</span>
         <button type="button" class="filter-pill active" data-cond="all">Tutti</button>
         <button type="button" class="filter-pill" data-cond="highest">Highest</button>
         <button type="button" class="filter-pill" data-cond="escalation">In Escalation</button>
         <button type="button" class="filter-pill" data-cond="spoccato">Spoccato</button>
+      </div>
+      <div class="group">
+        <select class="assignee-filter" id="assigneeFilter" aria-label="Filtra per assegnatario">
+          <option value="all">Tutti gli assegnatari</option>
+        </select>
       </div>
       <div class="group">
         <label class="toggle">
@@ -531,6 +557,7 @@
     filterCond: "all",        // "all" | "highest" | "escalation" | "spoccato"
     hideWfr: false,
     search: "",
+    assignee: "all",          // "all" | "__unassigned__" | "<displayName>"
     sortKey: "created",
     sortDir: "desc",          // "asc" | "desc"
   };
@@ -634,6 +661,7 @@
       banner.style.display = "none";
     }
 
+    refreshAssigneeFilter();
     renderTable();
   }
 
@@ -682,6 +710,14 @@
       if (view.filterCond === "escalation" && !r.isEscalation) return false;
       if (view.filterCond === "spoccato"   && !r.isSpoccato)   return false;
       if (view.hideWfr && r.statusFamily === "wfr") return false;
+      if (view.assignee !== "all") {
+        const name = r.assignee?.displayName || "";
+        if (view.assignee === "__unassigned__") {
+          if (name) return false;
+        } else if (name !== view.assignee) {
+          return false;
+        }
+      }
       if (q) {
         const hay = [
           r.key, r.summary, r.status,
@@ -694,6 +730,37 @@
       }
       return true;
     });
+  }
+
+  function refreshAssigneeFilter() {
+    if (!currentSnapshot) return;
+    const baseRows = view.tab === "active"
+      ? (currentSnapshot.rows || [])
+      : (currentSnapshot.rowsAll || []);
+    const counts = new Map();
+    let unassigned = 0;
+    for (const r of baseRows) {
+      const name = r.assignee?.displayName;
+      if (!name) { unassigned++; continue; }
+      counts.set(name, (counts.get(name) || 0) + 1);
+    }
+    const sorted = [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0], "it"));
+    const sel = document.getElementById("assigneeFilter");
+    if (!sel) return;
+    const totalAll = baseRows.length;
+    let html = `<option value="all">Tutti gli assegnatari (${totalAll})</option>`;
+    if (unassigned) html += `<option value="__unassigned__">— Non assegnato (${unassigned})</option>`;
+    for (const [name, n] of sorted) {
+      html += `<option value="${escapeAttr(name)}">${escapeHtml(name)} (${n})</option>`;
+    }
+    // Conserva la selezione corrente se ancora presente, altrimenti reset
+    const stillValid = view.assignee === "all"
+      || (view.assignee === "__unassigned__" && unassigned > 0)
+      || counts.has(view.assignee);
+    if (!stillValid) view.assignee = "all";
+    sel.innerHTML = html;
+    sel.value = view.assignee;
+    sel.classList.toggle("filtering", view.assignee !== "all");
   }
 
   function applySort(rows) {
@@ -758,6 +825,7 @@
         view.tab = t.dataset.tab;
         // Reset di campi che non esistono nel tab "all"
         if (view.tab === "all" && (view.sortKey === "customer")) view.sortKey = "key";
+        refreshAssigneeFilter();
         renderTable();
       });
     });
@@ -783,6 +851,12 @@
         view.search = ev.target.value;
         renderTable();
       }, 100);
+    });
+
+    document.getElementById("assigneeFilter").addEventListener("change", (ev) => {
+      view.assignee = ev.target.value;
+      ev.target.classList.toggle("filtering", view.assignee !== "all");
+      renderTable();
     });
   }
 

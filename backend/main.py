@@ -26,12 +26,15 @@ from .auth import (
     destroy_session,
     get_current_user,
     hash_password,
+    load_organigramma,
     load_users,
     require_admin,
+    require_full_access,
     save_user,
     seed_users,
     verify_password,
 )
+from . import solleciti as solleciti_store
 from .cache import cache
 from .jira_client import JiraClient, is_demo_mode
 from .snapshot import build_snapshot
@@ -227,6 +230,93 @@ def api_delete_user(username: str, current: dict = Depends(require_admin)):
 @app.get("/api/health")
 def health():
     return {"ok": True, "version": app.version, "demo": is_demo_mode()}
+
+
+@app.get("/api/organigramma")
+def api_organigramma(_: dict = Depends(get_current_user)):
+    """Lista pubblica dell'organigramma Archiva — usata dai dropdown del modale
+    "Aggiungi sollecito" (destinatario, richiedente). Auth-protetta per evitare
+    scraping anonimo, ma accessibile a tutti i ruoli loggati."""
+    return {"ok": True, "organigramma": load_organigramma()}
+
+
+# ============================================================
+#  Solleciti — lettura aperta a admin/user, scrittura idem (no ospite)
+# ============================================================
+
+@app.get("/api/solleciti")
+def api_list_solleciti(_: dict = Depends(require_full_access)):
+    return {"ok": True, "solleciti": solleciti_store.list_all()}
+
+
+@app.post("/api/solleciti")
+async def api_create_sollecito(
+    request: Request, user: dict = Depends(require_full_access)
+):
+    body = await request.json()
+    try:
+        record = solleciti_store.create(
+            key=(body.get("key") or "").strip().upper(),
+            destinatario=body.get("destinatario") or {},
+            richiedente=body.get("richiedente") or {},
+            evasione=body.get("evasione"),
+            data_sollecito=body.get("dataSollecito"),
+            user=user["username"],
+        )
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return {"ok": True, "sollecito": record}
+
+
+@app.post("/api/solleciti/{key}/sollecito")
+async def api_add_sollecito(
+    key: str, request: Request, user: dict = Depends(require_full_access)
+):
+    body = {}
+    try:
+        body = await request.json()
+    except Exception:
+        pass
+    try:
+        record = solleciti_store.add_sollecito(
+            key.upper(),
+            data_sollecito=body.get("dataSollecito") if body else None,
+            user=user["username"],
+        )
+    except KeyError as e:
+        raise HTTPException(404, str(e))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return {"ok": True, "sollecito": record}
+
+
+@app.patch("/api/solleciti/{key}")
+async def api_patch_sollecito(
+    key: str, request: Request, user: dict = Depends(require_full_access)
+):
+    body = await request.json()
+    kwargs = {"user": user["username"]}
+    if "destinatario" in body:
+        kwargs["destinatario"] = body["destinatario"]
+    if "richiedente" in body:
+        kwargs["richiedente"] = body["richiedente"]
+    if "evasione" in body:
+        kwargs["evasione"] = body["evasione"]
+    try:
+        record = solleciti_store.patch(key.upper(), **kwargs)
+    except KeyError as e:
+        raise HTTPException(404, str(e))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return {"ok": True, "sollecito": record}
+
+
+@app.delete("/api/solleciti/{key}")
+def api_delete_sollecito(key: str, _: dict = Depends(require_full_access)):
+    ok = solleciti_store.delete(key.upper())
+    if not ok:
+        raise HTTPException(404, f"{key} non trovato")
+    return {"ok": True}
 
 
 # ============================================================

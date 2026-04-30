@@ -22,6 +22,12 @@ DATA_DIR = Path(os.getenv("RAILWAY_VOLUME_MOUNT_PATH", "data"))
 USERS_FILE = DATA_DIR / "users.json"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
+# L'organigramma è un dato pubblico aziendale, versionato nel repo (non sul volume
+# Railway). Serve come fonte dati per i dropdown UI (richiedente / destinatario
+# sollecito), NON come sorgente per il seed utenti — le utenze applicative vengono
+# create on-demand dall'admin tramite il pannello /admin.
+ORGANIGRAMMA_FILE = Path(__file__).resolve().parent.parent / "data" / "organigramma.json"
+
 VALID_ROLES = {"admin", "user", "ospite"}
 
 sessions: dict[str, dict] = {}
@@ -64,10 +70,27 @@ def delete_user(username: str) -> None:
     _atomic_write(users)
 
 
+def load_organigramma() -> list[dict]:
+    """Carica la lista organigramma dal file JSON committato nel repo. Lista vuota
+    se il file non esiste. Usato dall'endpoint ``/api/organigramma`` per popolare
+    i dropdown del modale "Aggiungi sollecito" (richiedente / destinatario)."""
+    try:
+        if ORGANIGRAMMA_FILE.exists():
+            return json.loads(ORGANIGRAMMA_FILE.read_text("utf-8"))
+    except Exception:
+        pass
+    return []
+
+
 def seed_users() -> None:
-    """Seed iniziale utenti standard Archiva. Idempotente *additive*: aggiunge
-    solo i seed mancanti, non sovrascrive utenti esistenti (così le password
-    cambiate dagli utenti restano valide al riavvio).
+    """Seed iniziale utenti applicativi (NON l'organigramma). Idempotente
+    *additive*: crea un utente solo se mancante, non sovrascrive password / ruolo
+    di utenti esistenti.
+
+    Le utenze sono ridotte agli admin di rete del pattern Archiva auth standard
+    + il Customer Service Manager + gli Helpdesk Specialist censiti on-demand
+    (ad oggi solo Alessandra). Tutti gli altri utenti vengono creati dall'admin
+    tramite il pannello ``/admin`` quando serve loro accesso alla board.
     """
     pwd_default = hash_password(os.getenv("DEFAULT_PASSWORD", "archiva2026"))
     seed: list[dict] = [
@@ -96,21 +119,25 @@ def seed_users() -> None:
             "nome": "Michael Seren",
             "username": "michael.seren",
             "ruolo": "admin",
-            "role": "",
+            "role": "Customer Service Manager",
             "password": hash_password("D3fault!"),
         },
         {
             "nome": "Alessandra Donisi",
             "username": "alessandra.donisi",
             "ruolo": "user",
-            "role": "Customer Care Agent",
+            "role": "Helpdesk Specialist",
             "password": hash_password("Alessandra1!"),
         },
     ]
-    existing = load_users()
+    users = load_users()
+    added = 0
     for u in seed:
-        if u["username"].lower() not in existing:
-            save_user(u)
+        if u["username"].lower() not in users:
+            users[u["username"].lower()] = u
+            added += 1
+    if added > 0:
+        _atomic_write(users)
 
 
 def create_session(user: dict) -> str:

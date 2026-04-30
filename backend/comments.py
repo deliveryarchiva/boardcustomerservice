@@ -66,6 +66,39 @@ def find_last_operator_response(
     return max(candidates, key=lambda c: c["created"])
 
 
+def find_last_human_comment(
+    comments: list[dict],
+    bot_blocklist: Optional[set[str]] = None,
+) -> Optional[dict]:
+    """Ultimo commento di un autore *umano* (= non in blocklist bot/automation).
+
+    Differisce da ``find_last_operator_response`` perché:
+    - NON esclude il reporter (qualunque autore va bene)
+    - NON richiede ``jsdPublic=true`` (anche commenti interni contano come "vita"
+      sull'issue, utile per misurare lo stallo del leaf)
+
+    Usata da ``_stall_days_for_leaf`` (PRD §4.2.5 / Q&A §4.24: *"giorni
+    dall'ultimo commento del leaf"*).
+    """
+    if not comments:
+        return None
+    blocklist = bot_blocklist if bot_blocklist is not None else _bot_blocklist()
+    candidates = []
+    for c in comments:
+        author_id = _author_id(c)
+        author_name = _author_name(c)
+        if not author_id and not author_name:
+            continue
+        if author_id in blocklist or author_name in blocklist:
+            continue
+        if not c.get("created"):
+            continue
+        candidates.append(c)
+    if not candidates:
+        return None
+    return max(candidates, key=lambda c: c["created"])
+
+
 def extract_response_info(
     comments: list[dict], issue: dict
 ) -> dict:

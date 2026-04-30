@@ -26,7 +26,7 @@ from typing import Optional
 
 from . import demo_data
 from .business_days import business_days_between
-from .comments import extract_response_info
+from .comments import extract_response_info, find_last_human_comment
 from .jira_client import JiraClient, is_demo_mode
 from .leaf import LeafInfo, build_parent_index, resolve_for_tc
 from .sla import parse_sla
@@ -214,7 +214,14 @@ async def _enrich_response_and_sla(
 async def _stall_days_for_leaf(
     leaf_info: LeafInfo, client: JiraClient, sem: asyncio.Semaphore
 ) -> Optional[int]:
-    """Calcola gg lavorativi dall'ultimo commento del leaf (Q&A §4.24)."""
+    """Calcola gg lavorativi dall'ultimo commento del leaf (Q&A §4.24).
+
+    Usa ``find_last_human_comment`` (qualunque autore non-bot) — NON l'ultimo
+    commento operatore. Per il leaf vogliamo misurare lo stallo "umano" indipen-
+    dentemente dal ruolo: anche un commento del reporter conta come "vita". Se
+    non c'è alcun commento umano, fallback a ``issue.created`` (NON ``updated``,
+    che viene mosso da Automation for Jira / Time to SLA e falserebbe il dato).
+    """
     if leaf_info.leaf_issue is None:
         return None
     async with sem:
@@ -223,8 +230,12 @@ async def _stall_days_for_leaf(
         except Exception as e:
             log.warning("Commenti leaf fallback per %s: %s", leaf_info.leaf_key, e)
             comments = []
-    response = extract_response_info(comments, leaf_info.leaf_issue)
-    return business_days_between(response["lastResponseToClient"])
+    last = find_last_human_comment(comments)
+    if last is not None:
+        return business_days_between(last.get("created"))
+    # Nessun commento umano — usa created del leaf (stabile, immune ad automation)
+    fields = leaf_info.leaf_issue.get("fields") or {}
+    return business_days_between(fields.get("created"))
 
 
 # ============================================================

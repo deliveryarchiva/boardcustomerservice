@@ -436,6 +436,132 @@
     padding: 32px;
     font-style: italic;
   }
+
+  /* ========= TC Sollecitati ========= */
+  thead th.col-sollecito {
+    background: #5B4A1F;
+    border-bottom: 3px solid #F2D78A;
+  }
+  tbody td.col-sollecito {
+    background: #FFF8E6 !important;
+    border-right: 1px solid #F2D78A;
+  }
+  tbody tr:hover td.col-sollecito { background: #FFEFC2 !important; }
+  tbody tr.row-closed td { color: var(--archiva-grey-mid); }
+  tbody tr.row-closed td:first-child { box-shadow: inset 4px 0 0 var(--archiva-grey-light); }
+
+  .organigramma-person .nome-l { font-weight: 500; line-height: 1.2; }
+  .organigramma-person .reparto-l { font-size: 11px; color: var(--archiva-grey-mid); font-style: italic; line-height: 1.2; }
+
+  .sollecito-count-btn {
+    display: inline-block; min-width: 28px;
+    padding: 4px 10px; border-radius: 999px;
+    background: var(--archiva-orange); color: var(--archiva-white);
+    font-weight: 700; text-align: center;
+    cursor: pointer; border: 0; font-family: inherit; font-size: 13px;
+    transition: transform 0.1s;
+  }
+  .sollecito-count-btn:hover { transform: scale(1.08); }
+  .sollecito-count-btn.high { background: var(--archiva-red); }
+
+  .urgenza-evasione { font-weight: 600; }
+  .urgenza-evasione.scaduta { color: var(--archiva-red); }
+  .urgenza-evasione.imminente { color: var(--archiva-orange); }
+  .urgenza-evasione.ok { color: var(--archiva-green); }
+  .urgenza-evasione.special { color: var(--archiva-grey-mid); font-weight: 500; font-style: italic; }
+  .urgenza-evasione small { display: block; font-weight: 400; font-size: 11px; color: var(--archiva-grey-mid); font-style: italic; }
+  .badge-evasione-special {
+    display: inline-block; padding: 2px 10px;
+    border-radius: 999px; font-size: 11px; font-weight: 600;
+    background: var(--archiva-bg-alt); color: var(--archiva-navy);
+    border: 1px dashed var(--archiva-grey-mid);
+  }
+
+  .row-actions { display: flex; gap: 4px; }
+  .row-actions .btn-icon {
+    width: 28px; height: 28px; padding: 0;
+    border-radius: 50%; border: 1px solid var(--archiva-grey-light);
+    background: var(--archiva-white); cursor: pointer; font-size: 13px;
+    display: inline-grid; place-items: center; font-family: inherit;
+  }
+  .row-actions .btn-icon:hover { border-color: var(--archiva-accent); }
+  .row-actions .btn-icon:disabled { opacity: 0.4; cursor: not-allowed; }
+  .row-actions .btn-icon.danger { color: var(--archiva-red); }
+
+  /* Modali generiche per i solleciti (riusa stile di admin.html) */
+  .modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: none; align-items: center; justify-content: center; z-index: 1000;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: var(--archiva-white); border-radius: 10px;
+    padding: 22px 24px; width: 480px; max-width: calc(100vw - 32px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+  }
+  .modal.large { width: 620px; }
+  .modal h2 { margin: 0 0 4px; font-size: 18px; color: var(--archiva-primary); }
+  .modal .modal-sub { margin: 0 0 16px; font-size: 13px; color: var(--archiva-grey-mid); }
+  .modal label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: var(--archiva-grey-mid); text-transform: uppercase;
+    letter-spacing: 0.4px; margin-bottom: 6px;
+  }
+  .modal input, .modal select {
+    width: 100%; padding: 9px 11px; border: 1px solid var(--archiva-grey-light);
+    border-radius: 6px; font-size: 14px; margin-bottom: 12px; font-family: inherit;
+  }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+  .modal .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .err-modal {
+    color: var(--archiva-red); font-size: 13px;
+    background: #FBDDD9; padding: 8px 12px; border-radius: 6px;
+    margin-bottom: 12px; display: none;
+  }
+  .err-modal.show { display: block; }
+
+  .field-radio-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .field-radio-group label {
+    border: 1px solid var(--archiva-grey-light); border-radius: 6px;
+    padding: 10px 8px; cursor: pointer; text-align: center;
+    font-size: 12px; font-weight: 500; color: var(--archiva-text);
+    text-transform: none; letter-spacing: 0; margin: 0;
+  }
+  .field-radio-group label.selected {
+    background: var(--archiva-bg-alt); border-color: var(--archiva-accent);
+    color: var(--archiva-primary); font-weight: 700;
+  }
+  .field-radio-group input[type=radio] { display: none; }
+
+  /* Timeline */
+  .timeline { padding: 0 4px 4px; max-height: 360px; overflow-y: auto; }
+  .timeline-event {
+    display: grid; grid-template-columns: 110px 1fr;
+    gap: 14px; padding: 12px 0;
+    border-bottom: 1px solid var(--archiva-grey-light);
+  }
+  .timeline-event:last-child { border-bottom: 0; }
+  .timeline-event .when { font-size: 12px; color: var(--archiva-grey-mid); line-height: 1.4; padding-top: 2px; }
+  .timeline-event .when strong { display: block; color: var(--archiva-text); font-weight: 600; }
+  .timeline-event .what { font-size: 13px; }
+  .timeline-event .what .titolo { font-weight: 600; margin-bottom: 4px; }
+  .timeline-event .what .titolo .ev-icon {
+    display: inline-grid; place-items: center;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--archiva-bg-alt); color: var(--archiva-primary);
+    font-size: 12px; margin-right: 6px;
+  }
+  .timeline-event .what .dettagli { color: var(--archiva-grey-mid); line-height: 1.5; }
+  .timeline-event .what .dettagli strong { color: var(--archiva-text); font-weight: 500; }
+  .timeline-event.create .ev-icon { background: #DCEEFD; color: var(--archiva-primary); }
+  .timeline-event.sollecito .ev-icon { background: #FFE9CC; color: #8A4B00; }
+  .timeline-event.cambio .ev-icon { background: #E8E1FB; color: #4A2B8A; }
+
+  /* Toolbar specifica per tab solleciti (nascosta sui tab Jira) */
+  body[data-active-tab=active] .toolbar-solleciti,
+  body[data-active-tab=all] .toolbar-solleciti { display: none; }
+  body[data-active-tab=solleciti] .toolbar:not(.toolbar-solleciti) { display: none; }
 </style>
 </head>
 <body>
@@ -493,6 +619,7 @@
     <div class="tabs">
       <div class="tab active" data-tab="active" role="tab">Vista TC Attivi <span class="count" id="count-active">—</span></div>
       <div class="tab" data-tab="all" role="tab">Tutti i TC <span class="count" id="count-all">—</span></div>
+      <div class="tab" data-tab="solleciti" role="tab">TC Sollecitati <span class="count" id="count-solleciti">—</span></div>
     </div>
 
     <div class="toolbar">
@@ -516,6 +643,30 @@
       </div>
       <div class="search-box">
         <input type="text" id="searchInput" placeholder="Cerca per key, summary, assegnatario, cliente…" />
+      </div>
+    </div>
+
+    <div class="toolbar toolbar-solleciti">
+      <button type="button" class="btn btn-primary" id="btnAddSollecito">+ Aggiungi sollecito</button>
+      <div class="group">
+        <select class="assignee-filter" id="solleciti-destinatario-filter" aria-label="Filtra per destinatario">
+          <option value="all">Tutti i destinatari</option>
+        </select>
+      </div>
+      <div class="group">
+        <button type="button" class="filter-pill active" data-sol-evas="all">Tutti</button>
+        <button type="button" class="filter-pill" data-sol-evas="scaduti">Scaduti</button>
+        <button type="button" class="filter-pill" data-sol-evas="settimana">In settimana</button>
+      </div>
+      <div class="group">
+        <label class="toggle">
+          <input type="checkbox" id="hideClosed" checked />
+          <span class="switch"></span>
+          Nascondi TC chiusi
+        </label>
+      </div>
+      <div class="search-box">
+        <input type="text" id="searchInputSolleciti" placeholder="Cerca per key, summary, cliente, destinatario, richiedente…" />
       </div>
     </div>
 
@@ -547,23 +698,86 @@
 
 </main>
 
+<!-- ========= Modali TC Sollecitati ========= -->
+
+<div class="modal-bg" id="modalSollecito">
+  <div class="modal">
+    <h2 id="modalSollecitoTitle">Aggiungi sollecito</h2>
+    <p class="modal-sub" id="modalSollecitoSub">Aggiungi un TC alla lista solleciti. Tutti i campi sono modificabili in seguito.</p>
+
+    <div class="err-modal" id="modalSollecitoErr"></div>
+
+    <form id="formSollecito" autocomplete="off">
+      <label for="sf-key">TC Key</label>
+      <input type="text" id="sf-key" list="tc-keys-datalist" placeholder="es. TC-107711" required />
+      <datalist id="tc-keys-datalist"></datalist>
+
+      <label for="sf-destinatario">Destinatario <span style="font-weight:400;text-transform:none;">(da organigramma)</span></label>
+      <select id="sf-destinatario" required>
+        <option value="">— scegli persona —</option>
+      </select>
+
+      <label for="sf-richiedente">Richiedente <span style="font-weight:400;text-transform:none;">(da organigramma)</span></label>
+      <select id="sf-richiedente" required>
+        <option value="">— scegli persona —</option>
+      </select>
+
+      <label for="sf-data">Data Sollecito</label>
+      <input type="date" id="sf-data" />
+
+      <label>Richiesta Evasione</label>
+      <div class="field-radio-group" id="sf-evas-radio">
+        <label class="selected" data-evas="date"><input type="radio" name="evasMode" value="date" checked /> 📅 Data specifica</label>
+        <label data-evas="empty"><input type="radio" name="evasMode" value="empty" /> ⊘ Vuoto</label>
+        <label data-evas="data_richiesta"><input type="radio" name="evasMode" value="data_richiesta" /> 📥 Data richiesta</label>
+      </div>
+      <input type="date" id="sf-evas-date" />
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="btnSollecitoCancel">Annulla</button>
+        <button type="submit" class="btn btn-primary" id="btnSollecitoSave">Salva</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalTimeline">
+  <div class="modal large">
+    <h2 id="timelineTitle">Timeline solleciti</h2>
+    <p class="modal-sub" id="timelineSub"></p>
+    <div class="timeline" id="timelineBody"></div>
+    <div class="modal-actions">
+      <span style="margin-right:auto;font-size:12px;color:var(--archiva-grey-mid);font-style:italic;" id="timelineFooter"></span>
+      <button type="button" class="btn btn-secondary" id="btnTimelineClose">Chiudi</button>
+    </div>
+  </div>
+</div>
+
 <script src="/static/js/auth.js"></script>
 <script>
   // ============================================================
   //  Stato UI globale (PRD §4.2.6)
   // ============================================================
   const view = {
-    tab: "active",            // "active" | "all"
+    tab: "active",            // "active" | "all" | "solleciti"
     filterCond: "all",        // "all" | "highest" | "escalation" | "spoccato"
     hideWfr: false,
     search: "",
     assignee: "all",          // "all" | "__unassigned__" | "<displayName>"
     sortKey: "created",
     sortDir: "desc",          // "asc" | "desc"
+    // Solleciti tab specific
+    sollecitiDestinatario: "all",
+    sollecitiEvas: "all",     // "all" | "scaduti" | "settimana"
+    sollecitiHideClosed: true,
+    sollecitiSearch: "",
   };
 
   let currentSnapshot = null;
+  let currentSolleciti = [];
+  let currentOrganigramma = [];
   let countdownTimer = null;
+  let currentUser = null;
 
   // ============================================================
   //  Definizioni colonne
@@ -580,6 +794,24 @@
     { id: "leaf",           label: "Ticket Figlio Attivo", sort: null, render: cellLeaf, cls: "leaf-cell" },
     { id: "leafStatus",     label: "Stato Figlio",    sort: null,             render: cellLeafStatus },
     { id: "sla",            label: "SLA",             sort: null,             render: cellSla },
+  ];
+
+  // Tab "TC Sollecitati": colonne base Jira + 5 colonne giallo-tenue ("col-sollecito") con
+  // i dati manuali della sezione solleciti.
+  const COLUMNS_SOLLECITI = [
+    { id: "key",            label: "TC Key",          sort: "key",            render: cellKey },
+    { id: "customer",       label: "Cliente",         sort: "customer",       render: cellCustomer },
+    { id: "summary",        label: "Summary",         sort: "summary",        render: cellSummary },
+    { id: "status",         label: "Stato TC",        sort: "status",         render: cellStatus },
+    { id: "assignee",       label: "Assegnatario TC", sort: "assignee",       render: cellAssignee },
+    { id: "leaf",           label: "Ticket Figlio Attivo", sort: null,        render: cellLeaf, cls: "leaf-cell" },
+    { id: "leafStatus",     label: "Stato Figlio",    sort: null,             render: cellLeafStatus },
+    { id: "dataSollecito",  label: "Data Sollecito",  sort: "dataSollecito",  render: r => formatDate(r._sol.ultimaDataSollecito), cls: "col-sollecito" },
+    { id: "numSolleciti",   label: "# Solleciti",     sort: "numSolleciti",   render: cellSollecitoCount,   cls: "col-sollecito" },
+    { id: "destinatario",   label: "Destinatario",    sort: "destinatario",   render: cellOrganigrammaPerson("destinatario"), cls: "col-sollecito" },
+    { id: "richiedente",    label: "Richiedente",     sort: "richiedente",    render: cellOrganigrammaPerson("richiedente"),  cls: "col-sollecito" },
+    { id: "evasione",       label: "Richiesta Evasione", sort: "evasione",    render: cellEvasione,         cls: "col-sollecito" },
+    { id: "azioni",         label: "Azioni",          sort: null,             render: cellSollecitoActions },
   ];
 
   // PRD §4.2.3: stesse colonne escluse Cliente e Ticket Figlio Attivo, aggiunte Data Chiusura e Tempo Risoluzione.
@@ -601,11 +833,40 @@
   // ============================================================
   authInit().then(user => {
     if (!user) return;
+    currentUser = user;
+    document.body.dataset.activeTab = view.tab;
     if (user.ruolo === "ospite") document.body.classList.add("role-ospite");
     attachToolbarHandlers();
+    if (user.ruolo !== "ospite") {
+      // Per i tab Solleciti servono organigramma + lista solleciti
+      loadOrganigramma();
+      loadSolleciti();
+    }
     loadSnapshot();
     setInterval(loadSnapshot, 60_000);
+    setInterval(loadSolleciti, 60_000);
   });
+
+  async function loadOrganigramma() {
+    try {
+      const r = await apiFetch("/api/organigramma");
+      if (!r) return;
+      const data = await r.json();
+      currentOrganigramma = data.organigramma || [];
+    } catch (e) { /* ignore */ }
+  }
+
+  async function loadSolleciti() {
+    try {
+      const r = await apiFetch("/api/solleciti");
+      if (!r) return;
+      const data = await r.json();
+      currentSolleciti = data.solleciti || [];
+      const c = document.getElementById("count-solleciti");
+      if (c) c.textContent = String(currentSolleciti.length);
+      if (view.tab === "solleciti") renderTable();
+    } catch (e) { /* ignore */ }
+  }
 
   async function loadSnapshot() {
     try {
@@ -669,6 +930,7 @@
   //  Tabella (filtro + ordinamento + render)
   // ============================================================
   function renderTable() {
+    if (view.tab === "solleciti") return renderSollecitiTable();
     if (!currentSnapshot) return;
     const cols = view.tab === "active" ? COLUMNS_ACTIVE : COLUMNS_ALL;
     const baseRows = view.tab === "active"
@@ -823,12 +1085,18 @@
         document.querySelectorAll(".tabs .tab").forEach(x => x.classList.remove("active"));
         t.classList.add("active");
         view.tab = t.dataset.tab;
-        // Reset di campi che non esistono nel tab "all"
-        if (view.tab === "all" && (view.sortKey === "customer")) view.sortKey = "key";
+        document.body.dataset.activeTab = view.tab;
+        // Reset sort se la chiave non esiste nel tab corrente
+        if (view.tab === "all" && view.sortKey === "customer") view.sortKey = "key";
+        if (view.tab === "solleciti" && (view.sortKey === "customer" || view.sortKey === "days" || view.sortKey === "lastResp")) {
+          view.sortKey = "dataSollecito"; view.sortDir = "desc";
+        }
         refreshAssigneeFilter();
         renderTable();
       });
     });
+
+    bindSollecitiModalHandlers();
 
     document.querySelectorAll(".filter-pill").forEach(p => {
       p.addEventListener("click", () => {
@@ -1004,6 +1272,447 @@
     ));
   }
   function escapeAttr(s) { return escapeHtml(s); }
+
+  // ============================================================
+  //  Tab TC Sollecitati
+  // ============================================================
+  function _allJiraRowsByKey() {
+    // Per la sezione TC Sollecitati raccordiamo ogni `key` alla migliore riga Jira
+    // disponibile: rows (Vista TC Attivi) ha leaf+stallDays popolati, rowsAll no.
+    // Diamo priorità a `rows` per i TC ancora attivi; per i TC chiusi (presenti
+    // solo in rowsAll) usiamo la versione base.
+    const map = new Map();
+    if (currentSnapshot) {
+      for (const r of (currentSnapshot.rowsAll || [])) map.set(r.key, r);
+      for (const r of (currentSnapshot.rows || [])) map.set(r.key, r);  // sovrascrivi con versione arricchita
+    }
+    return map;
+  }
+
+  function _buildSollecitiRows() {
+    const jiraByKey = _allJiraRowsByKey();
+    return (currentSolleciti || []).map(sol => {
+      const jira = jiraByKey.get(sol.key) || null;
+      // Riga = mix dati Jira (se TC nel dataset) + dati sollecito
+      return {
+        key: sol.key,
+        // dati Jira con fallback
+        customer:    jira?.customer    || { name: "—", code: "" },
+        summary:     jira?.summary     || "(TC fuori dal pool urgent — riapri da Jira)",
+        status:      jira?.status      || "?",
+        statusFamily:jira?.statusFamily|| "open",
+        assignee:    jira?.assignee    || null,
+        isActive:    jira?.isActive    !== false, // default true (ottimista)
+        url:         jira?.url         || "#",
+        leaf:        jira?.leaf        || null,
+        leafStallDays: jira?.leafStallDays ?? null,
+        // dati sollecito
+        _sol: sol,
+      };
+    });
+  }
+
+  function renderSollecitiTable() {
+    refreshSollecitiDestinatarioFilter();
+    const cols = COLUMNS_SOLLECITI;
+    const baseRows = _buildSollecitiRows();
+    const filtered = applySollecitiFilters(baseRows);
+    const sorted = applySollecitiSort(filtered);
+
+    document.getElementById("thead").innerHTML = `
+      <tr>${cols.map(c => `
+        <th ${c.sort ? `data-sort="${c.sort}"` : ""} ${c.cls ? `class="${c.cls}"` : ""}>
+          ${escapeHtml(c.label)}
+          ${c.sort ? `<span class="sort">${sortIndicator(c.sort)}</span>` : ""}
+        </th>`).join("")}</tr>`;
+
+    const tbody = document.getElementById("tbody");
+    if (!sorted.length) {
+      const msg = baseRows.length === 0
+        ? "Nessun TC sollecitato. Clicca \"+ Aggiungi sollecito\" per inserire il primo."
+        : "Nessun risultato per i filtri applicati.";
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="${cols.length}">${msg}</td></tr>`;
+    } else {
+      tbody.innerHTML = sorted.map(r => {
+        const closed = !r.isActive;
+        return `<tr class="${closed ? 'row-closed' : 'row-' + (r._sol.severity || 'green')}">
+          ${cols.map(c => `<td${c.cls ? ` class="${c.cls}"` : ""}>${c.render(r)}</td>`).join("")}
+        </tr>`;
+      }).join("");
+    }
+    bindSortHandlers();
+    bindSollecitiActionHandlers();
+  }
+
+  function applySollecitiFilters(rows) {
+    const q = view.sollecitiSearch.trim().toLowerCase();
+    const today = new Date(); today.setHours(0,0,0,0);
+    const oneWeek = 7 * 24 * 3600 * 1000;
+    return rows.filter(r => {
+      if (view.sollecitiHideClosed && !r.isActive) return false;
+      if (view.sollecitiDestinatario !== "all") {
+        if ((r._sol.destinatario?.nome || "") !== view.sollecitiDestinatario) return false;
+      }
+      if (view.sollecitiEvas !== "all") {
+        const ev = r._sol.richiestaEvasione;
+        if (view.sollecitiEvas === "scaduti") {
+          if (!ev || ev === "data_richiesta") return false;
+          if (new Date(ev) >= today) return false;
+        }
+        if (view.sollecitiEvas === "settimana") {
+          if (!ev || ev === "data_richiesta") return false;
+          const evD = new Date(ev);
+          if (evD < today) return false;
+          if (evD - today > oneWeek) return false;
+        }
+      }
+      if (q) {
+        const hay = [
+          r.key, r.summary, r.status,
+          r.assignee?.displayName || "",
+          r.customer?.name || "", r.customer?.code || "",
+          r._sol.destinatario?.nome || "", r._sol.destinatario?.reparto || "",
+          r._sol.richiedente?.nome || "",  r._sol.richiedente?.reparto || "",
+        ].join(" ").toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }
+
+  function applySollecitiSort(rows) {
+    const dir = view.sortDir === "asc" ? 1 : -1;
+    const key = view.sortKey;
+    const get = sollecitiAccessor(key);
+    return [...rows].sort((a, b) => {
+      const va = get(a), vb = get(b);
+      if (va === vb) return 0;
+      if (va === null || va === undefined) return 1;
+      if (vb === null || vb === undefined) return -1;
+      return va < vb ? -dir : dir;
+    });
+  }
+
+  function sollecitiAccessor(key) {
+    switch (key) {
+      case "dataSollecito": return r => r._sol.ultimaDataSollecito || "";
+      case "numSolleciti":  return r => r._sol.numSolleciti || 0;
+      case "destinatario":  return r => (r._sol.destinatario?.nome || "").toLowerCase();
+      case "richiedente":   return r => (r._sol.richiedente?.nome || "").toLowerCase();
+      case "evasione": return r => {
+        const ev = r._sol.richiestaEvasione;
+        if (!ev) return "9999-99-99";  // null in fondo
+        if (ev === "data_richiesta") return "9999-99-98";
+        return ev;
+      };
+      default: return sortAccessor(key); // fallback ai sort delle altre tabs
+    }
+  }
+
+  function refreshSollecitiDestinatarioFilter() {
+    const baseRows = _buildSollecitiRows();
+    const counts = new Map();
+    for (const r of baseRows) {
+      const name = r._sol.destinatario?.nome;
+      if (!name) continue;
+      counts.set(name, (counts.get(name) || 0) + 1);
+    }
+    const sel = document.getElementById("solleciti-destinatario-filter");
+    if (!sel) return;
+    const sorted = [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0], "it"));
+    let html = `<option value="all">Tutti i destinatari (${baseRows.length})</option>`;
+    for (const [name, n] of sorted) html += `<option value="${escapeAttr(name)}">${escapeHtml(name)} (${n})</option>`;
+    const stillValid = view.sollecitiDestinatario === "all" || counts.has(view.sollecitiDestinatario);
+    if (!stillValid) view.sollecitiDestinatario = "all";
+    sel.innerHTML = html;
+    sel.value = view.sollecitiDestinatario;
+    sel.classList.toggle("filtering", view.sollecitiDestinatario !== "all");
+  }
+
+  // ============================================================
+  //  Solleciti — cell renderers
+  // ============================================================
+  function cellSollecitoCount(r) {
+    const n = r._sol.numSolleciti;
+    const cls = n >= 3 ? "high" : "";
+    return `<button type="button" class="sollecito-count-btn ${cls}" data-action="timeline" data-key="${escapeAttr(r.key)}" title="Apri timeline">${n}</button>`;
+  }
+  function cellOrganigrammaPerson(field) {
+    return r => {
+      const p = r._sol[field];
+      if (!p?.nome) return `<span style="color:var(--archiva-grey-mid)">—</span>`;
+      return `<div class="organigramma-person">
+        <div>
+          <div class="nome-l">${escapeHtml(p.nome)}</div>
+          ${p.reparto ? `<div class="reparto-l">${escapeHtml(p.reparto)}</div>` : ""}
+        </div>
+      </div>`;
+    };
+  }
+  function cellEvasione(r) {
+    const ev = r._sol.richiestaEvasione;
+    if (ev === null || ev === undefined) {
+      return `<span class="urgenza-evasione special">— non specificata</span>`;
+    }
+    if (ev === "data_richiesta") {
+      return `<span class="badge-evasione-special">📅 Data richiesta</span>`;
+    }
+    const d = new Date(ev);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const diff = Math.round((d - today) / (24*3600*1000));
+    let cls = "ok";
+    let descr = "";
+    if (diff < 0) { cls = "scaduta"; descr = `scaduta da ${-diff} giorn${-diff === 1 ? 'o' : 'i'}`; }
+    else if (diff <= 2) { cls = "imminente"; descr = diff === 0 ? "oggi" : `tra ${diff} giorn${diff === 1 ? 'o' : 'i'}`; }
+    else { cls = "ok"; descr = `tra ${diff} giorni`; }
+    return `<div class="urgenza-evasione ${cls}">${formatDate(ev)}<small>${descr}</small></div>`;
+  }
+  function cellSollecitoActions(r) {
+    const closed = !r.isActive;
+    return `<div class="row-actions">
+      <button class="btn-icon" data-action="plus" data-key="${escapeAttr(r.key)}" title="+1 sollecito (oggi)" ${closed ? 'disabled' : ''}>＋</button>
+      <button class="btn-icon" data-action="edit" data-key="${escapeAttr(r.key)}" title="Modifica">✎</button>
+      <button class="btn-icon danger" data-action="delete" data-key="${escapeAttr(r.key)}" title="Rimuovi">🗑</button>
+    </div>`;
+  }
+
+  function bindSollecitiActionHandlers() {
+    document.querySelectorAll('#tbody [data-action]').forEach(b => {
+      b.addEventListener("click", async (ev) => {
+        ev.stopPropagation();
+        const key = b.dataset.key;
+        const action = b.dataset.action;
+        if (action === "plus") return doPlusSollecito(key);
+        if (action === "edit") return openEditSollecito(key);
+        if (action === "delete") return doDeleteSollecito(key);
+        if (action === "timeline") return openTimeline(key);
+      });
+    });
+  }
+
+  // ============================================================
+  //  Solleciti — handlers UI
+  // ============================================================
+  let _editingKey = null;
+
+  function openAddSollecito() {
+    _editingKey = null;
+    document.getElementById("modalSollecitoTitle").textContent = "Aggiungi sollecito";
+    document.getElementById("modalSollecitoSub").textContent = "Aggiungi un TC alla lista solleciti. Tutti i campi sono modificabili in seguito.";
+    document.getElementById("sf-key").disabled = false;
+    document.getElementById("sf-key").value = "";
+    document.getElementById("sf-data").valueAsDate = new Date();
+    populateOrganigrammaDropdowns();
+    populateTcKeysDatalist();
+    selectEvasMode("date");
+    document.getElementById("sf-evas-date").valueAsDate = null;
+    document.getElementById("modalSollecitoErr").classList.remove("show");
+    document.getElementById("modalSollecito").classList.add("open");
+    setTimeout(() => document.getElementById("sf-key").focus(), 0);
+  }
+
+  async function openEditSollecito(key) {
+    const sol = currentSolleciti.find(s => s.key === key);
+    if (!sol) return;
+    _editingKey = key;
+    document.getElementById("modalSollecitoTitle").textContent = `Modifica sollecito — ${key}`;
+    document.getElementById("modalSollecitoSub").textContent = "Le modifiche generano eventi separati nella timeline.";
+    document.getElementById("sf-key").disabled = true;
+    document.getElementById("sf-key").value = key;
+    populateOrganigrammaDropdowns(sol.destinatario, sol.richiedente);
+    populateTcKeysDatalist();
+    document.getElementById("sf-data").value = "";
+    document.getElementById("sf-data").parentElement && (document.getElementById("sf-data").style.display = "none");
+    document.getElementById("sf-data").previousElementSibling && (document.getElementById("sf-data").previousElementSibling.style.display = "none");
+    if (sol.richiestaEvasione === null || sol.richiestaEvasione === undefined) {
+      selectEvasMode("empty");
+    } else if (sol.richiestaEvasione === "data_richiesta") {
+      selectEvasMode("data_richiesta");
+    } else {
+      selectEvasMode("date");
+      document.getElementById("sf-evas-date").value = sol.richiestaEvasione.slice(0, 10);
+    }
+    document.getElementById("modalSollecitoErr").classList.remove("show");
+    document.getElementById("modalSollecito").classList.add("open");
+  }
+
+  function closeSollecitoModal() {
+    document.getElementById("modalSollecito").classList.remove("open");
+    document.getElementById("sf-data").style.display = "";
+    if (document.getElementById("sf-data").previousElementSibling) document.getElementById("sf-data").previousElementSibling.style.display = "";
+    _editingKey = null;
+  }
+
+  function selectEvasMode(mode) {
+    document.querySelectorAll("#sf-evas-radio label").forEach(l => l.classList.toggle("selected", l.dataset.evas === mode));
+    document.querySelectorAll("#sf-evas-radio input").forEach(i => i.checked = i.value === mode);
+    document.getElementById("sf-evas-date").style.display = mode === "date" ? "" : "none";
+  }
+
+  function getEvasModeValue() {
+    const mode = (document.querySelector("#sf-evas-radio input:checked") || {}).value || "date";
+    if (mode === "empty") return null;
+    if (mode === "data_richiesta") return "data_richiesta";
+    return document.getElementById("sf-evas-date").value || null;
+  }
+
+  function populateOrganigrammaDropdowns(selDest, selRich) {
+    const sorted = [...currentOrganigramma].sort((a,b) => a.nome.localeCompare(b.nome, "it"));
+    const buildOpts = (sel) => `<option value="">— scegli persona —</option>` + sorted.map(p => {
+      const value = `${p.nome}|${p.reparto}`;
+      const isSel = sel && sel.nome === p.nome && sel.reparto === p.reparto;
+      return `<option value="${escapeAttr(value)}" ${isSel ? "selected" : ""}>${escapeHtml(p.nome)} · ${escapeHtml(p.reparto)}</option>`;
+    }).join("");
+    document.getElementById("sf-destinatario").innerHTML = buildOpts(selDest);
+    document.getElementById("sf-richiedente").innerHTML = buildOpts(selRich);
+  }
+
+  function populateTcKeysDatalist() {
+    const dl = document.getElementById("tc-keys-datalist");
+    if (!dl || !currentSnapshot) return;
+    const keys = new Set();
+    for (const r of (currentSnapshot.rowsAll || [])) keys.add(r.key);
+    for (const r of (currentSnapshot.rows || [])) keys.add(r.key);
+    dl.innerHTML = [...keys].sort().map(k => `<option value="${k}">`).join("");
+  }
+
+  function _parsePerson(val) {
+    if (!val || !val.includes("|")) return null;
+    const [nome, reparto] = val.split("|");
+    return { nome, reparto: reparto || "" };
+  }
+
+  async function saveSollecitoForm(ev) {
+    ev.preventDefault();
+    const errBox = document.getElementById("modalSollecitoErr");
+    errBox.classList.remove("show");
+    const key = document.getElementById("sf-key").value.trim().toUpperCase();
+    const dest = _parsePerson(document.getElementById("sf-destinatario").value);
+    const rich = _parsePerson(document.getElementById("sf-richiedente").value);
+    if (!key || !dest || !rich) {
+      errBox.textContent = "Compila TC Key, destinatario e richiedente.";
+      errBox.classList.add("show"); return;
+    }
+    const evasione = getEvasModeValue();
+    let r, body;
+    if (_editingKey) {
+      body = JSON.stringify({ destinatario: dest, richiedente: rich, evasione });
+      r = await apiFetch(`/api/solleciti/${encodeURIComponent(_editingKey)}`, { method: "PATCH", body });
+    } else {
+      body = JSON.stringify({
+        key, destinatario: dest, richiedente: rich, evasione,
+        dataSollecito: document.getElementById("sf-data").value || null,
+      });
+      r = await apiFetch("/api/solleciti", { method: "POST", body });
+    }
+    if (!r) return;
+    const data = await r.json();
+    if (!r.ok) {
+      errBox.textContent = data.detail || "Errore";
+      errBox.classList.add("show"); return;
+    }
+    closeSollecitoModal();
+    await loadSolleciti();
+  }
+
+  async function doPlusSollecito(key) {
+    const r = await apiFetch(`/api/solleciti/${encodeURIComponent(key)}/sollecito`, { method: "POST", body: "{}" });
+    if (!r) return;
+    if (!r.ok) { const d = await r.json(); alert(d.detail || "Errore"); return; }
+    await loadSolleciti();
+  }
+
+  async function doDeleteSollecito(key) {
+    if (!confirm(`Rimuovere ${key} dalla lista solleciti?`)) return;
+    const r = await apiFetch(`/api/solleciti/${encodeURIComponent(key)}`, { method: "DELETE" });
+    if (!r) return;
+    if (!r.ok) { const d = await r.json(); alert(d.detail || "Errore"); return; }
+    await loadSolleciti();
+  }
+
+  function openTimeline(key) {
+    const sol = currentSolleciti.find(s => s.key === key);
+    if (!sol) return;
+    const jiraByKey = _allJiraRowsByKey();
+    const jira = jiraByKey.get(key);
+    document.getElementById("timelineTitle").textContent = `Timeline solleciti — ${key}`;
+    document.getElementById("timelineSub").textContent = jira ? `${jira.customer?.name || "—"} · ${jira.summary || ""}` : "(TC fuori dal pool urgent)";
+    const events = (sol.history || []).slice().reverse(); // più recenti in cima
+    const numSol = sol.numSolleciti || 0;
+    const numCambi = events.filter(e => e.type.startsWith("cambio_")).length;
+    document.getElementById("timelineFooter").textContent = `${numSol} sollecit${numSol === 1 ? 'o' : 'i'} totali · ${numCambi} cambi`;
+    document.getElementById("timelineBody").innerHTML = events.map(ev => renderTimelineEvent(ev, sol)).join("");
+    document.getElementById("modalTimeline").classList.add("open");
+  }
+
+  function renderTimelineEvent(ev, sol) {
+    const ts = new Date(ev.ts);
+    const when = `<strong>${pad(ts.getDate())}/${pad(ts.getMonth()+1)}/${ts.getFullYear()}</strong>${pad(ts.getHours())}:${pad(ts.getMinutes())} · ${escapeHtml(ev.user || "")}`;
+    let cls, icon, titolo, dettagli;
+    const personHtml = p => p ? `<strong>${escapeHtml(p.nome)}</strong>${p.reparto ? ' · ' + escapeHtml(p.reparto) : ''}` : "—";
+    if (ev.type === "create") {
+      cls = "create"; icon = "＋"; titolo = "Creato sollecito";
+      dettagli = `verso ${personHtml(ev.destinatario)}<br/>richiesto da ${personHtml(ev.richiedente)}<br/>evasione: ${formatEvasioneInline(ev.evasione)}`;
+    } else if (ev.type === "sollecito") {
+      cls = "sollecito"; icon = "⏰"; titolo = "Sollecito ripetuto";
+      dettagli = `verso ${personHtml(ev.destinatario || sol.destinatario)}`;
+    } else if (ev.type === "cambio_destinatario") {
+      cls = "cambio"; icon = "↻"; titolo = "Destinatario cambiato";
+      dettagli = `da ${personHtml(ev.from)}<br/>a ${personHtml(ev.to)}`;
+    } else if (ev.type === "cambio_richiedente") {
+      cls = "cambio"; icon = "↻"; titolo = "Richiedente cambiato";
+      dettagli = `da ${personHtml(ev.from)}<br/>a ${personHtml(ev.to)}`;
+    } else if (ev.type === "cambio_evasione") {
+      cls = "cambio"; icon = "📅"; titolo = "Data evasione cambiata";
+      dettagli = `da ${formatEvasioneInline(ev.from)}<br/>a ${formatEvasioneInline(ev.to)}`;
+    } else {
+      cls = ""; icon = "•"; titolo = ev.type; dettagli = "";
+    }
+    return `<div class="timeline-event ${cls}">
+      <div class="when">${when}</div>
+      <div class="what">
+        <div class="titolo"><span class="ev-icon">${icon}</span>${titolo}</div>
+        <div class="dettagli">${dettagli}</div>
+      </div>
+    </div>`;
+  }
+
+  function formatEvasioneInline(ev) {
+    if (ev === null || ev === undefined) return "<em>vuoto</em>";
+    if (ev === "data_richiesta") return "<em>Data richiesta</em>";
+    return formatDate(ev);
+  }
+
+  // Bind handlers modali (una sola volta all'init)
+  function bindSollecitiModalHandlers() {
+    document.getElementById("btnAddSollecito")?.addEventListener("click", openAddSollecito);
+    document.getElementById("btnSollecitoCancel")?.addEventListener("click", closeSollecitoModal);
+    document.getElementById("formSollecito")?.addEventListener("submit", saveSollecitoForm);
+    document.getElementById("btnTimelineClose")?.addEventListener("click", () => document.getElementById("modalTimeline").classList.remove("open"));
+    document.querySelectorAll("#sf-evas-radio label").forEach(l => l.addEventListener("click", () => selectEvasMode(l.dataset.evas)));
+    document.getElementById("modalSollecito")?.addEventListener("click", (ev) => { if (ev.target.id === "modalSollecito") closeSollecitoModal(); });
+    document.getElementById("modalTimeline")?.addEventListener("click", (ev) => { if (ev.target.id === "modalTimeline") document.getElementById("modalTimeline").classList.remove("open"); });
+
+    document.getElementById("hideClosed")?.addEventListener("change", (ev) => { view.sollecitiHideClosed = ev.target.checked; renderTable(); });
+    document.getElementById("solleciti-destinatario-filter")?.addEventListener("change", (ev) => {
+      view.sollecitiDestinatario = ev.target.value;
+      ev.target.classList.toggle("filtering", view.sollecitiDestinatario !== "all");
+      renderTable();
+    });
+    document.querySelectorAll(".filter-pill[data-sol-evas]").forEach(p => {
+      p.addEventListener("click", () => {
+        document.querySelectorAll(".filter-pill[data-sol-evas]").forEach(x => x.classList.remove("active"));
+        p.classList.add("active");
+        view.sollecitiEvas = p.dataset.solEvas;
+        renderTable();
+      });
+    });
+    let st;
+    document.getElementById("searchInputSolleciti")?.addEventListener("input", (ev) => {
+      clearTimeout(st);
+      st = setTimeout(() => { view.sollecitiSearch = ev.target.value; renderTable(); }, 100);
+    });
+  }
 </script>
 </body>
 </html>

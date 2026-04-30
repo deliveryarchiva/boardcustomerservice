@@ -15,9 +15,13 @@ env/
 .env.local
 .env.*.local
 
-# Data persistente locale (non committare users.json)
-data/
+# Data persistente locale.
+# users.json contiene hash password → MAI committare.
+# organigramma.json è dato pubblico aziendale → versionato con il repo.
+# (uso data/* invece di data/ per permettere a !data/<file> di sbloccare i file singoli)
+data/*
 !data/.gitkeep
+!data/organigramma.json
 
 # Editor / tooling locale
 .vscode/

@@ -267,17 +267,15 @@ async def resolve_for_tc(
 ) -> list[LeafInfo]:
     """Risolve i leaf per un singolo TC. Lista vuota se non si applica.
 
-    - Se il TC NON è in waiting-for-son → []
+    - Se il TC non ha figli attivi → []
     - Se ha ≥2 figli ATTIVI in stato waiting → una LeafInfo per ogni figlio waiting
       (Q&A §4.20: duplicazione a livello TC).
-    - Altrimenti → una sola LeafInfo, partendo dal primo figlio attivo (anche se
-      non in waiting: è il caso normale "TC in WFS, figlio già in lavorazione").
-    """
-    fields = tc_issue.get("fields") or {}
-    status_name = (fields.get("status") or {}).get("name", "")
-    if not is_waiting_for_son(status_name):
-        return []
+    - Altrimenti → una sola LeafInfo, partendo dal primo figlio attivo.
 
+    Nota: la risoluzione viene eseguita anche per TC che NON sono in
+    Waiting for son (es. "Replied from reporter") perché la catena figli
+    aperta è informazione utile nella sezione TC Sollecitati.
+    """
     children = parent_index.get(tc_issue.get("key", ""), [])
     active_children = _filter_active_children(children)
     if not active_children:

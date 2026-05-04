@@ -301,14 +301,10 @@ async def fetch_snapshot(client: JiraClient) -> dict:
     enrich_tasks = [_enrich_response_and_sla(tc, client, sem) for tc in urgent_tcs]
     enrich_results = await asyncio.gather(*enrich_tasks, return_exceptions=False)
 
-    # 2) risoluzione catena per ogni TC in waiting-for-son.
-    leaf_tasks = []
-    for tc in urgent_tcs:
-        status_name = ((tc.get("fields") or {}).get("status") or {}).get("name", "")
-        if is_waiting_for_son(status_name):
-            leaf_tasks.append(resolve_for_tc(tc, parent_index, client))
-        else:
-            leaf_tasks.append(asyncio.sleep(0, result=[]))
+    # 2) risoluzione catena per ogni TC urgent attivo che abbia figli attivi.
+    # Anche TC non in WFS (es. "Replied from reporter") possono avere figli HDX
+    # ancora aperti — utile esporre la catena nella sezione TC Sollecitati.
+    leaf_tasks = [resolve_for_tc(tc, parent_index, client) for tc in urgent_tcs]
     leaf_results: list[list[LeafInfo]] = await asyncio.gather(*leaf_tasks)
 
     # 3) gg fermo per tutti i leaf (deduplicato per chiave).

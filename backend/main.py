@@ -15,7 +15,7 @@ from pathlib import Path
 # che legga env var a tempo di import (jira_client, transform, snapshot).
 
 from fastapi import Depends, FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -74,8 +74,10 @@ def page_index(request: Request):
 
 
 @app.get("/admin")
-def page_admin(request: Request):
-    return templates.TemplateResponse("admin.html", {"request": request})
+def page_admin():
+    # La gestione utenze è ora una sezione integrata nella board principale.
+    # Manteniamo la route per compatibilità con vecchi bookmark.
+    return RedirectResponse(url="/#utenze", status_code=301)
 
 
 # ============================================================

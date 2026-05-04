@@ -28,6 +28,7 @@ from typing import Optional
 
 from .jira_client import JiraClient
 from .transform import (
+    _build_url,
     is_active_status,
     is_waiting_for_reporter,
     is_waiting_for_son,
@@ -61,7 +62,9 @@ class LeafInfo:
             )
         return {
             "directChildKey": self.direct_child_key,
+            "directChildUrl": _build_url(self.direct_child_key),
             "leafKey": self.leaf_key,
+            "leafUrl": _build_url(self.leaf_key),
             "leafStatus": self.leaf_status,
             "leafStatusFamily": status_family(self.leaf_status, cat_key),
             "leafAssignee": self.leaf_assignee,

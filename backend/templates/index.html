@@ -488,7 +488,7 @@
   .row-actions .btn-icon:disabled { opacity: 0.4; cursor: not-allowed; }
   .row-actions .btn-icon.danger { color: var(--archiva-red); }
 
-  /* Modali generiche per i solleciti (riusa stile di admin.html) */
+  /* Modali generiche per i solleciti e gestione utenze */
   .modal-bg {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.45);
@@ -562,6 +562,198 @@
   body[data-active-tab=active] .toolbar-solleciti,
   body[data-active-tab=all] .toolbar-solleciti { display: none; }
   body[data-active-tab=solleciti] .toolbar:not(.toolbar-solleciti) { display: none; }
+
+  /* ========= Navigazione sezioni globale ========= */
+  /* Allineamento titolo header dopo rimozione sottotitolo: facciamo combaciare
+     verticalmente il titolo con il logo (36px). */
+  header.app-header .app-title strong { display: block; font-size: 18px; line-height: 36px; }
+
+  nav.section-nav {
+    background: var(--archiva-navy);
+    color: var(--archiva-white);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  nav.section-nav a {
+    display: flex; align-items: center; gap: 8px;
+    color: rgba(255,255,255,0.78);
+    padding: 14px 18px;
+    font-size: 14px; font-weight: 600;
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    cursor: pointer;
+  }
+  nav.section-nav a:hover {
+    color: var(--archiva-white);
+    background: rgba(255,255,255,0.06);
+  }
+  nav.section-nav a.active {
+    color: var(--archiva-white);
+    border-bottom-color: var(--archiva-cyan);
+    background: rgba(255,255,255,0.04);
+  }
+  nav.section-nav a .ico { font-size: 16px; }
+  nav.section-nav .nav-spacer { flex: 1; }
+  nav.section-nav .role-hint {
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  /* ========= Sezione Gestione Utenze ========= */
+  .utenze-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .utenze-page-header h1 {
+    font-size: 22px;
+    color: var(--archiva-primary);
+    margin: 0 0 4px;
+    font-weight: 700;
+  }
+  .utenze-page-header .subtitle {
+    color: var(--archiva-grey-mid);
+    font-size: 13px;
+  }
+  .utenze-kpi {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 900px) { .utenze-kpi { grid-template-columns: repeat(2, 1fr); } }
+  .ukpi {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-left: 4px solid var(--archiva-primary);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .ukpi.k-admin  { border-left-color: var(--archiva-orange); }
+  .ukpi.k-user   { border-left-color: var(--archiva-accent); }
+  .ukpi.k-ospite { border-left-color: var(--archiva-grey-mid); }
+  .ukpi .label {
+    font-size: 11px; color: var(--archiva-grey-mid);
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .ukpi .value {
+    font-size: 24px; font-weight: 700;
+    color: var(--archiva-primary); line-height: 1.1; margin-top: 4px;
+  }
+  .ukpi.k-admin  .value { color: var(--archiva-orange); }
+  .ukpi.k-user   .value { color: var(--archiva-accent); }
+  .ukpi.k-ospite .value { color: var(--archiva-grey-mid); }
+
+  .utenze-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 10px 10px 0 0;
+    padding: 12px 16px;
+    border-bottom: 0;
+  }
+  .utenze-card {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+  }
+  .utenze-card table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .utenze-card thead th {
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--archiva-white);
+    background: var(--archiva-navy);
+    padding: 11px 14px;
+  }
+  .utenze-card tbody td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--archiva-grey-light);
+    vertical-align: middle;
+  }
+  .utenze-card tbody tr:hover td { background: var(--archiva-bg-alt); }
+  .utenze-card tbody tr.is-self td { background: #FFFBE8; }
+  .utenze-card td code {
+    background: var(--archiva-bg-light);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--archiva-primary);
+  }
+  .ruolo-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .ruolo-admin  { background: #FFE9CC; color: #8A4B00; }
+  .ruolo-user   { background: #DCEEFD; color: #0A4A7A; }
+  .ruolo-ospite { background: #E5E5E5; color: #555; }
+  .row-actions { display: flex; gap: 6px; justify-content: flex-end; }
+  .row-actions .btn { padding: 5px 10px; font-size: 12px; }
+  .self-pill {
+    background: var(--archiva-cyan);
+    color: var(--archiva-white);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 999px;
+    margin-left: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  /* Selettore ruolo a card nella modale utente */
+  .role-radio-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .role-radio {
+    border: 1.5px solid var(--archiva-grey-light);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    background: var(--archiva-white);
+    user-select: none;
+  }
+  .role-radio:hover { border-color: var(--archiva-accent); }
+  .role-radio.selected {
+    border-color: var(--archiva-primary);
+    background: var(--archiva-bg-alt);
+  }
+  .role-radio .ico { font-size: 18px; display: block; margin-bottom: 4px; }
+  .role-radio .name { font-weight: 700; font-size: 13px; color: var(--archiva-primary); }
+  .role-radio .desc {
+    font-size: 10px; color: var(--archiva-grey-mid); margin-top: 2px; line-height: 1.3;
+  }
 </style>
 </head>
 <body>
@@ -573,7 +765,6 @@
   </div>
   <div class="app-title">
     <strong>Customer Service Board</strong>
-    Monitoraggio ticket ad alta priorità — Customer Care
   </div>
   <div class="header-spacer"></div>
   <div class="last-update" title="I dati vengono aggiornati ogni 10 minuti dal backend">
@@ -584,12 +775,27 @@
   <div class="user-chip" id="userChip"></div>
 </header>
 
+<nav class="section-nav" id="sectionNav" aria-label="Navigazione sezioni">
+  <a href="#monitoraggio" data-section="monitoraggio" class="active">
+    <span class="ico">📊</span>
+    Monitoraggio Ticket
+  </a>
+  <a href="#utenze" data-section="utenze" data-requires-role="admin" hidden>
+    <span class="ico">👥</span>
+    Gestione Utenze
+  </a>
+  <div class="nav-spacer"></div>
+  <span class="role-hint" id="navRoleHint"></span>
+</nav>
+
 <div class="banner" id="degradeBanner" style="display:none;">
   <span class="ico">⚠</span>
   <span id="degradeMsg">Atlassian rate limit raggiunto (429) — backoff in corso. Dato non aggiornato da <strong>—</strong>.</span>
 </div>
 
 <main>
+
+<section class="app-section" id="section-monitoraggio" data-section="monitoraggio">
 
   <section class="kpi-grid" aria-label="Indicatori principali">
     <div class="kpi accent-red">
@@ -696,7 +902,115 @@
     </div>
   </footer>
 
+</section>
+
+<section class="app-section" id="section-utenze" data-section="utenze" hidden>
+
+  <div class="utenze-page-header">
+    <div>
+      <h1>👥 Gestione Utenze</h1>
+      <div class="subtitle"><span id="utenzeCount">—</span> · solo gli amministratori possono accedere a questa sezione</div>
+    </div>
+    <div>
+      <button class="btn btn-primary" id="btnNewUser">+ Nuovo utente</button>
+    </div>
+  </div>
+
+  <section class="utenze-kpi" aria-label="Riepilogo utenze">
+    <div class="ukpi">
+      <div class="label">Totale utenze</div>
+      <div class="value" id="ukpi-total">—</div>
+    </div>
+    <div class="ukpi k-admin">
+      <div class="label">Amministratori</div>
+      <div class="value" id="ukpi-admin">—</div>
+    </div>
+    <div class="ukpi k-user">
+      <div class="label">Utenti</div>
+      <div class="value" id="ukpi-user">—</div>
+    </div>
+    <div class="ukpi k-ospite">
+      <div class="label">Ospiti (kiosk)</div>
+      <div class="value" id="ukpi-ospite">—</div>
+    </div>
+  </section>
+
+  <div class="utenze-toolbar">
+    <button type="button" class="filter-pill active" data-ufilter="all">Tutti</button>
+    <button type="button" class="filter-pill" data-ufilter="admin">Amministratori</button>
+    <button type="button" class="filter-pill" data-ufilter="user">Utenti</button>
+    <button type="button" class="filter-pill" data-ufilter="ospite">Ospiti</button>
+    <div class="search-box" style="margin-left:auto;">
+      <input type="text" id="utenzeSearch" placeholder="Cerca per username, nome, titolo…" />
+    </div>
+  </div>
+
+  <div class="utenze-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Nome completo</th>
+          <th>Ruolo applicativo</th>
+          <th>Titolo professionale</th>
+          <th style="text-align:right;width:200px">Azioni</th>
+        </tr>
+      </thead>
+      <tbody id="utenzeTbody">
+        <tr><td colspan="5" style="text-align:center;color:var(--archiva-grey-mid);padding:24px">Caricamento…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</section>
+
 </main>
+
+<!-- ========= Modale Gestione Utenze (crea/modifica) ========= -->
+
+<div class="modal-bg" id="modalUser">
+  <div class="modal">
+    <h2 id="modalUserTitle">Nuovo utente</h2>
+    <div class="err-modal" id="modalUserErr"></div>
+    <form id="formUser" autocomplete="off">
+      <label for="uf-username">Username</label>
+      <input type="text" id="uf-username" required />
+
+      <label for="uf-nome">Nome completo</label>
+      <input type="text" id="uf-nome" required />
+
+      <label for="uf-role">Titolo professionale</label>
+      <input type="text" id="uf-role" placeholder="es. Service Delivery Manager" />
+
+      <label>Ruolo applicativo</label>
+      <div class="role-radio-group" id="uf-ruolo-group">
+        <div class="role-radio" data-ruolo="admin">
+          <span class="ico">👑</span>
+          <div class="name">Admin</div>
+          <div class="desc">CRUD utenze + tutto</div>
+        </div>
+        <div class="role-radio selected" data-ruolo="user">
+          <span class="ico">👤</span>
+          <div class="name">Utente</div>
+          <div class="desc">Board + sollecitati</div>
+        </div>
+        <div class="role-radio" data-ruolo="ospite">
+          <span class="ico">👁</span>
+          <div class="name">Ospite</div>
+          <div class="desc">Solo KPI (kiosk)</div>
+        </div>
+      </div>
+
+      <label for="uf-password">Password <span id="uf-pwd-hint" style="text-transform:none;font-weight:400;color:var(--archiva-grey-mid)">(min 8 caratteri)</span></label>
+      <input type="password" id="uf-password" autocomplete="new-password" />
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="btnUserCancel">Annulla</button>
+        <button type="submit" class="btn btn-primary" id="btnUserSave">Salva</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <!-- ========= Modali TC Sollecitati ========= -->
 
@@ -836,7 +1150,9 @@
     currentUser = user;
     document.body.dataset.activeTab = view.tab;
     if (user.ruolo === "ospite") document.body.classList.add("role-ospite");
+    initSectionNav(user);
     attachToolbarHandlers();
+    if (user.ruolo === "admin") attachUtenzeHandlers();
     if (user.ruolo !== "ospite") {
       // Per i tab Solleciti servono organigramma + lista solleciti
       loadOrganigramma();
@@ -846,6 +1162,245 @@
     setInterval(loadSnapshot, 60_000);
     setInterval(loadSolleciti, 60_000);
   });
+
+  // ============================================================
+  //  Hash router — sezioni globali (#monitoraggio | #utenze)
+  // ============================================================
+  const SECTION_BY_ROLE = {
+    admin:  ["monitoraggio", "utenze"],
+    user:   ["monitoraggio"],
+    ospite: ["monitoraggio"],
+  };
+  const RUOLO_LABEL = { admin: "Amministratore", user: "Utente", ospite: "Ospite" };
+
+  function initSectionNav(user) {
+    const allowed = SECTION_BY_ROLE[user.ruolo] || ["monitoraggio"];
+    document.querySelectorAll('nav.section-nav a[data-section]').forEach(a => {
+      const sec = a.dataset.section;
+      if (allowed.includes(sec)) a.removeAttribute("hidden");
+      else a.setAttribute("hidden", "");
+      a.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        navigateToSection(sec);
+      });
+    });
+    const hint = document.getElementById("navRoleHint");
+    if (hint) hint.textContent = "Vista: " + (RUOLO_LABEL[user.ruolo] || user.ruolo);
+    window.addEventListener("hashchange", () => applyHash(allowed));
+    applyHash(allowed);
+  }
+
+  function applyHash(allowed) {
+    let target = (window.location.hash || "").replace(/^#/, "").trim() || "monitoraggio";
+    if (!allowed.includes(target)) target = "monitoraggio";
+    showSection(target);
+  }
+
+  function navigateToSection(name) {
+    if (window.location.hash.replace(/^#/, "") === name) {
+      // stesso hash → forza apply (per click su voce attiva)
+      showSection(name);
+    } else {
+      window.location.hash = "#" + name;
+    }
+  }
+
+  function showSection(name) {
+    document.querySelectorAll('section.app-section').forEach(s => {
+      s.hidden = (s.dataset.section !== name);
+    });
+    document.querySelectorAll('nav.section-nav a[data-section]').forEach(a => {
+      a.classList.toggle("active", a.dataset.section === name);
+    });
+    document.body.dataset.activeSection = name;
+    if (name === "utenze" && typeof loadUsers === "function") loadUsers();
+  }
+
+  // ============================================================
+  //  Gestione Utenze (sezione admin-only)
+  // ============================================================
+  let usersCache = [];
+  const usersFilter = { ruolo: "all", search: "" };
+  let editingUsername = null;
+
+  function ruoloLabel(r) { return RUOLO_LABEL[r] || r; }
+
+  async function loadUsers() {
+    if (currentUser?.ruolo !== "admin") return;
+    const tbody = document.getElementById("utenzeTbody");
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--archiva-grey-mid);padding:24px">Caricamento…</td></tr>`;
+    const r = await apiFetch("/api/admin/users");
+    if (!r) return;
+    const data = await r.json();
+    if (!r.ok) {
+      tbody.innerHTML = `<tr><td colspan="5" style="color:var(--archiva-red);padding:18px">${escapeHtml(data.detail || "Errore")}</td></tr>`;
+      return;
+    }
+    usersCache = data.users || [];
+    renderUsers();
+  }
+
+  function renderUsers() {
+    const tbody = document.getElementById("utenzeTbody");
+    const counts = { admin: 0, user: 0, ospite: 0 };
+    usersCache.forEach(u => { counts[u.ruolo] = (counts[u.ruolo] || 0) + 1; });
+    document.getElementById("ukpi-total").textContent = usersCache.length;
+    document.getElementById("ukpi-admin").textContent = counts.admin || 0;
+    document.getElementById("ukpi-user").textContent = counts.user || 0;
+    document.getElementById("ukpi-ospite").textContent = counts.ospite || 0;
+    document.getElementById("utenzeCount").textContent =
+      usersCache.length + (usersCache.length === 1 ? " utenza attiva" : " utenze attive");
+
+    const q = usersFilter.search.trim().toLowerCase();
+    const list = usersCache.filter(u => {
+      if (usersFilter.ruolo !== "all" && u.ruolo !== usersFilter.ruolo) return false;
+      if (!q) return true;
+      return [u.username, u.nome, u.role].some(s => (s || "").toLowerCase().includes(q));
+    });
+    if (!list.length) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--archiva-grey-mid);padding:24px">Nessun utente</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = list.map(u => {
+      const isSelf = u.username === currentUser.username;
+      const selfPill = isSelf ? `<span class="self-pill">tu</span>` : "";
+      return `
+        <tr class="${isSelf ? "is-self" : ""}">
+          <td><code>${escapeHtml(u.username)}</code>${selfPill}</td>
+          <td>${escapeHtml(u.nome)}</td>
+          <td><span class="ruolo-badge ruolo-${escapeAttr(u.ruolo)}">${ruoloLabel(u.ruolo)}</span></td>
+          <td>${escapeHtml(u.role || "—")}</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn btn-secondary" data-uact="edit" data-username="${escapeAttr(u.username)}">Modifica</button>
+              <button class="btn btn-danger" data-uact="del" data-username="${escapeAttr(u.username)}" ${isSelf ? 'disabled title="Non puoi eliminare te stesso"' : ""}>Elimina</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+    tbody.querySelectorAll('button[data-uact="edit"]').forEach(b =>
+      b.addEventListener("click", () => openUserEdit(b.dataset.username)));
+    tbody.querySelectorAll('button[data-uact="del"]').forEach(b =>
+      b.addEventListener("click", () => deleteUserAction(b.dataset.username)));
+  }
+
+  function attachUtenzeHandlers() {
+    document.querySelectorAll('.utenze-toolbar button[data-ufilter]').forEach(b => {
+      b.addEventListener("click", () => {
+        document.querySelectorAll('.utenze-toolbar button[data-ufilter]').forEach(x => x.classList.remove("active"));
+        b.classList.add("active");
+        usersFilter.ruolo = b.dataset.ufilter;
+        renderUsers();
+      });
+    });
+    document.getElementById("utenzeSearch").addEventListener("input", (ev) => {
+      usersFilter.search = ev.target.value;
+      renderUsers();
+    });
+    document.getElementById("btnNewUser").addEventListener("click", openUserCreate);
+    document.getElementById("btnUserCancel").addEventListener("click", closeUserModal);
+    document.getElementById("modalUser").addEventListener("click", (ev) => {
+      if (ev.target.id === "modalUser") closeUserModal();
+    });
+    document.querySelectorAll('#uf-ruolo-group .role-radio').forEach(card => {
+      card.addEventListener("click", () => selectRoleCard(card.dataset.ruolo));
+    });
+    document.getElementById("formUser").addEventListener("submit", submitUserForm);
+  }
+
+  function selectRoleCard(ruolo) {
+    document.querySelectorAll('#uf-ruolo-group .role-radio').forEach(c => {
+      c.classList.toggle("selected", c.dataset.ruolo === ruolo);
+    });
+  }
+
+  function getSelectedRole() {
+    const sel = document.querySelector('#uf-ruolo-group .role-radio.selected');
+    return sel?.dataset.ruolo || "user";
+  }
+
+  function openUserCreate() {
+    editingUsername = null;
+    document.getElementById("modalUserTitle").textContent = "Nuovo utente";
+    document.getElementById("uf-username").disabled = false;
+    document.getElementById("uf-username").value = "";
+    document.getElementById("uf-nome").value = "";
+    document.getElementById("uf-role").value = "";
+    document.getElementById("uf-password").value = "";
+    document.getElementById("uf-password").required = true;
+    document.getElementById("uf-pwd-hint").textContent = "(min 8 caratteri)";
+    selectRoleCard("user");
+    document.getElementById("modalUserErr").classList.remove("show");
+    document.getElementById("modalUser").classList.add("open");
+  }
+
+  function openUserEdit(username) {
+    const u = usersCache.find(x => x.username === username);
+    if (!u) return;
+    editingUsername = username;
+    document.getElementById("modalUserTitle").textContent = "Modifica utente: " + username;
+    document.getElementById("uf-username").disabled = true;
+    document.getElementById("uf-username").value = u.username;
+    document.getElementById("uf-nome").value = u.nome;
+    document.getElementById("uf-role").value = u.role || "";
+    document.getElementById("uf-password").value = "";
+    document.getElementById("uf-password").required = false;
+    document.getElementById("uf-pwd-hint").textContent = "(lascia vuoto per non modificare)";
+    selectRoleCard(u.ruolo);
+    document.getElementById("modalUserErr").classList.remove("show");
+    document.getElementById("modalUser").classList.add("open");
+  }
+
+  function closeUserModal() {
+    document.getElementById("modalUser").classList.remove("open");
+  }
+
+  async function submitUserForm(ev) {
+    ev.preventDefault();
+    const err = document.getElementById("modalUserErr");
+    err.classList.remove("show");
+    const payload = {
+      nome: document.getElementById("uf-nome").value.trim(),
+      ruolo: getSelectedRole(),
+      role: document.getElementById("uf-role").value.trim(),
+    };
+    const pwd = document.getElementById("uf-password").value;
+    if (pwd) payload.password = pwd;
+
+    let r;
+    if (editingUsername) {
+      r = await apiFetch(`/api/admin/users/${encodeURIComponent(editingUsername)}`, {
+        method: "PUT",
+        body: JSON.stringify(payload),
+      });
+    } else {
+      payload.username = document.getElementById("uf-username").value.trim().toLowerCase();
+      payload.password = pwd;
+      r = await apiFetch("/api/admin/users", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    }
+    if (!r) return;
+    const data = await r.json();
+    if (!r.ok) {
+      err.textContent = data.detail || "Errore";
+      err.classList.add("show");
+      return;
+    }
+    closeUserModal();
+    loadUsers();
+  }
+
+  async function deleteUserAction(username) {
+    if (!confirm(`Eliminare l'utente "${username}"?`)) return;
+    const r = await apiFetch(`/api/admin/users/${encodeURIComponent(username)}`, { method: "DELETE" });
+    if (!r) return;
+    const data = await r.json();
+    if (!r.ok) { alert(data.detail || "Errore"); return; }
+    loadUsers();
+  }
 
   async function loadOrganigramma() {
     try {
@@ -1181,18 +1736,20 @@
   function cellLeaf(r) {
     const leaf = r.leaf;
     if (!leaf) return `<span style="color:var(--archiva-grey-mid)">—</span>`;
+    const leafLink = (key, url) =>
+      `<a href="${escapeAttr(url || "#")}" target="_blank" rel="noopener" class="leaf-key">${escapeHtml(key)}</a>`;
     if (leaf.attesaClienteHelpdesk) {
-      return `<a href="#" class="leaf-key">${escapeHtml(leaf.directChildKey)}</a>
+      return `${leafLink(leaf.directChildKey, leaf.directChildUrl)}
               <span class="stall" style="color:#8A4B00">📨 Attesa Cliente / Helpdesk</span>`;
     }
     if (leaf.chainTooDeep) {
-      return `<a href="#" class="leaf-key">${escapeHtml(leaf.leafKey)}</a>
+      return `${leafLink(leaf.leafKey, leaf.leafUrl)}
               <span class="chain-warn">catena troppo profonda</span>
               <span class="stall">fallback applicato al ticket di partenza</span>`;
     }
     const chain = leaf.directChildKey === leaf.leafKey
-      ? `<a href="#" class="leaf-key">${escapeHtml(leaf.leafKey)}</a>`
-      : `<a href="#" class="leaf-key">${escapeHtml(leaf.directChildKey)}</a><span class="arrow">➜</span><a href="#" class="leaf-key">${escapeHtml(leaf.leafKey)}</a>`;
+      ? leafLink(leaf.leafKey, leaf.leafUrl)
+      : `${leafLink(leaf.directChildKey, leaf.directChildUrl)}<span class="arrow">➜</span>${leafLink(leaf.leafKey, leaf.leafUrl)}`;
     const stallParts = [];
     if (r.leafStallDays !== null && r.leafStallDays !== undefined) stallParts.push(`⏱ ${r.leafStallDays}gg fermo`);
     if (leaf.leafAssignee) stallParts.push(escapeHtml(leaf.leafAssignee));

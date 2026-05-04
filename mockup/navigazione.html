@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mockup — Navigazione sezioni (Customer Service Board)</title>
+<style>
+  :root {
+    --archiva-primary:     #00417A;
+    --archiva-navy:        #1B3A6B;
+    --archiva-accent:      #1E8BC3;
+    --archiva-mid:         #1C6BB0;
+    --archiva-grey-light:  #D0D8E4;
+    --archiva-grey-mid:    #6B7A93;
+    --archiva-bg-light:    #F4F7FA;
+    --archiva-bg-alt:      #EBF4FD;
+    --archiva-text:        #262626;
+    --archiva-white:       #FFFFFF;
+    --archiva-green:       #1A9E5C;
+    --archiva-orange:      #E8820C;
+    --archiva-red:         #C0392B;
+    --archiva-cyan:        #2AC0CE;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--archiva-text);
+    background: var(--archiva-bg-light);
+    font-size: 14px;
+  }
+
+  /* ========= Header (invariato) ========= */
+  header.app-header {
+    background: var(--archiva-primary);
+    color: var(--archiva-white);
+    padding: 12px 24px;
+    display: flex; align-items: center; gap: 24px;
+    border-bottom: 3px solid var(--archiva-navy);
+  }
+  .logo { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 18px; }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: var(--archiva-white); color: var(--archiva-primary);
+    display: grid; place-items: center; font-weight: 800; font-size: 16px;
+  }
+  .app-title {
+    font-size: 14px; font-weight: 500; opacity: 0.85;
+    border-left: 1px solid rgba(255,255,255,0.3); padding-left: 16px;
+  }
+  .app-title strong { display: block; font-size: 18px; font-weight: 700; opacity: 1; line-height: 36px; }
+  .header-spacer { flex: 1; }
+  .last-update {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.10); padding: 6px 12px;
+    border-radius: 999px; font-size: 13px;
+  }
+  .last-update .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--archiva-green);
+  }
+  .user-chip {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.12); padding: 6px 12px; border-radius: 999px;
+  }
+  .avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--archiva-accent); color: var(--archiva-white);
+    display: grid; place-items: center; font-weight: 700; font-size: 12px;
+  }
+  .user-meta { line-height: 1.1; }
+  .user-meta .name { font-weight: 600; font-size: 13px; }
+  .user-meta .role { font-size: 11px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ========= NAVIGAZIONE SEZIONI (NUOVO) ========= */
+  nav.section-nav {
+    background: var(--archiva-navy);
+    color: var(--archiva-white);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  nav.section-nav a {
+    display: flex; align-items: center; gap: 8px;
+    color: rgba(255,255,255,0.78);
+    padding: 14px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    transition: all 0.15s ease;
+    position: relative;
+  }
+  nav.section-nav a:hover {
+    color: var(--archiva-white);
+    background: rgba(255,255,255,0.06);
+  }
+  nav.section-nav a.active {
+    color: var(--archiva-white);
+    border-bottom-color: var(--archiva-cyan);
+    background: rgba(255,255,255,0.04);
+  }
+  nav.section-nav a .ico {
+    font-size: 16px;
+  }
+  nav.section-nav a .badge {
+    background: var(--archiva-red);
+    color: var(--archiva-white);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 999px;
+    margin-left: 4px;
+  }
+  nav.section-nav .nav-spacer { flex: 1; }
+  nav.section-nav .role-hint {
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  /* Icona "lock" per sezioni admin-only quando l'utente è non-admin (mockup informativo) */
+  nav.section-nav a.locked {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+  nav.section-nav a.locked::after {
+    content: "🔒";
+    font-size: 11px;
+    margin-left: 4px;
+  }
+
+  /* ========= Banner mockup ========= */
+  .mockup-banner {
+    background: #FFF3E0;
+    color: #8A4B00;
+    border-bottom: 1px solid #F0B879;
+    padding: 10px 24px;
+    font-size: 13px;
+    text-align: center;
+  }
+  .mockup-banner strong { color: #6E3A00; }
+
+  /* ========= Container ========= */
+  main {
+    padding: 20px 24px 48px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  h2.section-title {
+    font-size: 18px;
+    color: var(--archiva-primary);
+    margin: 0 0 14px;
+    font-weight: 700;
+  }
+
+  /* KPI */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .kpi {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-left: 4px solid var(--archiva-primary);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .kpi.accent-navy   { border-left-color: var(--archiva-navy); }
+  .kpi.accent-cyan   { border-left-color: var(--archiva-cyan); }
+  .kpi.accent-orange { border-left-color: var(--archiva-orange); }
+  .kpi.accent-red    { border-left-color: var(--archiva-red); }
+  .kpi .label {
+    font-size: 11px; color: var(--archiva-grey-mid);
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .kpi .value {
+    font-size: 28px; font-weight: 700;
+    color: var(--archiva-primary); line-height: 1.1; margin-top: 6px;
+  }
+  .kpi .sub {
+    font-size: 11px; color: var(--archiva-grey-mid); margin-top: 4px;
+  }
+  .kpi.accent-orange .value { color: var(--archiva-orange); }
+  .kpi.accent-red    .value { color: var(--archiva-red); }
+  .kpi.accent-cyan   .value { color: var(--archiva-accent); }
+
+  /* Card placeholder */
+  .placeholder-card {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 10px;
+    padding: 32px;
+    text-align: center;
+    color: var(--archiva-grey-mid);
+    font-size: 14px;
+  }
+
+  /* ========= Box "varianti per ruolo" ========= */
+  .role-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 32px;
+  }
+  .role-preview {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .role-preview .rp-head {
+    background: var(--archiva-bg-alt);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--archiva-grey-light);
+    font-weight: 700;
+    color: var(--archiva-primary);
+    font-size: 13px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .role-preview .rp-head .pill {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .pill-admin  { background: #FFE9CC; color: #8A4B00; }
+  .pill-user   { background: #DCEEFD; color: #0A4A7A; }
+  .pill-ospite { background: #E5E5E5; color: #555; }
+
+  .role-preview .rp-nav {
+    background: var(--archiva-navy);
+    padding: 0 12px;
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+  }
+  .role-preview .rp-nav span {
+    color: rgba(255,255,255,0.78);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 8px 10px;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+  .role-preview .rp-nav span.active {
+    color: var(--archiva-white);
+    border-bottom-color: var(--archiva-cyan);
+  }
+  .role-preview .rp-nav span.locked {
+    opacity: 0.3;
+  }
+  .role-preview .rp-body {
+    padding: 14px;
+    font-size: 12px;
+    color: var(--archiva-grey-mid);
+    line-height: 1.6;
+  }
+  .role-preview .rp-body ul {
+    margin: 6px 0 0;
+    padding-left: 18px;
+  }
+  .role-preview .rp-body li { margin-bottom: 3px; }
+
+  footer {
+    text-align: center;
+    color: var(--archiva-grey-mid);
+    padding: 24px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">
+    <div class="logo-mark">A</div>
+    <span>Archiva Group</span>
+  </div>
+  <div class="app-title">
+    <strong>Customer Service Board</strong>
+  </div>
+  <div class="header-spacer"></div>
+  <div class="last-update">
+    <span class="dot"></span>
+    Ultimo aggiornamento: <strong>14:32</strong>
+  </div>
+  <div class="user-chip">
+    <div class="avatar">MS</div>
+    <div class="user-meta">
+      <div class="name">Michael Seren</div>
+      <div class="role">Amministratore</div>
+    </div>
+  </div>
+</header>
+
+<!-- ⬇ NUOVA NAV: menu sezioni globali, sotto l'header, sticky in scroll -->
+<nav class="section-nav" aria-label="Navigazione sezioni">
+  <a href="#monitoraggio" class="active">
+    <span class="ico">📊</span>
+    Monitoraggio Ticket
+  </a>
+  <a href="#utenze">
+    <span class="ico">👥</span>
+    Gestione Utenze
+  </a>
+  <div class="nav-spacer"></div>
+  <span class="role-hint">Vista: Amministratore</span>
+</nav>
+
+<div class="mockup-banner">
+  <strong>📐 Mockup di navigazione</strong> — illustra la nuova testata con menu sezioni globali. Le sezioni visibili dipendono dal ruolo (vedi anteprime in fondo).
+</div>
+
+<main>
+
+  <h2 class="section-title">📊 Monitoraggio Ticket — sezione attiva</h2>
+
+  <section class="kpi-grid">
+    <div class="kpi accent-red">
+      <div class="label">TC urgenti aperti</div>
+      <div class="value">12</div>
+      <div class="sub">su 47 del periodo</div>
+    </div>
+    <div class="kpi accent-navy">
+      <div class="label">TC urgenti del periodo</div>
+      <div class="value">47</div>
+      <div class="sub">35 completati</div>
+    </div>
+    <div class="kpi accent-cyan">
+      <div class="label">TC in Waiting for reporter</div>
+      <div class="value">8</div>
+      <div class="sub">67% degli aperti</div>
+    </div>
+    <div class="kpi accent-orange">
+      <div class="label">TC in Waiting for son</div>
+      <div class="value">2</div>
+      <div class="sub">17% degli aperti</div>
+    </div>
+  </section>
+
+  <div class="placeholder-card">
+    [Tabella ticket esistente — non rappresentata in questo mockup di navigazione]
+  </div>
+
+  <h2 class="section-title" style="margin-top:36px">🎭 Anteprima differenze per ruolo</h2>
+  <div class="role-preview-grid">
+
+    <div class="role-preview">
+      <div class="rp-head">
+        Amministratore
+        <span class="pill pill-admin">admin</span>
+      </div>
+      <div class="rp-nav">
+        <span class="active">📊 Monitoraggio</span>
+        <span>👥 Utenze</span>
+      </div>
+      <div class="rp-body">
+        Vede entrambe le sezioni:
+        <ul>
+          <li>Monitoraggio: KPI + tabella + tab "TC Sollecitati"</li>
+          <li>Utenze: CRUD completo</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="role-preview">
+      <div class="rp-head">
+        Utente
+        <span class="pill pill-user">user</span>
+      </div>
+      <div class="rp-nav">
+        <span class="active">📊 Monitoraggio</span>
+        <span class="locked">👥 Utenze 🔒</span>
+      </div>
+      <div class="rp-body">
+        Vede solo Monitoraggio:
+        <ul>
+          <li>Monitoraggio: KPI + tabella + tab "TC Sollecitati" (lettura/scrittura)</li>
+          <li>Utenze: <strong>voce nascosta</strong> dal menu</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="role-preview">
+      <div class="rp-head">
+        Ospite (kiosk)
+        <span class="pill pill-ospite">ospite</span>
+      </div>
+      <div class="rp-nav">
+        <span class="active">📊 Monitoraggio</span>
+        <span class="locked">👥 Utenze 🔒</span>
+      </div>
+      <div class="rp-body">
+        Vista ridotta:
+        <ul>
+          <li>Monitoraggio: <strong>solo 4 KPI</strong> aggregati, no tabella e no tab "Sollecitati"</li>
+          <li>Utenze: <strong>voce nascosta</strong> dal menu</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  Mockup non vincolante — Archiva Group · Customer Service Board v0.2 (proposta)
+</footer>
+
+</body>
+</html>

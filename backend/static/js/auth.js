@@ -121,7 +121,6 @@ function renderUserChip(user) {
       <div class="role">${ruoloLabel}</div>
     </div>
     <div class="user-menu" id="userMenu">
-      ${user.ruolo === "admin" ? '<a href="/admin">⚙ Pannello admin</a>' : ""}
       <button type="button" id="btnChangePwd">🔑 Cambia password</button>
       <button type="button" id="btnLogout">↩ Esci</button>
     </div>

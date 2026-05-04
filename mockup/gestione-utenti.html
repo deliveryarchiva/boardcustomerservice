@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mockup — Gestione Utenze (Customer Service Board)</title>
+<style>
+  :root {
+    --archiva-primary:     #00417A;
+    --archiva-navy:        #1B3A6B;
+    --archiva-accent:      #1E8BC3;
+    --archiva-mid:         #1C6BB0;
+    --archiva-grey-light:  #D0D8E4;
+    --archiva-grey-mid:    #6B7A93;
+    --archiva-bg-light:    #F4F7FA;
+    --archiva-bg-alt:      #EBF4FD;
+    --archiva-text:        #262626;
+    --archiva-white:       #FFFFFF;
+    --archiva-green:       #1A9E5C;
+    --archiva-orange:      #E8820C;
+    --archiva-red:         #C0392B;
+    --archiva-cyan:        #2AC0CE;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--archiva-text);
+    background: var(--archiva-bg-light);
+    font-size: 14px;
+  }
+
+  /* ========= Header ========= */
+  header.app-header {
+    background: var(--archiva-primary);
+    color: var(--archiva-white);
+    padding: 12px 24px;
+    display: flex; align-items: center; gap: 24px;
+    border-bottom: 3px solid var(--archiva-navy);
+  }
+  .logo { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 18px; }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: var(--archiva-white); color: var(--archiva-primary);
+    display: grid; place-items: center; font-weight: 800; font-size: 16px;
+  }
+  .app-title {
+    font-size: 14px; font-weight: 500; opacity: 0.85;
+    border-left: 1px solid rgba(255,255,255,0.3); padding-left: 16px;
+  }
+  .app-title strong { display: block; font-size: 18px; font-weight: 700; opacity: 1; line-height: 36px; }
+  .header-spacer { flex: 1; }
+  .user-chip {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.12); padding: 6px 12px; border-radius: 999px;
+  }
+  .avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--archiva-accent); color: var(--archiva-white);
+    display: grid; place-items: center; font-weight: 700; font-size: 12px;
+  }
+  .user-meta { line-height: 1.1; }
+  .user-meta .name { font-weight: 600; font-size: 13px; }
+  .user-meta .role { font-size: 11px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ========= Section nav ========= */
+  nav.section-nav {
+    background: var(--archiva-navy);
+    color: var(--archiva-white);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    position: sticky; top: 0; z-index: 50;
+  }
+  nav.section-nav a {
+    display: flex; align-items: center; gap: 8px;
+    color: rgba(255,255,255,0.78);
+    padding: 14px 18px;
+    font-size: 14px; font-weight: 600;
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    transition: all 0.15s ease;
+  }
+  nav.section-nav a:hover { color: var(--archiva-white); background: rgba(255,255,255,0.06); }
+  nav.section-nav a.active {
+    color: var(--archiva-white);
+    border-bottom-color: var(--archiva-cyan);
+    background: rgba(255,255,255,0.04);
+  }
+  nav.section-nav .nav-spacer { flex: 1; }
+  nav.section-nav .role-hint {
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  /* ========= Banner mockup ========= */
+  .mockup-banner {
+    background: #FFF3E0;
+    color: #8A4B00;
+    border-bottom: 1px solid #F0B879;
+    padding: 10px 24px;
+    font-size: 13px;
+    text-align: center;
+  }
+  .mockup-banner strong { color: #6E3A00; }
+
+  /* ========= Container ========= */
+  main {
+    padding: 20px 24px 48px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    gap: 12px;
+  }
+  .page-header .title-block h1 {
+    font-size: 22px;
+    color: var(--archiva-primary);
+    margin: 0 0 4px;
+    font-weight: 700;
+  }
+  .page-header .title-block .subtitle {
+    color: var(--archiva-grey-mid);
+    font-size: 13px;
+  }
+  .page-header .actions { display: flex; gap: 8px; }
+
+  /* ========= Bottoni ========= */
+  .btn {
+    border: none;
+    border-radius: 6px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-primary {
+    background: var(--archiva-primary);
+    color: var(--archiva-white);
+  }
+  .btn-primary:hover { background: var(--archiva-mid); }
+  .btn-secondary {
+    background: var(--archiva-bg-alt);
+    color: var(--archiva-primary);
+    border: 1px solid var(--archiva-grey-light);
+  }
+  .btn-danger {
+    background: #FBDDD9;
+    color: var(--archiva-red);
+    border: 1px solid #F5BFB6;
+  }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+  /* ========= KPI di sezione ========= */
+  .users-kpi {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .ukpi {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-left: 4px solid var(--archiva-primary);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .ukpi.k-admin  { border-left-color: var(--archiva-orange); }
+  .ukpi.k-user   { border-left-color: var(--archiva-accent); }
+  .ukpi.k-ospite { border-left-color: var(--archiva-grey-mid); }
+  .ukpi .label {
+    font-size: 11px; color: var(--archiva-grey-mid);
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .ukpi .value {
+    font-size: 24px; font-weight: 700;
+    color: var(--archiva-primary); line-height: 1.1; margin-top: 4px;
+  }
+  .ukpi.k-admin  .value { color: var(--archiva-orange); }
+  .ukpi.k-user   .value { color: var(--archiva-accent); }
+  .ukpi.k-ospite .value { color: var(--archiva-grey-mid); }
+
+  /* ========= Toolbar utenti ========= */
+  .users-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 10px 10px 0 0;
+    padding: 12px 16px;
+    border-bottom: 0;
+  }
+  .filter-pill {
+    border: 1px solid var(--archiva-grey-light);
+    background: var(--archiva-white);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--archiva-text);
+    font-family: inherit;
+  }
+  .filter-pill:hover { border-color: var(--archiva-accent); }
+  .filter-pill.active {
+    background: var(--archiva-primary);
+    color: var(--archiva-white);
+    border-color: var(--archiva-primary);
+  }
+  .search-box {
+    margin-left: auto;
+    position: relative;
+  }
+  .search-box input {
+    width: 280px;
+    padding: 7px 12px 7px 32px;
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .search-box::before {
+    content: "🔍";
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    font-size: 12px; opacity: 0.6;
+  }
+
+  /* ========= Tabella ========= */
+  .card {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead th {
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--archiva-white);
+    background: var(--archiva-navy);
+    padding: 11px 14px;
+  }
+  tbody td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--archiva-grey-light);
+    vertical-align: middle;
+  }
+  tbody tr:hover td { background: var(--archiva-bg-alt); }
+  tbody tr.is-self td { background: #FFFBE8; }
+
+  td code {
+    background: var(--archiva-bg-light);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--archiva-primary);
+  }
+
+  .ruolo-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .ruolo-admin  { background: #FFE9CC; color: #8A4B00; }
+  .ruolo-user   { background: #DCEEFD; color: #0A4A7A; }
+  .ruolo-ospite { background: #E5E5E5; color: #555; }
+
+  .row-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+  }
+  .self-pill {
+    background: var(--archiva-cyan);
+    color: var(--archiva-white);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 999px;
+    margin-left: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  /* ========= Modale (anteprima) ========= */
+  .modal-preview-wrap {
+    margin-top: 36px;
+    background: var(--archiva-white);
+    border: 1px dashed var(--archiva-accent);
+    border-radius: 10px;
+    padding: 24px;
+  }
+  .modal-preview-wrap .label-mockup {
+    font-size: 12px;
+    color: var(--archiva-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+  .modal-card {
+    background: var(--archiva-white);
+    border-radius: 10px;
+    padding: 22px 24px;
+    width: 460px;
+    max-width: 100%;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+    margin: 0 auto;
+    border: 1px solid var(--archiva-grey-light);
+  }
+  .modal-card h2 {
+    margin: 0 0 16px;
+    font-size: 18px;
+    color: var(--archiva-primary);
+  }
+  .modal-card label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--archiva-grey-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 5px;
+    margin-top: 12px;
+  }
+  .modal-card label:first-of-type { margin-top: 0; }
+  .modal-card input,
+  .modal-card select {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .role-radio-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .role-radio {
+    border: 1.5px solid var(--archiva-grey-light);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--archiva-white);
+  }
+  .role-radio:hover { border-color: var(--archiva-accent); }
+  .role-radio.selected {
+    border-color: var(--archiva-primary);
+    background: var(--archiva-bg-alt);
+  }
+  .role-radio .ico { font-size: 18px; display: block; margin-bottom: 4px; }
+  .role-radio .name { font-weight: 700; font-size: 13px; color: var(--archiva-primary); }
+  .role-radio .desc { font-size: 10px; color: var(--archiva-grey-mid); margin-top: 2px; line-height: 1.3; }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
+    border-top: 1px solid var(--archiva-grey-light);
+    padding-top: 16px;
+  }
+
+  footer {
+    text-align: center;
+    color: var(--archiva-grey-mid);
+    padding: 24px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">
+    <div class="logo-mark">A</div>
+    <span>Archiva Group</span>
+  </div>
+  <div class="app-title">
+    <strong>Customer Service Board</strong>
+  </div>
+  <div class="header-spacer"></div>
+  <div class="user-chip">
+    <div class="avatar">MS</div>
+    <div class="user-meta">
+      <div class="name">Michael Seren</div>
+      <div class="role">Amministratore</div>
+    </div>
+  </div>
+</header>
+
+<nav class="section-nav" aria-label="Navigazione sezioni">
+  <a href="#monitoraggio">
+    <span>📊</span> Monitoraggio Ticket
+  </a>
+  <a href="#utenze" class="active">
+    <span>👥</span> Gestione Utenze
+  </a>
+  <div class="nav-spacer"></div>
+  <span class="role-hint">Sezione admin-only</span>
+</nav>
+
+<div class="mockup-banner">
+  <strong>📐 Mockup sezione Gestione Utenze</strong> — versione integrata nella board (rimpiazza la pagina <code>/admin</code> separata).
+</div>
+
+<main>
+
+  <div class="page-header">
+    <div class="title-block">
+      <h1>👥 Gestione Utenze</h1>
+      <div class="subtitle">5 utenze attive · solo gli amministratori possono accedere a questa sezione</div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-secondary">⤓ Esporta CSV</button>
+      <button class="btn btn-primary">+ Nuovo utente</button>
+    </div>
+  </div>
+
+  <section class="users-kpi" aria-label="Riepilogo utenze">
+    <div class="ukpi">
+      <div class="label">Totale utenze</div>
+      <div class="value">5</div>
+    </div>
+    <div class="ukpi k-admin">
+      <div class="label">Amministratori</div>
+      <div class="value">4</div>
+    </div>
+    <div class="ukpi k-user">
+      <div class="label">Utenti</div>
+      <div class="value">1</div>
+    </div>
+    <div class="ukpi k-ospite">
+      <div class="label">Ospiti (kiosk)</div>
+      <div class="value">0</div>
+    </div>
+  </section>
+
+  <div class="users-toolbar">
+    <button class="filter-pill active">Tutti</button>
+    <button class="filter-pill">Amministratori</button>
+    <button class="filter-pill">Utenti</button>
+    <button class="filter-pill">Ospiti</button>
+    <div class="search-box">
+      <input type="text" placeholder="Cerca per username, nome, titolo…" />
+    </div>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Nome completo</th>
+          <th>Ruolo applicativo</th>
+          <th>Titolo professionale</th>
+          <th style="text-align:right;width:200px">Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="is-self">
+          <td><code>michael.seren</code><span class="self-pill">tu</span></td>
+          <td>Michael Seren</td>
+          <td><span class="ruolo-badge ruolo-admin">Amministratore</span></td>
+          <td>Customer Service Manager</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn btn-secondary btn-sm">Modifica</button>
+              <button class="btn btn-danger btn-sm" disabled title="Non puoi eliminare te stesso">Elimina</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>marco.pastore</code></td>
+          <td>Marco Pastore</td>
+          <td><span class="ruolo-badge ruolo-admin">Amministratore</span></td>
+          <td>Head of Project Delivery</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn btn-secondary btn-sm">Modifica</button>
+              <button class="btn btn-danger btn-sm">Elimina</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>paolo.gandini</code></td>
+          <td>Paolo Gandini</td>
+          <td><span class="ruolo-badge ruolo-admin">Amministratore</span></td>
+          <td>Delivery &amp; Customer Service Director</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn btn-secondary btn-sm">Modifica</button>
+              <button class="btn btn-danger btn-sm">Elimina</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>chiara.pettenuzzo</code></td>
+          <td>Chiara Pettenuzzo</td>
+          <td><span class="ruolo-badge ruolo-admin">Amministratore</span></td>
+          <td>Service Delivery Manager</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn btn-secondary btn-sm">Modifica</button>
+              <button class="btn btn-danger btn-sm">Elimina</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>alessandra.donisi</code></td>
+          <td>Alessandra Donisi</td>
+          <td><span class="ruolo-badge ruolo-user">Utente</span></td>
+          <td>Helpdesk Specialist</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn btn-secondary btn-sm">Modifica</button>
+              <button class="btn btn-danger btn-sm">Elimina</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Anteprima modale crea/modifica con selettore ruolo "card" -->
+  <div class="modal-preview-wrap">
+    <div class="label-mockup">▼ Anteprima modale "Nuovo utente / Modifica utente"</div>
+    <div class="modal-card">
+      <h2>Modifica utente: alessandra.donisi</h2>
+
+      <label>Username</label>
+      <input type="text" value="alessandra.donisi" disabled style="opacity:0.6;cursor:not-allowed" />
+
+      <label>Nome completo</label>
+      <input type="text" value="Alessandra Donisi" />
+
+      <label>Titolo professionale</label>
+      <input type="text" value="Helpdesk Specialist" placeholder="es. Service Delivery Manager" />
+
+      <label>Ruolo applicativo</label>
+      <div class="role-radio-group">
+        <div class="role-radio">
+          <span class="ico">👑</span>
+          <div class="name">Admin</div>
+          <div class="desc">CRUD utenze + tutto</div>
+        </div>
+        <div class="role-radio selected">
+          <span class="ico">👤</span>
+          <div class="name">Utente</div>
+          <div class="desc">Board + sollecitati</div>
+        </div>
+        <div class="role-radio">
+          <span class="ico">👁</span>
+          <div class="name">Ospite</div>
+          <div class="desc">Solo KPI (kiosk)</div>
+        </div>
+      </div>
+
+      <label>Password <span style="text-transform:none;font-weight:400;color:var(--archiva-grey-mid)">(lascia vuoto per non modificare)</span></label>
+      <input type="password" placeholder="••••••••" />
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary">Annulla</button>
+        <button class="btn btn-primary">Salva modifiche</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Mockup non vincolante — Archiva Group · Customer Service Board v0.2 (proposta)
+</footer>
+
+</body>
+</html>

@@ -54,6 +54,7 @@ BASE_FIELDS = [
     "summary",
     "status",
     "priority",
+    "issuetype",
     "assignee",
     "reporter",
     "created",

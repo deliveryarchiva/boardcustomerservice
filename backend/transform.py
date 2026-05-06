@@ -163,6 +163,7 @@ def issue_to_row(issue: dict) -> dict:
     priority_name = (fields.get("priority") or {}).get("name", "") or ""
     assignee = fields.get("assignee") or None
     assignee_name = (assignee or {}).get("displayName") if assignee else None
+    issuetype_name = (fields.get("issuetype") or {}).get("name", "") or ""
     return {
         "key": key,
         "issueId": issue.get("id"),
@@ -172,6 +173,8 @@ def issue_to_row(issue: dict) -> dict:
         "statusFamily": status_family(status_name),
         "statusCategory": status_category,
         "isActive": is_active_status(status_category),
+        "priority": priority_name,
+        "issueType": issuetype_name,
         "isHighest": priority_name.strip().lower() == "highest",
         "isEscalation": _read_custom_yes_no(fields, FIELD_IN_ESCALATION),
         "isSpoccato": _read_custom_yes_no(fields, FIELD_TICKET_SPOCCATO),

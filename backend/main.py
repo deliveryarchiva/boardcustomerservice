@@ -14,8 +14,8 @@ from pathlib import Path
 # load_dotenv() viene chiamato in backend/__init__.py PRIMA di qualunque import
 # che legga env var a tempo di import (jira_client, transform, snapshot).
 
-from fastapi import Depends, FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -35,6 +35,7 @@ from .auth import (
     verify_password,
 )
 from . import solleciti as solleciti_store
+from . import service_manager as sm_store
 from .cache import cache
 from .jira_client import JiraClient, is_demo_mode
 from .snapshot import build_snapshot
@@ -347,6 +348,257 @@ async def api_snapshot(user: dict = Depends(get_current_user)):
             },
         }
     return {"ok": True, "snapshot": snapshot}
+
+
+# ============================================================
+#  Service Manager — registry clienti + ticket + stats
+# ============================================================
+
+def _ensure_customer(code: str) -> dict:
+    customer = sm_store.get_customer(code)
+    if not customer:
+        raise HTTPException(404, f"Cliente {code} non censito")
+    return customer
+
+
+def _require_customer_write(code: str, user: dict) -> dict:
+    customer = _ensure_customer(code)
+    if not sm_store.user_can_write_customer(user, customer):
+        raise HTTPException(
+            403,
+            "Solo admin o membri del team del cliente (SM/helpdesk/backup) "
+            "possono scrivere su questo ambiente",
+        )
+    return customer
+
+
+@app.get("/api/sm/customers")
+def api_sm_list_customers(_: dict = Depends(require_full_access)):
+    """Registry clienti — visibile a tutti gli utenti loggati con accesso pieno."""
+    return {"ok": True, "customers": sm_store.load_customers()}
+
+
+@app.get("/api/sm/customer-codes")
+async def api_sm_customer_codes(_: dict = Depends(require_admin)):
+    """Codici cliente distinti rilevati dallo snapshot (per il modale 'Nuovo cliente')."""
+    snapshot = await cache.get_or_fetch(_fetch_for_cache)
+    seen: dict[str, str] = {}
+    for r in snapshot.get("rowsAll", []) or []:
+        c = r.get("customer") or {}
+        code = (c.get("code") or "").strip()
+        name = (c.get("name") or "").strip()
+        if code and code not in seen:
+            seen[code] = name
+    already = {c["code"] for c in sm_store.load_customers()}
+    items = [
+        {"code": k, "name": v, "alreadyRegistered": k in already}
+        for k, v in sorted(seen.items())
+    ]
+    return {"ok": True, "codes": items}
+
+
+@app.post("/api/sm/customers")
+async def api_sm_create_customer(request: Request, user: dict = Depends(require_admin)):
+    body = await request.json()
+    try:
+        record = sm_store.create_customer(
+            code=body.get("code") or "",
+            name=body.get("name") or "",
+            service_manager_username=body.get("service_manager") or "",
+            helpdesk_username=body.get("helpdesk") or "",
+            backup_username=body.get("backup") or None,
+            notes=body.get("notes") or "",
+            created_by=user["username"],
+        )
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return {"ok": True, "customer": record}
+
+
+@app.put("/api/sm/customers/{code}")
+async def api_sm_update_customer(
+    code: str, request: Request, _: dict = Depends(require_admin)
+):
+    body = await request.json()
+    try:
+        record = sm_store.update_customer(code, body)
+    except KeyError as e:
+        raise HTTPException(404, str(e))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return {"ok": True, "customer": record}
+
+
+@app.delete("/api/sm/customers/{code}")
+def api_sm_delete_customer(code: str, _: dict = Depends(require_admin)):
+    if not sm_store.delete_customer(code):
+        raise HTTPException(404, f"Cliente {code} non trovato")
+    return {"ok": True}
+
+
+@app.get("/api/sm/customers/{code}/tickets")
+async def api_sm_customer_tickets(code: str, _: dict = Depends(require_full_access)):
+    customer = _ensure_customer(code)
+    rows, _ttl = await sm_store.get_customer_tickets(jira_client, code)
+    return {"ok": True, "customer": customer, "rows": rows}
+
+
+@app.get("/api/sm/customers/{code}/stats")
+async def api_sm_customer_stats(code: str, _: dict = Depends(require_full_access)):
+    customer = _ensure_customer(code)
+    rows, _ttl = await sm_store.get_customer_tickets(jira_client, code)
+    return {"ok": True, "customer": customer, "stats": sm_store.compute_stats(rows)}
+
+
+# ----- Documenti -----
+
+@app.get("/api/sm/customers/{code}/docs")
+def api_sm_list_docs(code: str, _: dict = Depends(require_full_access)):
+    _ensure_customer(code)
+    return {"ok": True, "docs": sm_store.list_docs(code)}
+
+
+@app.post("/api/sm/customers/{code}/docs")
+async def api_sm_upload_doc(
+    code: str,
+    file: UploadFile = File(...),
+    user: dict = Depends(require_full_access),
+):
+    _require_customer_write(code, user)
+    content = await file.read()
+    try:
+        record = sm_store.add_doc(
+            code,
+            filename=file.filename or "file",
+            mime=file.content_type or "application/octet-stream",
+            content=content,
+            uploader=user["username"],
+        )
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return {"ok": True, "doc": record}
+
+
+@app.get("/api/sm/customers/{code}/docs/{doc_id}")
+def api_sm_download_doc(code: str, doc_id: str, _: dict = Depends(require_full_access)):
+    _ensure_customer(code)
+    try:
+        path, meta = sm_store.get_doc_path(code, doc_id)
+    except KeyError as e:
+        raise HTTPException(404, str(e))
+    except FileNotFoundError as e:
+        raise HTTPException(404, str(e))
+    return FileResponse(path, media_type=meta.get("mime", "application/octet-stream"), filename=meta.get("filename"))
+
+
+@app.delete("/api/sm/customers/{code}/docs/{doc_id}")
+def api_sm_delete_doc(code: str, doc_id: str, user: dict = Depends(require_full_access)):
+    _require_customer_write(code, user)
+    if not sm_store.delete_doc(code, doc_id):
+        raise HTTPException(404, "Documento non trovato")
+    return {"ok": True}
+
+
+# ----- SAL -----
+
+@app.get("/api/sm/customers/{code}/sal")
+def api_sm_list_sal(code: str, _: dict = Depends(require_full_access)):
+    _ensure_customer(code)
+    return {"ok": True, "sal": sm_store.list_sal(code)}
+
+
+@app.post("/api/sm/customers/{code}/sal")
+async def api_sm_create_sal(
+    code: str, request: Request, user: dict = Depends(require_full_access)
+):
+    _require_customer_write(code, user)
+    body = await request.json()
+    try:
+        record = sm_store.add_sal(
+            code,
+            date=body.get("date") or "",
+            oggetto=body.get("oggetto") or "",
+            partecipanti=body.get("partecipanti") or [],
+            minute=body.get("minute") or "",
+            next_steps=body.get("next_steps") or "",
+            author=user["username"],
+        )
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return {"ok": True, "sal": record}
+
+
+@app.put("/api/sm/customers/{code}/sal/{sal_id}")
+async def api_sm_update_sal(
+    code: str, sal_id: str, request: Request, user: dict = Depends(require_full_access)
+):
+    _require_customer_write(code, user)
+    body = await request.json()
+    try:
+        record = sm_store.update_sal(code, sal_id, body)
+    except KeyError as e:
+        raise HTTPException(404, str(e))
+    return {"ok": True, "sal": record}
+
+
+@app.delete("/api/sm/customers/{code}/sal/{sal_id}")
+def api_sm_delete_sal(code: str, sal_id: str, user: dict = Depends(require_full_access)):
+    _require_customer_write(code, user)
+    if not sm_store.delete_sal(code, sal_id):
+        raise HTTPException(404, "SAL non trovato")
+    return {"ok": True}
+
+
+# ----- Appunti -----
+
+@app.get("/api/sm/customers/{code}/appunti")
+def api_sm_list_appunti(code: str, _: dict = Depends(require_full_access)):
+    _ensure_customer(code)
+    return {"ok": True, "appunti": sm_store.list_appunti(code)}
+
+
+@app.post("/api/sm/customers/{code}/appunti")
+async def api_sm_create_appunto(
+    code: str, request: Request, user: dict = Depends(require_full_access)
+):
+    _require_customer_write(code, user)
+    body = await request.json()
+    try:
+        record = sm_store.add_appunto(code, text=body.get("text") or "", author=user["username"])
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return {"ok": True, "appunto": record}
+
+
+@app.put("/api/sm/customers/{code}/appunti/{appunto_id}")
+async def api_sm_update_appunto(
+    code: str, appunto_id: str, request: Request, user: dict = Depends(require_full_access)
+):
+    _require_customer_write(code, user)
+    body = await request.json()
+    try:
+        record = sm_store.update_appunto(code, appunto_id, text=body.get("text") or "", user=user)
+    except KeyError as e:
+        raise HTTPException(404, str(e))
+    except PermissionError as e:
+        raise HTTPException(403, str(e))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return {"ok": True, "appunto": record}
+
+
+@app.delete("/api/sm/customers/{code}/appunti/{appunto_id}")
+def api_sm_delete_appunto(
+    code: str, appunto_id: str, user: dict = Depends(require_full_access)
+):
+    _require_customer_write(code, user)
+    try:
+        ok = sm_store.delete_appunto(code, appunto_id, user)
+    except PermissionError as e:
+        raise HTTPException(403, str(e))
+    if not ok:
+        raise HTTPException(404, "Appunto non trovato")
+    return {"ok": True}
 
 
 # ============================================================

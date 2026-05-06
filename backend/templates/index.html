@@ -754,6 +754,266 @@
   .role-radio .desc {
     font-size: 10px; color: var(--archiva-grey-mid); margin-top: 2px; line-height: 1.3;
   }
+
+  /* ========= Sezione Service Manager ========= */
+  .sm-page-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 16px; margin: 16px 0 12px;
+  }
+  .sm-page-header h1 {
+    font-size: 22px; color: var(--archiva-primary); margin: 0;
+  }
+  .sm-page-header .subtitle {
+    font-size: 12px; color: var(--archiva-grey-mid); margin-top: 2px;
+  }
+  .sm-customers-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .sm-card {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 8px; padding: 14px;
+    cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .sm-card:hover {
+    border-color: var(--archiva-accent);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+  .sm-card .code {
+    font-family: monospace; font-size: 11px; color: var(--archiva-grey-mid);
+  }
+  .sm-card .name {
+    font-weight: 700; font-size: 15px; color: var(--archiva-primary);
+    margin: 4px 0 8px;
+  }
+  .sm-card .meta {
+    font-size: 11px; color: var(--archiva-grey-mid); line-height: 1.5;
+  }
+  .sm-card .meta strong { color: var(--archiva-text); }
+  .sm-empty {
+    background: var(--archiva-bg-alt);
+    border: 1px dashed var(--archiva-grey-light);
+    border-radius: 8px; padding: 30px; text-align: center;
+    color: var(--archiva-grey-mid); font-size: 13px;
+  }
+
+  /* Vista cliente — header con breadcrumb e tab */
+  .sm-customer-header {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 8px; padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .sm-breadcrumb {
+    font-size: 12px; color: var(--archiva-grey-mid); margin-bottom: 4px;
+  }
+  .sm-breadcrumb a {
+    color: var(--archiva-accent); text-decoration: none;
+  }
+  .sm-breadcrumb a:hover { text-decoration: underline; }
+  .sm-customer-header h2 {
+    margin: 0; font-size: 20px; color: var(--archiva-primary);
+  }
+  .sm-customer-meta {
+    display: flex; gap: 18px; flex-wrap: wrap;
+    margin-top: 6px; font-size: 12px; color: var(--archiva-grey-mid);
+  }
+  .sm-customer-meta strong { color: var(--archiva-text); }
+  .sm-tabs {
+    display: flex; gap: 2px; margin: 16px 0 0; border-bottom: 2px solid var(--archiva-grey-light);
+  }
+  .sm-tab {
+    padding: 8px 14px; cursor: pointer; font-size: 13px;
+    color: var(--archiva-grey-mid); border-bottom: 2px solid transparent;
+    margin-bottom: -2px; user-select: none;
+  }
+  .sm-tab:hover { color: var(--archiva-text); }
+  .sm-tab.active {
+    color: var(--archiva-primary); font-weight: 700;
+    border-bottom-color: var(--archiva-accent);
+  }
+  .sm-tab-pane { display: none; padding-top: 12px; }
+  .sm-tab-pane.active { display: block; }
+
+  /* Tab Stato ticket — riusa toolbar/tabella esistenti con classi proprie */
+  .sm-status-toolbar {
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .sm-tickets-table {
+    width: 100%; border-collapse: collapse;
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 6px; overflow: hidden;
+  }
+  .sm-tickets-table thead th {
+    background: var(--archiva-navy); color: white;
+    font-size: 11px; padding: 8px; text-align: left;
+  }
+  .sm-tickets-table tbody td {
+    padding: 8px; border-bottom: 1px solid var(--archiva-grey-light);
+    font-size: 12px; vertical-align: top;
+  }
+  .sm-tickets-table tbody tr:hover td { background: var(--archiva-bg-alt); }
+
+  /* Tab Statistiche — griglia di card metriche */
+  .sm-stats-kpi {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px; margin-bottom: 16px;
+  }
+  .sm-stats-kpi .skpi {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-left: 4px solid var(--archiva-accent);
+    border-radius: 6px; padding: 12px;
+  }
+  .sm-stats-kpi .skpi .label {
+    font-size: 11px; color: var(--archiva-grey-mid); text-transform: uppercase;
+  }
+  .sm-stats-kpi .skpi .value {
+    font-size: 24px; font-weight: 700; color: var(--archiva-primary);
+    margin-top: 4px;
+  }
+  .sm-stats-kpi .skpi .sub {
+    font-size: 11px; color: var(--archiva-grey-mid); margin-top: 2px;
+  }
+  .sm-stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .sm-stats-card {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 8px; padding: 14px;
+  }
+  .sm-stats-card h3 {
+    margin: 0 0 10px; font-size: 13px; color: var(--archiva-primary);
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .sm-stats-card .bar-row {
+    display: grid; grid-template-columns: 110px 1fr 40px;
+    gap: 8px; align-items: center; font-size: 12px; margin-bottom: 4px;
+  }
+  .sm-stats-card .bar-row .lbl { color: var(--archiva-grey-mid); }
+  .sm-stats-card .bar-row .num { text-align: right; font-weight: 700; }
+  .sm-stats-card .bar {
+    height: 8px; background: var(--archiva-bg-alt); border-radius: 4px; overflow: hidden;
+  }
+  .sm-stats-card .bar > span {
+    display: block; height: 100%; background: var(--archiva-accent);
+  }
+  .sm-stats-gaps {
+    grid-column: 1/-1;
+    background: #FFF8E1; border: 1px solid #F0D88A; border-radius: 6px;
+    padding: 10px 12px; font-size: 11px; color: #6A4A00;
+  }
+  .sm-stats-gaps ul { margin: 4px 0 0 18px; padding: 0; }
+
+  .sm-soon {
+    background: var(--archiva-bg-alt); border: 1px dashed var(--archiva-grey-light);
+    border-radius: 8px; padding: 32px; text-align: center;
+    color: var(--archiva-grey-mid); font-size: 13px;
+  }
+
+  /* ----- Documenti ----- */
+  .sm-docs-upload {
+    border: 2px dashed var(--archiva-grey-light);
+    border-radius: 8px; padding: 24px; text-align: center;
+    background: var(--archiva-bg-alt);
+    transition: border-color 0.15s, background 0.15s;
+    margin-bottom: 12px;
+  }
+  .sm-docs-upload.drag {
+    border-color: var(--archiva-accent); background: #EAF4FB;
+  }
+  .sm-docs-upload p { margin: 0; color: var(--archiva-grey-mid); font-size: 13px; }
+  .sm-docs-upload .hint { font-size: 11px; margin-top: 4px; }
+  .sm-doc-row {
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) 90px 140px 130px 90px;
+    gap: 10px; align-items: center;
+    padding: 8px 12px; font-size: 12px;
+    border-bottom: 1px solid var(--archiva-grey-light);
+  }
+  .sm-doc-row:hover { background: var(--archiva-bg-alt); }
+  .sm-doc-row .name { font-weight: 600; color: var(--archiva-primary); word-break: break-word; }
+  .sm-doc-row .meta { color: var(--archiva-grey-mid); }
+  .sm-doc-row .actions { display: flex; gap: 4px; justify-content: flex-end; }
+
+  /* ----- SAL ----- */
+  .sm-sal-form {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 8px; padding: 14px;
+    margin-bottom: 16px;
+  }
+  .sm-sal-form .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .sm-sal-form .row > div { flex: 1 1 200px; }
+  .sm-sal-form label { display: block; font-size: 11px; color: var(--archiva-grey-mid); margin-top: 8px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .sm-sal-form input, .sm-sal-form textarea {
+    width: 100%; padding: 6px 8px; font-size: 13px;
+    border: 1px solid var(--archiva-grey-light); border-radius: 4px;
+    font-family: inherit;
+  }
+  .sm-sal-form textarea { min-height: 60px; resize: vertical; }
+  .sm-sal-list { display: flex; flex-direction: column; gap: 8px; }
+  .sm-sal-card {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 8px; overflow: hidden;
+  }
+  .sm-sal-head {
+    padding: 10px 14px; cursor: pointer;
+    display: flex; gap: 12px; align-items: center; justify-content: space-between;
+    background: var(--archiva-bg-alt);
+  }
+  .sm-sal-head:hover { background: #ECF1F4; }
+  .sm-sal-head .when { font-family: monospace; color: var(--archiva-accent); font-weight: 700; min-width: 95px; }
+  .sm-sal-head .obj { flex: 1; font-weight: 600; color: var(--archiva-primary); }
+  .sm-sal-head .by { color: var(--archiva-grey-mid); font-size: 11px; }
+  .sm-sal-body { padding: 12px 14px; display: none; border-top: 1px solid var(--archiva-grey-light); font-size: 12px; }
+  .sm-sal-card.open .sm-sal-body { display: block; }
+  .sm-sal-body h4 { margin: 8px 0 4px; font-size: 11px; color: var(--archiva-grey-mid); text-transform: uppercase; letter-spacing: 0.4px; }
+  .sm-sal-body pre {
+    background: var(--archiva-bg-alt); padding: 8px;
+    border-radius: 4px; font-family: inherit; white-space: pre-wrap; margin: 0;
+  }
+
+  /* ----- Appunti ----- */
+  .sm-appunti-form {
+    background: var(--archiva-white);
+    border: 1px solid var(--archiva-grey-light);
+    border-radius: 8px; padding: 12px; margin-bottom: 16px;
+  }
+  .sm-appunti-form textarea {
+    width: 100%; min-height: 60px; padding: 8px;
+    border: 1px solid var(--archiva-grey-light); border-radius: 4px;
+    font-family: inherit; font-size: 13px; resize: vertical;
+  }
+  .sm-appunti-form .actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+  .sm-appunti-list { display: flex; flex-direction: column; gap: 8px; }
+  .sm-appunto-card {
+    background: var(--archiva-white);
+    border-left: 3px solid var(--archiva-accent);
+    border: 1px solid var(--archiva-grey-light);
+    border-left: 3px solid var(--archiva-accent);
+    border-radius: 0 6px 6px 0; padding: 10px 12px;
+  }
+  .sm-appunto-card .head {
+    display: flex; gap: 8px; align-items: baseline; justify-content: space-between;
+    font-size: 11px; color: var(--archiva-grey-mid); margin-bottom: 6px;
+  }
+  .sm-appunto-card .head strong { color: var(--archiva-primary); }
+  .sm-appunto-card .text { font-size: 13px; white-space: pre-wrap; }
+  .sm-appunto-card .actions { display: flex; gap: 4px; justify-content: flex-end; margin-top: 6px; }
+  .btn-mini {
+    background: transparent; border: 1px solid var(--archiva-grey-light);
+    border-radius: 4px; padding: 2px 8px; font-size: 11px; cursor: pointer;
+  }
+  .btn-mini:hover { background: var(--archiva-bg-alt); }
+  .btn-mini.danger { color: var(--archiva-red); border-color: #F8C7C7; }
+  .btn-mini.danger:hover { background: #FDECEC; }
 </style>
 </head>
 <body>
@@ -779,6 +1039,10 @@
   <a href="#monitoraggio" data-section="monitoraggio" class="active">
     <span class="ico">📊</span>
     Monitoraggio Ticket
+  </a>
+  <a href="#service-manager" data-section="service-manager" hidden>
+    <span class="ico">🎯</span>
+    Service Manager
   </a>
   <a href="#utenze" data-section="utenze" data-requires-role="admin" hidden>
     <span class="ico">👥</span>
@@ -964,6 +1228,133 @@
 
 </section>
 
+<section class="app-section" id="section-service-manager" data-section="service-manager" hidden>
+
+  <!-- Vista A: lista clienti -->
+  <div id="smListView">
+    <div class="sm-page-header">
+      <div>
+        <h1>🎯 Service Manager</h1>
+        <div class="subtitle">Cruscotti dedicati per cliente — <span id="smCustomersCount">—</span></div>
+      </div>
+      <div>
+        <button class="btn btn-primary" id="btnNewCustomer" hidden>+ Nuovo cliente</button>
+      </div>
+    </div>
+    <div class="sm-customers-grid" id="smCustomersGrid">
+      <div class="sm-empty">Caricamento clienti…</div>
+    </div>
+  </div>
+
+  <!-- Vista B: dettaglio cliente con sotto-tab -->
+  <div id="smCustomerView" hidden>
+    <div class="sm-customer-header">
+      <div class="sm-breadcrumb">
+        <a href="#service-manager" id="smBackToList">← Tutti i clienti</a>
+      </div>
+      <h2 id="smCustomerName">—</h2>
+      <div class="sm-customer-meta" id="smCustomerMeta"></div>
+      <div class="sm-tabs" id="smTabs">
+        <div class="sm-tab active" data-smtab="stato">Stato ticket</div>
+        <div class="sm-tab" data-smtab="stats">Statistiche</div>
+        <div class="sm-tab" data-smtab="docs">Documenti</div>
+        <div class="sm-tab" data-smtab="sal">SAL</div>
+        <div class="sm-tab" data-smtab="appunti">Appunti</div>
+      </div>
+    </div>
+
+    <div class="sm-tab-pane active" data-smpane="stato">
+      <div class="sm-status-toolbar">
+        <button type="button" class="filter-pill active" data-smstatus="all">Tutti <span id="smCnt-all">—</span></button>
+        <button type="button" class="filter-pill" data-smstatus="active">Attivi <span id="smCnt-active">—</span></button>
+        <button type="button" class="filter-pill" data-smstatus="wfr">Waiting for reporter <span id="smCnt-wfr">—</span></button>
+        <button type="button" class="filter-pill" data-smstatus="wfson">Waiting for son <span id="smCnt-wfson">—</span></button>
+        <button type="button" class="filter-pill" data-smstatus="progress">In lavorazione <span id="smCnt-progress">—</span></button>
+        <button type="button" class="filter-pill" data-smstatus="resolved">Chiusi <span id="smCnt-resolved">—</span></button>
+        <div class="search-box" style="margin-left:auto">
+          <input type="text" id="smSearchInput" placeholder="Cerca per key, summary, assegnatario…" />
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="sm-tickets-table">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Summary</th>
+              <th>Stato</th>
+              <th>Tipo</th>
+              <th>Priorità</th>
+              <th>Assegnatario</th>
+              <th>Apertura</th>
+              <th>Chiusura</th>
+              <th>SLA</th>
+            </tr>
+          </thead>
+          <tbody id="smTicketsTbody">
+            <tr><td colspan="9" style="text-align:center;color:var(--archiva-grey-mid);padding:24px">Caricamento ticket…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="sm-tab-pane" data-smpane="stats">
+      <div id="smStatsBody"><div class="sm-empty">Caricamento statistiche…</div></div>
+    </div>
+
+    <div class="sm-tab-pane" data-smpane="docs">
+      <div class="sm-docs-upload" id="smDocsDrop" hidden>
+        <p><strong>Trascina file</strong> qui oppure
+          <button type="button" class="btn btn-secondary" id="smDocsPickBtn">scegli da disco</button>
+        </p>
+        <div class="hint">PDF, Office, .msg, immagini · max 10 MB</div>
+        <input type="file" id="smDocsInput" hidden multiple />
+      </div>
+      <div class="sm-doc-row" style="background:var(--archiva-navy);color:white;font-weight:700">
+        <div>Nome file</div>
+        <div>Dimensione</div>
+        <div>Data upload</div>
+        <div>Caricato da</div>
+        <div style="text-align:right">Azioni</div>
+      </div>
+      <div id="smDocsList"><div class="sm-empty" style="border-radius:0 0 6px 6px">Caricamento documenti…</div></div>
+    </div>
+
+    <div class="sm-tab-pane" data-smpane="sal">
+      <div class="sm-sal-form" id="smSalFormBox" hidden>
+        <h3 style="margin:0 0 8px;font-size:13px;color:var(--archiva-primary);text-transform:uppercase;letter-spacing:0.4px">Nuovo SAL / minute incontro</h3>
+        <div class="row">
+          <div><label for="sf-sal-date">Data incontro</label><input type="date" id="sf-sal-date" /></div>
+          <div style="flex:2"><label for="sf-sal-obj">Oggetto</label><input type="text" id="sf-sal-obj" placeholder="Es. Allineamento Q2 - migrazione storage" /></div>
+        </div>
+        <label for="sf-sal-part">Partecipanti (separati da virgola)</label>
+        <input type="text" id="sf-sal-part" placeholder="Mario Rossi, Luigi Verdi, ..." />
+        <label for="sf-sal-min">Minute incontro</label>
+        <textarea id="sf-sal-min" rows="6" placeholder="Riassunto, decisioni, note tecniche..."></textarea>
+        <label for="sf-sal-next">Prossimi step</label>
+        <textarea id="sf-sal-next" rows="3" placeholder="Azioni, owner, deadline"></textarea>
+        <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:10px">
+          <button type="button" class="btn btn-secondary" id="btnSalReset">Pulisci</button>
+          <button type="button" class="btn btn-primary" id="btnSalSubmit">Salva SAL</button>
+        </div>
+      </div>
+      <div id="smSalReadOnlyHint" hidden class="sm-empty" style="margin-bottom:12px">Solo gli admin o i membri del team del cliente possono creare SAL.</div>
+      <div class="sm-sal-list" id="smSalList"><div class="sm-empty">Caricamento SAL…</div></div>
+    </div>
+
+    <div class="sm-tab-pane" data-smpane="appunti">
+      <div class="sm-appunti-form" id="smAppuntiFormBox" hidden>
+        <textarea id="sf-appunto-text" placeholder="Scrivi un appunto condiviso con il team del cliente..."></textarea>
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="btnAppuntoSubmit">Pubblica</button>
+        </div>
+      </div>
+      <div id="smAppuntiReadOnlyHint" hidden class="sm-empty" style="margin-bottom:12px">Solo gli admin o i membri del team del cliente possono scrivere appunti.</div>
+      <div class="sm-appunti-list" id="smAppuntiList"><div class="sm-empty">Caricamento appunti…</div></div>
+    </div>
+  </div>
+
+</section>
+
 </main>
 
 <!-- ========= Modale Gestione Utenze (crea/modifica) ========= -->
@@ -1067,6 +1458,39 @@
   </div>
 </div>
 
+<!-- ========= Modale Nuovo cliente Service Manager (admin-only) ========= -->
+<div class="modal-bg" id="modalCustomer">
+  <div class="modal">
+    <h2 id="modalCustomerTitle">Nuovo cliente</h2>
+    <div class="err-modal" id="modalCustomerErr"></div>
+    <form id="formCustomer" autocomplete="off">
+      <label for="cf-code">Codice cliente</label>
+      <select id="cf-code" required></select>
+      <small style="color:var(--archiva-grey-mid);font-size:11px;">Solo i codici già visti negli snapshot Jira; quelli già censiti non compaiono.</small>
+
+      <label for="cf-name" style="margin-top:8px">Nome cliente</label>
+      <input type="text" id="cf-name" required />
+
+      <label for="cf-sm" style="margin-top:8px">Service Manager (utente)</label>
+      <select id="cf-sm" required></select>
+
+      <label for="cf-helpdesk" style="margin-top:8px">Helpdesk associato</label>
+      <select id="cf-helpdesk" required></select>
+
+      <label for="cf-backup" style="margin-top:8px">Backup helpdesk (facoltativo)</label>
+      <select id="cf-backup"></select>
+
+      <label for="cf-notes" style="margin-top:8px">Note</label>
+      <textarea id="cf-notes" rows="2" placeholder="Eventuali note sull'ambiente"></textarea>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="btnCustomerCancel">Annulla</button>
+        <button type="submit" class="btn btn-primary" id="btnCustomerSubmit">Crea cliente</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script src="/static/js/auth.js"></script>
 <script>
   // ============================================================
@@ -1153,6 +1577,7 @@
     initSectionNav(user);
     attachToolbarHandlers();
     if (user.ruolo === "admin") attachUtenzeHandlers();
+    if (user.ruolo !== "ospite") attachServiceManagerHandlers();
     if (user.ruolo !== "ospite") {
       // Per i tab Solleciti servono organigramma + lista solleciti
       loadOrganigramma();
@@ -1167,8 +1592,8 @@
   //  Hash router — sezioni globali (#monitoraggio | #utenze)
   // ============================================================
   const SECTION_BY_ROLE = {
-    admin:  ["monitoraggio", "utenze"],
-    user:   ["monitoraggio"],
+    admin:  ["monitoraggio", "service-manager", "utenze"],
+    user:   ["monitoraggio", "service-manager"],
     ospite: ["monitoraggio"],
   };
   const RUOLO_LABEL = { admin: "Amministratore", user: "Utente", ospite: "Ospite" };
@@ -1191,21 +1616,23 @@
   }
 
   function applyHash(allowed) {
-    let target = (window.location.hash || "").replace(/^#/, "").trim() || "monitoraggio";
+    const raw = (window.location.hash || "").replace(/^#/, "").trim() || "monitoraggio";
+    const parts = raw.split("/").filter(Boolean);
+    let target = parts[0] || "monitoraggio";
     if (!allowed.includes(target)) target = "monitoraggio";
-    showSection(target);
+    showSection(target, parts.slice(1));
   }
 
   function navigateToSection(name) {
     if (window.location.hash.replace(/^#/, "") === name) {
       // stesso hash → forza apply (per click su voce attiva)
-      showSection(name);
+      showSection(name, []);
     } else {
       window.location.hash = "#" + name;
     }
   }
 
-  function showSection(name) {
+  function showSection(name, sub = []) {
     document.querySelectorAll('section.app-section').forEach(s => {
       s.hidden = (s.dataset.section !== name);
     });
@@ -1214,6 +1641,7 @@
     });
     document.body.dataset.activeSection = name;
     if (name === "utenze" && typeof loadUsers === "function") loadUsers();
+    if (name === "service-manager" && typeof smRoute === "function") smRoute(sub);
   }
 
   // ============================================================
@@ -2268,6 +2696,628 @@
     document.getElementById("searchInputSolleciti")?.addEventListener("input", (ev) => {
       clearTimeout(st);
       st = setTimeout(() => { view.sollecitiSearch = ev.target.value; renderTable(); }, 100);
+    });
+  }
+
+  // ============================================================
+  //  Service Manager — registry clienti + cruscotto per cliente
+  // ============================================================
+  async function fetchJson(url, opts = {}) {
+    const r = await apiFetch(url, opts);
+    if (!r) throw new Error("Sessione scaduta");
+    let data;
+    try { data = await r.json(); } catch { data = {}; }
+    if (!r.ok || data.ok === false) {
+      throw new Error(data.detail || data.error || `Errore ${r.status}`);
+    }
+    return data;
+  }
+
+  const smState = {
+    customers: [],
+    activeCode: null,
+    activeCustomer: null,
+    tickets: [],
+    stats: null,
+    statusFilter: "all",
+    search: "",
+    subTab: "stato",
+  };
+
+  function attachServiceManagerHandlers() {
+    document.getElementById("btnNewCustomer")?.addEventListener("click", openCustomerModal);
+    document.getElementById("btnCustomerCancel")?.addEventListener("click", closeCustomerModal);
+    document.getElementById("formCustomer")?.addEventListener("submit", submitCustomerForm);
+
+    document.querySelectorAll('#smTabs .sm-tab').forEach(t => {
+      t.addEventListener("click", () => {
+        smState.subTab = t.dataset.smtab;
+        document.querySelectorAll('#smTabs .sm-tab').forEach(x => x.classList.toggle("active", x === t));
+        document.querySelectorAll('#smCustomerView .sm-tab-pane').forEach(p => {
+          p.classList.toggle("active", p.dataset.smpane === smState.subTab);
+        });
+        if (smState.subTab === "stats" && !smState.stats) loadCustomerStats();
+        else if (smState.subTab === "docs") loadDocs();
+        else if (smState.subTab === "sal") loadSal();
+        else if (smState.subTab === "appunti") loadAppunti();
+      });
+    });
+
+    document.querySelectorAll('.sm-status-toolbar [data-smstatus]').forEach(b => {
+      b.addEventListener("click", () => {
+        document.querySelectorAll('.sm-status-toolbar [data-smstatus]').forEach(x => x.classList.remove("active"));
+        b.classList.add("active");
+        smState.statusFilter = b.dataset.smstatus;
+        renderCustomerTickets();
+      });
+    });
+
+    let smTimer;
+    document.getElementById("smSearchInput")?.addEventListener("input", (ev) => {
+      clearTimeout(smTimer);
+      smTimer = setTimeout(() => {
+        smState.search = ev.target.value.toLowerCase();
+        renderCustomerTickets();
+      }, 100);
+    });
+  }
+
+  // Routing: parts = [] → lista, parts = [code] → dettaglio
+  async function smRoute(parts) {
+    if (!parts || parts.length === 0) {
+      smState.activeCode = null;
+      document.getElementById("smListView").hidden = false;
+      document.getElementById("smCustomerView").hidden = true;
+      await loadCustomersList();
+    } else {
+      const code = decodeURIComponent(parts[0]);
+      smState.activeCode = code;
+      document.getElementById("smListView").hidden = true;
+      document.getElementById("smCustomerView").hidden = false;
+      smState.subTab = "stato";
+      document.querySelectorAll('#smTabs .sm-tab').forEach(x => x.classList.toggle("active", x.dataset.smtab === "stato"));
+      document.querySelectorAll('#smCustomerView .sm-tab-pane').forEach(p => p.classList.toggle("active", p.dataset.smpane === "stato"));
+      smState.tickets = [];
+      smState.stats = null;
+      smState.search = "";
+      smState.statusFilter = "all";
+      const si = document.getElementById("smSearchInput"); if (si) si.value = "";
+      document.querySelectorAll('.sm-status-toolbar [data-smstatus]').forEach(x => x.classList.toggle("active", x.dataset.smstatus === "all"));
+      await loadCustomerDetail(code);
+    }
+  }
+
+  async function loadCustomersList() {
+    const grid = document.getElementById("smCustomersGrid");
+    const btn = document.getElementById("btnNewCustomer");
+    if (btn) btn.hidden = currentUser?.ruolo !== "admin";
+    try {
+      const res = await fetchJson("/api/sm/customers");
+      smState.customers = res.customers || [];
+    } catch (e) {
+      grid.innerHTML = `<div class="sm-empty">Errore: ${escapeHtml(e.message)}</div>`;
+      return;
+    }
+    document.getElementById("smCustomersCount").textContent =
+      smState.customers.length + (smState.customers.length === 1 ? " cliente censito" : " clienti censiti");
+    if (!smState.customers.length) {
+      grid.innerHTML = `<div class="sm-empty">${
+        currentUser?.ruolo === "admin"
+          ? 'Nessun cliente censito. Clicca "+ Nuovo cliente" per iniziare.'
+          : 'Nessun cliente censito. Solo gli amministratori possono creare nuovi clienti.'
+      }</div>`;
+      return;
+    }
+    grid.innerHTML = smState.customers.map(c => `
+      <div class="sm-card" data-code="${escapeAttr(c.code)}">
+        <div class="code">${escapeHtml(c.code)}</div>
+        <div class="name">${escapeHtml(c.name)}</div>
+        <div class="meta">
+          <div>SM: <strong>${escapeHtml(c.service_manager || "—")}</strong></div>
+          <div>Helpdesk: <strong>${escapeHtml(c.helpdesk || "—")}</strong>${c.backup ? ` · backup <strong>${escapeHtml(c.backup)}</strong>` : ""}</div>
+        </div>
+      </div>`).join("");
+    grid.querySelectorAll('.sm-card').forEach(card => {
+      card.addEventListener("click", () => {
+        window.location.hash = "#service-manager/" + encodeURIComponent(card.dataset.code);
+      });
+    });
+  }
+
+  async function loadCustomerDetail(code) {
+    document.getElementById("smCustomerName").textContent = "Caricamento…";
+    document.getElementById("smCustomerMeta").innerHTML = "";
+    document.getElementById("smTicketsTbody").innerHTML =
+      '<tr><td colspan="9" style="text-align:center;color:var(--archiva-grey-mid);padding:24px">Caricamento ticket…</td></tr>';
+    try {
+      const res = await fetchJson(`/api/sm/customers/${encodeURIComponent(code)}/tickets`);
+      smState.activeCustomer = res.customer;
+      smState.tickets = res.rows || [];
+    } catch (e) {
+      document.getElementById("smCustomerName").textContent = "Errore";
+      document.getElementById("smTicketsTbody").innerHTML =
+        `<tr><td colspan="9" style="text-align:center;color:var(--archiva-red);padding:24px">${escapeHtml(e.message)}</td></tr>`;
+      return;
+    }
+    const c = smState.activeCustomer;
+    document.getElementById("smCustomerName").textContent = `${c.name} · ${c.code}`;
+    document.getElementById("smCustomerMeta").innerHTML = `
+      <div><strong>Service Manager:</strong> ${escapeHtml(c.service_manager || "—")}</div>
+      <div><strong>Helpdesk:</strong> ${escapeHtml(c.helpdesk || "—")}</div>
+      <div><strong>Backup:</strong> ${escapeHtml(c.backup || "—")}</div>
+      ${c.notes ? `<div style="flex-basis:100%"><em>${escapeHtml(c.notes)}</em></div>` : ""}
+    `;
+    renderCustomerTickets();
+  }
+
+  function _smStatusBadgeClass(family) {
+    return ({wfr: "s-wfr", wfson: "s-wfson", progress: "s-progress", open: "s-open", resolved: "s-resolved"})[family] || "s-open";
+  }
+
+  function _smSlaBadge(sla) {
+    if (!sla) return "—";
+    const cls = sla.state || "none";
+    return `<span class="sla ${cls}">${escapeHtml(sla.label || "—")}</span>`;
+  }
+
+  function renderCustomerTickets() {
+    const tbody = document.getElementById("smTicketsTbody");
+    let rows = smState.tickets.slice();
+    const counts = {
+      all: rows.length,
+      active: rows.filter(r => r.isActive).length,
+      wfr: rows.filter(r => r.statusFamily === "wfr").length,
+      wfson: rows.filter(r => r.statusFamily === "wfson").length,
+      progress: rows.filter(r => r.statusFamily === "progress").length,
+      resolved: rows.filter(r => !r.isActive).length,
+    };
+    Object.entries(counts).forEach(([k, v]) => {
+      const el = document.getElementById("smCnt-" + k);
+      if (el) el.textContent = v;
+    });
+    if (smState.statusFilter === "active") rows = rows.filter(r => r.isActive);
+    else if (smState.statusFilter === "resolved") rows = rows.filter(r => !r.isActive);
+    else if (smState.statusFilter !== "all") rows = rows.filter(r => r.statusFamily === smState.statusFilter);
+    if (smState.search) {
+      const q = smState.search;
+      rows = rows.filter(r => (
+        (r.key || "").toLowerCase().includes(q) ||
+        (r.summary || "").toLowerCase().includes(q) ||
+        ((r.assignee || {}).displayName || "").toLowerCase().includes(q) ||
+        (r.status || "").toLowerCase().includes(q)
+      ));
+    }
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--archiva-grey-mid);padding:24px">Nessun ticket nel filtro corrente.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td><a href="${escapeAttr(r.url)}" target="_blank" rel="noopener">${escapeHtml(r.key)} ↗</a></td>
+        <td title="${escapeAttr(r.summary)}" style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(r.summary || "")}</td>
+        <td><span class="badge ${_smStatusBadgeClass(r.statusFamily)}">${escapeHtml(r.status || "—")}</span></td>
+        <td>${escapeHtml(r.issueType || "—")}</td>
+        <td>${escapeHtml(r.priority || "—")}</td>
+        <td>${escapeHtml((r.assignee || {}).displayName || "—")}</td>
+        <td>${formatDate(r.createdAt)}</td>
+        <td>${r.resolutionDate ? formatDate(r.resolutionDate) : "—"}</td>
+        <td>${_smSlaBadge(r.sla)}</td>
+      </tr>`).join("");
+  }
+
+  async function loadCustomerStats() {
+    const body = document.getElementById("smStatsBody");
+    body.innerHTML = '<div class="sm-empty">Calcolo statistiche in corso…</div>';
+    try {
+      const res = await fetchJson(`/api/sm/customers/${encodeURIComponent(smState.activeCode)}/stats`);
+      smState.stats = res.stats;
+    } catch (e) {
+      body.innerHTML = `<div class="sm-empty" style="color:var(--archiva-red)">Errore: ${escapeHtml(e.message)}</div>`;
+      return;
+    }
+    body.innerHTML = renderStatsHtml(smState.stats);
+  }
+
+  function renderStatsHtml(s) {
+    const kpi = (label, value, sub = "") =>
+      `<div class="skpi"><div class="label">${label}</div><div class="value">${value}</div><div class="sub">${sub}</div></div>`;
+    const formatNum = (n, suffix = "") => (n === null || n === undefined) ? "—" : (n + suffix);
+
+    const monthlyMax = Math.max(1, ...s.monthly.map(m => Math.max(m.opened, m.closed)));
+    const monthlyHtml = s.monthly.length
+      ? s.monthly.map(m => `
+          <div class="bar-row"><span class="lbl">${m.month} aperti</span>
+            <div class="bar"><span style="width:${(m.opened / monthlyMax * 100).toFixed(0)}%"></span></div>
+            <span class="num">${m.opened}</span></div>
+          <div class="bar-row"><span class="lbl">${m.month} chiusi</span>
+            <div class="bar"><span style="width:${(m.closed / monthlyMax * 100).toFixed(0)}%; background:var(--archiva-green)"></span></div>
+            <span class="num">${m.closed}</span></div>`).join("")
+      : '<div class="sm-empty" style="padding:14px">Nessun dato mensile.</div>';
+
+    const distrHtml = (obj) => {
+      const entries = Object.entries(obj || {});
+      if (!entries.length) return '<div class="sm-empty" style="padding:14px">—</div>';
+      const max = Math.max(1, ...entries.map(([_, v]) => v));
+      return entries.sort((a, b) => b[1] - a[1]).map(([k, v]) => `
+        <div class="bar-row"><span class="lbl">${escapeHtml(k)}</span>
+          <div class="bar"><span style="width:${(v / max * 100).toFixed(0)}%"></span></div>
+          <span class="num">${v}</span></div>`).join("");
+    };
+
+    return `
+      <div class="sm-stats-kpi">
+        ${kpi("Totale", s.total, `${s.active} attivi · ${s.closed} chiusi`)}
+        ${kpi("In stallo (≥8gg)", s.stalled, "ticket attivi rossi")}
+        ${kpi("Risoluzione media", formatNum(s.avgResolutionDays, " gg"), "giorni di calendario, sui chiusi")}
+        ${kpi("Attesa media (attivi)", formatNum(s.avgWaitDays, " gg"), "giorni lavorativi senza riscontro")}
+        ${kpi("SLA rispettata", s.slaRespectPct === null ? "—" : s.slaRespectPct + "%", `${s.slaStates.ok} ok · ${s.slaStates.warn} warn · ${s.slaStates.breached} breached`)}
+      </div>
+      <div class="sm-stats-grid">
+        <div class="sm-stats-card"><h3>Andamento mensile</h3>${monthlyHtml}</div>
+        <div class="sm-stats-card"><h3>Distribuzione per tipologia</h3>${distrHtml(s.byType)}</div>
+        <div class="sm-stats-card"><h3>Distribuzione per priorità</h3>${distrHtml(s.byPriority)}</div>
+        <div class="sm-stats-card"><h3>Backlog age (attivi)</h3>${distrHtml(s.backlog)}</div>
+        <div class="sm-stats-gaps">
+          <strong>Gaps noti — richiedono fetch o configurazione aggiuntiva:</strong>
+          <ul>${(s.gaps || []).map(g => `<li>${escapeHtml(g)}</li>`).join("")}</ul>
+        </div>
+      </div>
+    `;
+  }
+
+  // -------- Modale Nuovo cliente --------
+  async function openCustomerModal() {
+    if (currentUser?.ruolo !== "admin") return;
+    document.getElementById("modalCustomerErr").classList.remove("show");
+    document.getElementById("formCustomer").reset();
+    const codeSel = document.getElementById("cf-code");
+    codeSel.innerHTML = '<option value="">— caricamento codici —</option>';
+    document.getElementById("modalCustomer").classList.add("open");
+    try {
+      const codesRes = await fetchJson("/api/sm/customer-codes");
+      const free = (codesRes.codes || []).filter(c => !c.alreadyRegistered);
+      codeSel.innerHTML = '<option value="">— scegli codice —</option>' + free.map(c =>
+        `<option value="${escapeAttr(c.code)}" data-name="${escapeAttr(c.name || '')}">${escapeHtml(c.code)} — ${escapeHtml(c.name || "—")}</option>`).join("");
+      codeSel.addEventListener("change", () => {
+        const opt = codeSel.options[codeSel.selectedIndex];
+        const name = opt?.dataset?.name || "";
+        if (name) document.getElementById("cf-name").value = name;
+      }, { once: true });
+
+      const usersRes = await fetchJson("/api/admin/users");
+      const writeable = (usersRes.users || []).filter(u => u.ruolo === "admin" || u.ruolo === "user");
+      const opts = (allowEmpty) => (allowEmpty ? '<option value="">— nessuno —</option>' : '<option value="">— scegli utente —</option>') +
+        writeable.map(u => `<option value="${escapeAttr(u.username)}">${escapeHtml(u.nome)} (${escapeHtml(u.username)})</option>`).join("");
+      document.getElementById("cf-sm").innerHTML = opts(false);
+      document.getElementById("cf-helpdesk").innerHTML = opts(false);
+      document.getElementById("cf-backup").innerHTML = opts(true);
+    } catch (e) {
+      showCustomerErr(e.message);
+    }
+  }
+
+  function closeCustomerModal() {
+    document.getElementById("modalCustomer").classList.remove("open");
+  }
+
+  function showCustomerErr(msg) {
+    const el = document.getElementById("modalCustomerErr");
+    el.textContent = msg;
+    el.classList.add("show");
+  }
+
+  async function submitCustomerForm(ev) {
+    ev.preventDefault();
+    const payload = {
+      code: document.getElementById("cf-code").value,
+      name: document.getElementById("cf-name").value,
+      service_manager: document.getElementById("cf-sm").value,
+      helpdesk: document.getElementById("cf-helpdesk").value,
+      backup: document.getElementById("cf-backup").value || null,
+      notes: document.getElementById("cf-notes").value,
+    };
+    try {
+      await fetchJson("/api/sm/customers", { method: "POST", body: JSON.stringify(payload) });
+      closeCustomerModal();
+      await loadCustomersList();
+    } catch (e) {
+      showCustomerErr(e.message);
+    }
+  }
+
+  // ============================================================
+  //  SM — Documenti / SAL / Appunti  (M7.B)
+  // ============================================================
+  function smCanWrite() {
+    const c = smState.activeCustomer;
+    if (!c || !currentUser) return false;
+    if (currentUser.ruolo === "admin") return true;
+    const u = (currentUser.username || "").toLowerCase();
+    return u === c.service_manager || u === c.helpdesk || u === c.backup;
+  }
+
+  function _formatBytes(n) {
+    if (!n && n !== 0) return "—";
+    if (n < 1024) return n + " B";
+    if (n < 1024*1024) return (n/1024).toFixed(1) + " KB";
+    return (n/(1024*1024)).toFixed(1) + " MB";
+  }
+
+  function _formatDateTime(iso) {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    const pad = (x) => String(x).padStart(2, "0");
+    return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  // -------- Documenti --------
+  async function loadDocs() {
+    const list = document.getElementById("smDocsList");
+    const drop = document.getElementById("smDocsDrop");
+    drop.hidden = !smCanWrite();
+    list.innerHTML = '<div class="sm-empty" style="border-radius:0 0 6px 6px">Caricamento documenti…</div>';
+    let docs = [];
+    try {
+      const res = await fetchJson(`/api/sm/customers/${encodeURIComponent(smState.activeCode)}/docs`);
+      docs = res.docs || [];
+    } catch (e) {
+      list.innerHTML = `<div class="sm-empty" style="color:var(--archiva-red)">Errore: ${escapeHtml(e.message)}</div>`;
+      return;
+    }
+    if (!docs.length) {
+      list.innerHTML = '<div class="sm-empty" style="border-radius:0 0 6px 6px">Nessun documento ancora caricato.</div>';
+    } else {
+      const canWrite = smCanWrite();
+      list.innerHTML = docs.map(d => `
+        <div class="sm-doc-row">
+          <div class="name">${escapeHtml(d.filename)}</div>
+          <div class="meta">${_formatBytes(d.size)}</div>
+          <div class="meta">${_formatDateTime(d.uploaded_at)}</div>
+          <div class="meta">${escapeHtml(d.uploaded_by || "—")}</div>
+          <div class="actions">
+            <a class="btn-mini" href="/api/sm/customers/${encodeURIComponent(smState.activeCode)}/docs/${encodeURIComponent(d.id)}?_=${Date.now()}" download="${escapeAttr(d.filename)}" target="_blank" rel="noopener">↓</a>
+            ${canWrite ? `<button class="btn-mini danger" data-doc-del="${escapeAttr(d.id)}">🗑</button>` : ""}
+          </div>
+        </div>`).join("");
+      list.querySelectorAll('[data-doc-del]').forEach(b => {
+        b.addEventListener("click", async () => {
+          if (!confirm("Eliminare questo documento?")) return;
+          try {
+            await fetchJson(`/api/sm/customers/${encodeURIComponent(smState.activeCode)}/docs/${encodeURIComponent(b.dataset.docDel)}`, { method: "DELETE" });
+            loadDocs();
+          } catch (e) { alert(e.message); }
+        });
+      });
+    }
+    // Note: i download usano <a href>, ma l'auth è via Bearer header. Fix sotto.
+  }
+
+  // I download richiedono auth header → li intercettiamo e li facciamo via apiFetch + blob.
+  document.addEventListener("click", async (ev) => {
+    const a = ev.target.closest('a[href*="/api/sm/customers/"][href*="/docs/"]');
+    if (!a) return;
+    const url = a.getAttribute("href");
+    if (!url || !url.includes("/docs/")) return;
+    ev.preventDefault();
+    try {
+      const r = await apiFetch(url);
+      if (!r || !r.ok) {
+        let msg = `Errore ${r?.status || ""}`;
+        try { const d = await r.json(); msg = d.detail || msg; } catch {}
+        alert(msg);
+        return;
+      }
+      const blob = await r.blob();
+      const filename = a.getAttribute("download") || "file";
+      const objUrl = URL.createObjectURL(blob);
+      const tmp = document.createElement("a");
+      tmp.href = objUrl;
+      tmp.download = filename;
+      document.body.appendChild(tmp);
+      tmp.click();
+      tmp.remove();
+      setTimeout(() => URL.revokeObjectURL(objUrl), 5000);
+    } catch (e) {
+      alert(e.message);
+    }
+  });
+
+  function _attachDocsUploadHandlers() {
+    const drop = document.getElementById("smDocsDrop");
+    const input = document.getElementById("smDocsInput");
+    const pickBtn = document.getElementById("smDocsPickBtn");
+    if (!drop || drop.dataset.bound === "1") return;
+    drop.dataset.bound = "1";
+    pickBtn.addEventListener("click", () => input.click());
+    input.addEventListener("change", () => {
+      uploadDocFiles([...input.files]);
+      input.value = "";
+    });
+    ["dragenter", "dragover"].forEach(ev =>
+      drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("drag"); }));
+    ["dragleave", "drop"].forEach(ev =>
+      drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("drag"); }));
+    drop.addEventListener("drop", (e) => {
+      const files = [...(e.dataTransfer?.files || [])];
+      if (files.length) uploadDocFiles(files);
+    });
+  }
+  // Re-bind handlers dopo che drop esce da hidden (lazy)
+  const _origLoadDocs = loadDocs;
+  loadDocs = async function() {
+    await _origLoadDocs();
+    _attachDocsUploadHandlers();
+  };
+
+  async function uploadDocFiles(files) {
+    if (!smCanWrite()) {
+      alert("Non hai permessi di scrittura su questo cliente.");
+      return;
+    }
+    for (const f of files) {
+      const fd = new FormData();
+      fd.append("file", f);
+      try {
+        await fetchJson(`/api/sm/customers/${encodeURIComponent(smState.activeCode)}/docs`, { method: "POST", body: fd });
+      } catch (e) {
+        alert(`${f.name}: ${e.message}`);
+      }
+    }
+    loadDocs();
+  }
+
+  // -------- SAL --------
+  async function loadSal() {
+    const list = document.getElementById("smSalList");
+    document.getElementById("smSalFormBox").hidden = !smCanWrite();
+    document.getElementById("smSalReadOnlyHint").hidden = smCanWrite();
+    _attachSalFormHandlers();
+    list.innerHTML = '<div class="sm-empty">Caricamento SAL…</div>';
+    let items = [];
+    try {
+      const res = await fetchJson(`/api/sm/customers/${encodeURIComponent(smState.activeCode)}/sal`);
+      items = res.sal || [];
+    } catch (e) {
+      list.innerHTML = `<div class="sm-empty" style="color:var(--archiva-red)">Errore: ${escapeHtml(e.message)}</div>`;
+      return;
+    }
+    if (!items.length) {
+      list.innerHTML = '<div class="sm-empty">Nessun SAL censito.</div>';
+      return;
+    }
+    const canWrite = smCanWrite();
+    list.innerHTML = items.map(s => `
+      <div class="sm-sal-card" data-sal-id="${escapeAttr(s.id)}">
+        <div class="sm-sal-head">
+          <span class="when">${escapeHtml(s.date)}</span>
+          <span class="obj">${escapeHtml(s.oggetto)}</span>
+          <span class="by">${escapeHtml(s.created_by || "—")}</span>
+        </div>
+        <div class="sm-sal-body">
+          ${s.partecipanti && s.partecipanti.length ? `<h4>Partecipanti</h4><div>${s.partecipanti.map(p => escapeHtml(p)).join(" · ")}</div>` : ""}
+          ${s.minute ? `<h4>Minute</h4><pre>${escapeHtml(s.minute)}</pre>` : ""}
+          ${s.next_steps ? `<h4>Prossimi step</h4><pre>${escapeHtml(s.next_steps)}</pre>` : ""}
+          ${canWrite ? `<div style="text-align:right;margin-top:8px"><button class="btn-mini danger" data-sal-del="${escapeAttr(s.id)}">Elimina SAL</button></div>` : ""}
+        </div>
+      </div>`).join("");
+    list.querySelectorAll('.sm-sal-head').forEach(h =>
+      h.addEventListener("click", () => h.closest('.sm-sal-card').classList.toggle("open")));
+    list.querySelectorAll('[data-sal-del]').forEach(b =>
+      b.addEventListener("click", async (ev) => {
+        ev.stopPropagation();
+        if (!confirm("Eliminare questo SAL?")) return;
+        try {
+          await fetchJson(`/api/sm/customers/${encodeURIComponent(smState.activeCode)}/sal/${encodeURIComponent(b.dataset.salDel)}`, { method: "DELETE" });
+          loadSal();
+        } catch (e) { alert(e.message); }
+      }));
+  }
+
+  function _attachSalFormHandlers() {
+    const submit = document.getElementById("btnSalSubmit");
+    if (!submit || submit.dataset.bound === "1") return;
+    submit.dataset.bound = "1";
+    document.getElementById("btnSalReset").addEventListener("click", _clearSalForm);
+    submit.addEventListener("click", async () => {
+      const payload = {
+        date: document.getElementById("sf-sal-date").value,
+        oggetto: document.getElementById("sf-sal-obj").value,
+        partecipanti: document.getElementById("sf-sal-part").value.split(",").map(p => p.trim()).filter(Boolean),
+        minute: document.getElementById("sf-sal-min").value,
+        next_steps: document.getElementById("sf-sal-next").value,
+      };
+      try {
+        await fetchJson(`/api/sm/customers/${encodeURIComponent(smState.activeCode)}/sal`, { method: "POST", body: JSON.stringify(payload) });
+        _clearSalForm();
+        loadSal();
+      } catch (e) { alert(e.message); }
+    });
+  }
+  function _clearSalForm() {
+    ["sf-sal-date", "sf-sal-obj", "sf-sal-part", "sf-sal-min", "sf-sal-next"].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = "";
+    });
+  }
+
+  // -------- Appunti --------
+  async function loadAppunti() {
+    const list = document.getElementById("smAppuntiList");
+    document.getElementById("smAppuntiFormBox").hidden = !smCanWrite();
+    document.getElementById("smAppuntiReadOnlyHint").hidden = smCanWrite();
+    _attachAppuntiFormHandlers();
+    list.innerHTML = '<div class="sm-empty">Caricamento appunti…</div>';
+    let items = [];
+    try {
+      const res = await fetchJson(`/api/sm/customers/${encodeURIComponent(smState.activeCode)}/appunti`);
+      items = res.appunti || [];
+    } catch (e) {
+      list.innerHTML = `<div class="sm-empty" style="color:var(--archiva-red)">Errore: ${escapeHtml(e.message)}</div>`;
+      return;
+    }
+    if (!items.length) {
+      list.innerHTML = '<div class="sm-empty">Nessun appunto ancora condiviso.</div>';
+      return;
+    }
+    const myUser = (currentUser?.username || "").toLowerCase();
+    const isAdmin = currentUser?.ruolo === "admin";
+    list.innerHTML = items.map(a => {
+      const canEdit = isAdmin || a.created_by === myUser;
+      return `
+      <div class="sm-appunto-card" data-app-id="${escapeAttr(a.id)}">
+        <div class="head">
+          <div><strong>${escapeHtml(a.created_by || "—")}</strong> · ${_formatDateTime(a.created_at)}${a.updated_at ? ` <em>(modificato ${_formatDateTime(a.updated_at)})</em>` : ""}</div>
+        </div>
+        <div class="text" data-app-text>${escapeHtml(a.text)}</div>
+        ${canEdit ? `<div class="actions">
+          <button class="btn-mini" data-app-edit="${escapeAttr(a.id)}">Modifica</button>
+          <button class="btn-mini danger" data-app-del="${escapeAttr(a.id)}">Elimina</button>
+        </div>` : ""}
+      </div>`;
+    }).join("");
+    list.querySelectorAll('[data-app-del]').forEach(b =>
+      b.addEventListener("click", async () => {
+        if (!confirm("Eliminare questo appunto?")) return;
+        try {
+          await fetchJson(`/api/sm/customers/${encodeURIComponent(smState.activeCode)}/appunti/${encodeURIComponent(b.dataset.appDel)}`, { method: "DELETE" });
+          loadAppunti();
+        } catch (e) { alert(e.message); }
+      }));
+    list.querySelectorAll('[data-app-edit]').forEach(b =>
+      b.addEventListener("click", () => _startEditAppunto(b.dataset.appEdit)));
+  }
+
+  function _startEditAppunto(id) {
+    const card = document.querySelector(`.sm-appunto-card[data-app-id="${id}"]`);
+    if (!card) return;
+    const textEl = card.querySelector('[data-app-text]');
+    const original = textEl.textContent;
+    textEl.innerHTML = `<textarea style="width:100%;min-height:60px;padding:6px;border:1px solid var(--archiva-grey-light);border-radius:4px;font-family:inherit">${escapeHtml(original)}</textarea>
+      <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:6px">
+        <button class="btn-mini" data-app-cancel>Annulla</button>
+        <button class="btn-mini" data-app-save>Salva</button>
+      </div>`;
+    textEl.querySelector('[data-app-cancel]').addEventListener("click", () => loadAppunti());
+    textEl.querySelector('[data-app-save]').addEventListener("click", async () => {
+      const newText = textEl.querySelector('textarea').value;
+      try {
+        await fetchJson(`/api/sm/customers/${encodeURIComponent(smState.activeCode)}/appunti/${encodeURIComponent(id)}`, { method: "PUT", body: JSON.stringify({ text: newText }) });
+        loadAppunti();
+      } catch (e) { alert(e.message); }
+    });
+  }
+
+  function _attachAppuntiFormHandlers() {
+    const submit = document.getElementById("btnAppuntoSubmit");
+    if (!submit || submit.dataset.bound === "1") return;
+    submit.dataset.bound = "1";
+    submit.addEventListener("click", async () => {
+      const text = document.getElementById("sf-appunto-text").value;
+      if (!text.trim()) return;
+      try {
+        await fetchJson(`/api/sm/customers/${encodeURIComponent(smState.activeCode)}/appunti`, { method: "POST", body: JSON.stringify({ text }) });
+        document.getElementById("sf-appunto-text").value = "";
+        loadAppunti();
+      } catch (e) { alert(e.message); }
     });
   }
 </script>

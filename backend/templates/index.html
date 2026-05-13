@@ -16,11 +16,12 @@
   /* ========= KPI ========= */
   .kpi-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 16px;
     margin-bottom: 20px;
   }
-  @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 1200px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 900px)  { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
 
   .kpi {
     background: var(--archiva-white);
@@ -452,6 +453,13 @@
 
   .organigramma-person .nome-l { font-weight: 500; line-height: 1.2; }
   .organigramma-person .reparto-l { font-size: 11px; color: var(--archiva-grey-mid); font-style: italic; line-height: 1.2; }
+
+  .sol-date-cell { font-size: 12px; line-height: 1.35; }
+  .sol-date-cell .sol-date-lbl {
+    display: inline-block; min-width: 38px;
+    font-size: 10px; color: var(--archiva-grey-mid);
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
 
   .sollecito-count-btn {
     display: inline-block; min-width: 28px;
@@ -1082,14 +1090,19 @@
       <div class="value" id="kpi-4">—</div>
       <div class="sub" id="kpi-4-sub">— degli urgenti aperti</div>
     </div>
+    <div class="kpi accent-green">
+      <div class="label">TC sollecitati attivi</div>
+      <div class="value" id="kpi-5">—</div>
+      <div class="sub" id="kpi-5-sub">esclusi chiusi e Waiting for reporter</div>
+    </div>
   </section>
 
   <section class="board">
 
     <div class="tabs">
-      <div class="tab active" data-tab="active" role="tab">Vista TC Attivi <span class="count" id="count-active">—</span></div>
-      <div class="tab" data-tab="all" role="tab">Tutti i TC <span class="count" id="count-all">—</span></div>
-      <div class="tab" data-tab="solleciti" role="tab">TC Sollecitati <span class="count" id="count-solleciti">—</span></div>
+      <div class="tab active" data-tab="active" role="tab">Vista TC Attivi</div>
+      <div class="tab" data-tab="all" role="tab">Tutti i TC</div>
+      <div class="tab" data-tab="solleciti" role="tab">TC Sollecitati</div>
     </div>
 
     <div class="toolbar">
@@ -1133,6 +1146,11 @@
           <input type="checkbox" id="hideClosed" checked />
           <span class="switch"></span>
           Nascondi TC chiusi
+        </label>
+        <label class="toggle">
+          <input type="checkbox" id="hideWfrSolleciti" />
+          <span class="switch"></span>
+          Nascondi TC in <em>Waiting for reporter</em>
         </label>
       </div>
       <div class="search-box">
@@ -1508,6 +1526,7 @@
     sollecitiDestinatario: "all",
     sollecitiEvas: "all",     // "all" | "scaduti" | "settimana"
     sollecitiHideClosed: true,
+    sollecitiHideWfr: false,
     sollecitiSearch: "",
   };
 
@@ -1544,7 +1563,7 @@
     { id: "assignee",       label: "Assegnatario TC", sort: "assignee",       render: cellAssignee },
     { id: "leaf",           label: "Ticket Figlio Attivo", sort: null,        render: cellLeaf, cls: "leaf-cell" },
     { id: "leafStatus",     label: "Stato Figlio",    sort: null,             render: cellLeafStatus },
-    { id: "dataSollecito",  label: "Data Sollecito",  sort: "dataSollecito",  render: r => formatDate(r._sol.ultimaDataSollecito), cls: "col-sollecito" },
+    { id: "dataSollecito",  label: "Data Sollecito",  sort: "dataSollecito",  render: cellDataSollecito,                           cls: "col-sollecito" },
     { id: "numSolleciti",   label: "# Solleciti",     sort: "numSolleciti",   render: cellSollecitoCount,   cls: "col-sollecito" },
     { id: "destinatario",   label: "Destinatario",    sort: "destinatario",   render: cellOrganigrammaPerson("destinatario"), cls: "col-sollecito" },
     { id: "richiedente",    label: "Richiedente",     sort: "richiedente",    render: cellOrganigrammaPerson("richiedente"),  cls: "col-sollecito" },
@@ -1845,10 +1864,33 @@
       if (!r) return;
       const data = await r.json();
       currentSolleciti = data.solleciti || [];
-      const c = document.getElementById("count-solleciti");
-      if (c) c.textContent = String(currentSolleciti.length);
+      updateKpiSolleciti();
       if (view.tab === "solleciti") renderTable();
     } catch (e) { /* ignore */ }
+  }
+
+  // KPI 5: TC sollecitati attivi (non chiusi e non in Waiting for reporter).
+  // Richiede di incrociare currentSolleciti con currentSnapshot per leggere
+  // isActive + statusFamily del TC; per i ticket non presenti nello snapshot
+  // (es. TC non-urgenti sollecitati comunque) consideriamo la riga "non
+  // valutabile" → la escludiamo dal totale.
+  function updateKpiSolleciti() {
+    const el = document.getElementById("kpi-5");
+    const sub = document.getElementById("kpi-5-sub");
+    if (!el) return;
+    if (!currentSolleciti) { el.textContent = "—"; return; }
+    const tcs = new Map();
+    for (const r of (currentSnapshot?.rowsAll || [])) tcs.set(r.key, r);
+    for (const r of (currentSnapshot?.rows || []))    if (!tcs.has(r.key)) tcs.set(r.key, r);
+    let active = 0, unknown = 0;
+    for (const s of currentSolleciti) {
+      const tc = tcs.get(s.key);
+      if (!tc) { unknown += 1; continue; }
+      if (tc.isActive && tc.statusFamily !== "wfr") active += 1;
+    }
+    el.textContent = fmt(active);
+    sub.textContent = `su ${currentSolleciti.length} sollecitati totali` +
+      (unknown ? ` · ${unknown} fuori snapshot` : "");
   }
 
   async function loadSnapshot() {
@@ -1878,9 +1920,7 @@
     document.getElementById("kpi-2-sub").textContent = `${fmt(completati)} completati (${pct(completati, kpi.tcUrgentiPeriodo)})`;
     document.getElementById("kpi-3-sub").textContent = pct(kpi.tcWaitingForReporter, kpi.tcUrgentiAperti) + " degli urgenti aperti";
     document.getElementById("kpi-4-sub").textContent = pct(kpi.tcWaitingForSon, kpi.tcUrgentiAperti) + " degli urgenti aperti";
-
-    document.getElementById("count-active").textContent = fmt((snap.rows || []).length);
-    document.getElementById("count-all").textContent = fmt((snap.rowsAll || []).length);
+    updateKpiSolleciti();
 
     const ts = snap.fetchedAtMs ? new Date(snap.fetchedAtMs) : null;
     const tsStr = ts ? formatTs(ts) : "—";
@@ -2335,6 +2375,7 @@
     const oneWeek = 7 * 24 * 3600 * 1000;
     return rows.filter(r => {
       if (view.sollecitiHideClosed && !r.isActive) return false;
+      if (view.sollecitiHideWfr && r.statusFamily === "wfr") return false;
       if (view.sollecitiDestinatario !== "all") {
         if ((r._sol.destinatario?.nome || "") !== view.sollecitiDestinatario) return false;
       }
@@ -2421,6 +2462,22 @@
     const n = r._sol.numSolleciti;
     const cls = n >= 3 ? "high" : "";
     return `<button type="button" class="sollecito-count-btn ${cls}" data-action="timeline" data-key="${escapeAttr(r.key)}" title="Apri timeline">${n}</button>`;
+  }
+  function cellDataSollecito(r) {
+    // Mostra primo (createdAt = primo evento "create" della history) e ultimo
+    // sollecito. Se ne è stato fatto uno solo, le due date coincidono e
+    // mostriamo una sola riga per non sporcare visivamente la cella.
+    const first = r._sol.createdAt;
+    const last = r._sol.ultimaDataSollecito;
+    const f = formatDate(first);
+    const l = formatDate(last);
+    if (!first || f === l) {
+      return `<div class="sol-date-cell"><div>${f}</div></div>`;
+    }
+    return `<div class="sol-date-cell">
+      <div><span class="sol-date-lbl">1°</span> ${f}</div>
+      <div><span class="sol-date-lbl">ultimo</span> ${l}</div>
+    </div>`;
   }
   function cellOrganigrammaPerson(field) {
     return r => {
@@ -2679,6 +2736,7 @@
     document.getElementById("modalTimeline")?.addEventListener("click", (ev) => { if (ev.target.id === "modalTimeline") document.getElementById("modalTimeline").classList.remove("open"); });
 
     document.getElementById("hideClosed")?.addEventListener("change", (ev) => { view.sollecitiHideClosed = ev.target.checked; renderTable(); });
+    document.getElementById("hideWfrSolleciti")?.addEventListener("change", (ev) => { view.sollecitiHideWfr = ev.target.checked; renderTable(); });
     document.getElementById("solleciti-destinatario-filter")?.addEventListener("change", (ev) => {
       view.sollecitiDestinatario = ev.target.value;
       ev.target.classList.toggle("filtering", view.sollecitiDestinatario !== "all");

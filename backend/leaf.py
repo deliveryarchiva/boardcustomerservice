@@ -26,6 +26,8 @@ import logging
 from dataclasses import dataclass
 from typing import Optional
 
+import os
+
 from .jira_client import JiraClient
 from .transform import (
     _build_url,
@@ -34,6 +36,8 @@ from .transform import (
     is_waiting_for_son,
     status_family,
 )
+
+_FIELD_REPARTO = os.getenv("JIRA_FIELD_REPARTO", "")
 
 log = logging.getLogger("csb.leaf")
 
@@ -48,6 +52,7 @@ class LeafInfo:
     leaf_key: str
     leaf_status: str
     leaf_assignee: Optional[str]
+    leaf_reparto: Optional[str] = None
     chain_too_deep: bool = False
     attesa_cliente_helpdesk: bool = False  # figlio diretto in Waiting for reporter
     leaf_issue: Optional[dict] = None  # issue Jira completa del leaf (per calcolo gg fermo)
@@ -68,6 +73,7 @@ class LeafInfo:
             "leafStatus": self.leaf_status,
             "leafStatusFamily": status_family(self.leaf_status, cat_key),
             "leafAssignee": self.leaf_assignee,
+            "leafReparto": self.leaf_reparto,
             "chainTooDeep": self.chain_too_deep,
             "attesaClienteHelpdesk": self.attesa_cliente_helpdesk,
         }
@@ -187,6 +193,7 @@ async def _resolve_one_chain(
                 leaf_key=direct_child_key,
                 leaf_status=status_name,
                 leaf_assignee=_assignee_name(current),
+                leaf_reparto=_reparto_value(current),
                 attesa_cliente_helpdesk=True,
                 leaf_issue=current,
             )
@@ -198,6 +205,7 @@ async def _resolve_one_chain(
                 leaf_key=current.get("key", ""),
                 leaf_status=status_name,
                 leaf_assignee=_assignee_name(current),
+                leaf_reparto=_reparto_value(current),
                 leaf_issue=current,
             )
 
@@ -208,6 +216,7 @@ async def _resolve_one_chain(
                 leaf_key=direct_child_key,  # fallback al ticket di partenza
                 leaf_status=status_name,
                 leaf_assignee=_assignee_name(direct_child),
+                leaf_reparto=_reparto_value(direct_child),
                 chain_too_deep=True,
                 leaf_issue=direct_child,
             )
@@ -222,6 +231,7 @@ async def _resolve_one_chain(
                 leaf_key=current.get("key", ""),
                 leaf_status=status_name,
                 leaf_assignee=_assignee_name(current),
+                leaf_reparto=_reparto_value(current),
                 leaf_issue=current,
             )
 
@@ -243,6 +253,7 @@ async def _resolve_one_chain(
                 leaf_key=current.get("key", ""),
                 leaf_status=status_name,
                 leaf_assignee=_assignee_name(current),
+                leaf_reparto=_reparto_value(current),
                 leaf_issue=current,
             )
         visited.add(next_key)
@@ -301,3 +312,13 @@ def _assignee_name(issue: dict) -> Optional[str]:
     fields = issue.get("fields") or {}
     assignee = fields.get("assignee") or {}
     return assignee.get("displayName") if assignee else None
+
+
+def _reparto_value(issue: dict) -> Optional[str]:
+    if not _FIELD_REPARTO:
+        return None
+    fields = issue.get("fields") or {}
+    val = fields.get(_FIELD_REPARTO)
+    if isinstance(val, dict):
+        return val.get("value") or None
+    return str(val) if val else None

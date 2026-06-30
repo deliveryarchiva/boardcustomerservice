@@ -48,6 +48,7 @@ FIELD_TICKET_SPOCCATO = os.getenv("JIRA_FIELD_TICKET_SPOCCATO", "")
 FIELD_IN_ESCALATION = os.getenv("JIRA_FIELD_IN_ESCALATION", "")
 FIELD_CUSTOMER_NAME = os.getenv("JIRA_FIELD_CUSTOMER_NAME", "")
 FIELD_CUSTOMER_CODE = os.getenv("JIRA_FIELD_CUSTOMER_CODE", "")
+FIELD_REPARTO = os.getenv("JIRA_FIELD_REPARTO", "")
 ENRICH_CONCURRENCY = int(os.getenv("JIRA_ENRICH_CONCURRENCY", "5"))
 
 BASE_FIELDS = [
@@ -170,7 +171,7 @@ async def _expand_chain_with_fetch(
 
 def _fields_to_request() -> list[str]:
     fields = list(BASE_FIELDS)
-    for cf in (FIELD_TICKET_SPOCCATO, FIELD_IN_ESCALATION, FIELD_CUSTOMER_NAME, FIELD_CUSTOMER_CODE):
+    for cf in (FIELD_TICKET_SPOCCATO, FIELD_IN_ESCALATION, FIELD_CUSTOMER_NAME, FIELD_CUSTOMER_CODE, FIELD_REPARTO):
         if cf:
             fields.append(cf)
     return fields

@@ -3503,17 +3503,8 @@
   function openScrumView() {
     const rows = _buildSollecitiRows();
 
-    // Mappa nome→reparto dall'organigramma per risolvere il reparto del leaf assignee
-    const repartoByNome = new Map();
-    for (const p of (currentOrganigramma || [])) {
-      if (p.nome) repartoByNome.set(p.nome.toLowerCase(), p.reparto || p.nome);
-    }
-
     function resolveReparto(r) {
-      const assignee = r.leaf?.leafAssignee;
-      if (!assignee) return null; // nessun figlio → gruppo separato
-      const match = repartoByNome.get(assignee.toLowerCase());
-      return match || assignee; // fallback al nome se non in organigramma
+      return r.leaf?.leafReparto || null; // null → gruppo "Senza reparto / figlio attivo"
     }
 
     // Raggruppa

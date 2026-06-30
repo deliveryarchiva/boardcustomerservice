@@ -8,9 +8,9 @@
 <style>
   /* ========= Container ========= */
   main {
-    padding: 20px 24px 48px;
-    max-width: 1600px;
-    margin: 0 auto;
+    padding: 20px 16px 48px;
+    max-width: none;
+    margin: 0;
   }
 
   /* ========= KPI ========= */
@@ -495,6 +495,106 @@
   .row-actions .btn-icon:hover { border-color: var(--archiva-accent); }
   .row-actions .btn-icon:disabled { opacity: 0.4; cursor: not-allowed; }
   .row-actions .btn-icon.danger { color: var(--archiva-red); }
+
+  /* ========= Bottone Scrum ========= */
+  .btn-scrum {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 16px; border-radius: 6px; border: 2px solid var(--archiva-accent);
+    background: var(--archiva-white); color: var(--archiva-accent);
+    font-weight: 700; font-size: 13px; cursor: pointer; font-family: inherit;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn-scrum:hover { background: var(--archiva-accent); color: var(--archiva-white); }
+
+  /* ========= Modal Scrum ========= */
+  .modal-scrum-bg {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: none; align-items: flex-start; justify-content: center;
+    z-index: 1000; overflow-y: auto; padding: 24px 16px;
+  }
+  .modal-scrum-bg.open { display: flex; }
+  .modal-scrum {
+    background: var(--archiva-bg-alt); border-radius: 12px;
+    width: min(1100px, calc(100vw - 32px));
+    box-shadow: 0 16px 48px rgba(0,0,0,0.25);
+    padding: 24px 28px 28px;
+    flex-shrink: 0; align-self: flex-start;
+  }
+  .modal-scrum-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; gap: 12px;
+  }
+  .modal-scrum-header h2 {
+    margin: 0; font-size: 20px; color: var(--archiva-primary);
+  }
+  .modal-scrum-header .sub {
+    font-size: 13px; color: var(--archiva-grey-mid); margin-top: 2px;
+  }
+  .scrum-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    align-items: start;
+  }
+  .scrum-lane {
+    background: var(--archiva-white); border-radius: 8px;
+    border: 1px solid var(--archiva-grey-light);
+    overflow: hidden;
+  }
+  .scrum-lane-header {
+    padding: 10px 14px; display: flex; align-items: center; justify-content: space-between;
+    background: var(--archiva-navy); color: var(--archiva-white);
+  }
+  .scrum-lane-header .lane-name { font-weight: 700; font-size: 14px; }
+  .scrum-lane-header .lane-count {
+    background: rgba(255,255,255,0.2); border-radius: 999px;
+    padding: 2px 10px; font-size: 12px; font-weight: 700;
+  }
+  .scrum-lane.lane-no-leaf .scrum-lane-header { background: var(--archiva-grey-mid); }
+  .scrum-card {
+    padding: 11px 14px; border-bottom: 1px solid var(--archiva-grey-light);
+  }
+  .scrum-card:last-child { border-bottom: 0; }
+  .scrum-card.card-closed { opacity: 0.55; }
+  .scrum-card-top {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+  }
+  .scrum-card-top .tc-key {
+    font-weight: 700; font-size: 13px; color: var(--archiva-accent);
+    text-decoration: none;
+  }
+  .scrum-card-top .tc-key:hover { text-decoration: underline; }
+  .scrum-card-top .customer-name {
+    font-size: 11px; color: var(--archiva-grey-mid);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;
+  }
+  .scrum-card .summary {
+    font-size: 12px; color: var(--archiva-primary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 6px;
+  }
+  .scrum-card-meta {
+    display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
+  }
+  .scrum-card-meta .leaf-ref {
+    font-size: 11px; color: var(--archiva-grey-mid);
+    display: flex; align-items: center; gap: 3px;
+  }
+  .scrum-card-meta .leaf-ref a { color: var(--archiva-navy); font-weight: 600; font-size: 11px; }
+  .scrum-card-meta .leaf-ref a:hover { color: var(--archiva-accent); }
+  .scrum-no-leaf-tag {
+    font-size: 11px; font-style: italic; color: var(--archiva-grey-mid);
+  }
+  .scrum-evas { font-size: 11px; font-weight: 600; }
+  .scrum-evas.scaduta { color: var(--archiva-red); }
+  .scrum-evas.imminente { color: var(--archiva-orange); }
+  .scrum-evas.ok { color: var(--archiva-green); }
+  .scrum-sol-badge {
+    font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 999px;
+    background: var(--archiva-orange); color: var(--archiva-white);
+  }
+  .scrum-sol-badge.high { background: var(--archiva-red); }
 
   /* Modali generiche per i solleciti e gestione utenze */
   .modal-bg {
@@ -1131,6 +1231,7 @@
 
     <div class="toolbar toolbar-solleciti">
       <button type="button" class="btn btn-primary" id="btnAddSollecito">+ Aggiungi sollecito</button>
+      <button type="button" class="btn btn-scrum" id="btnScrum" title="Vista Scrum — raggruppamento per reparto">🗂 Scrum</button>
       <div class="group">
         <select class="assignee-filter" id="solleciti-destinatario-filter" aria-label="Filtra per destinatario">
           <option value="all">Tutti i destinatari</option>
@@ -1461,6 +1562,20 @@
         <button type="submit" class="btn btn-primary" id="btnSollecitoSave">Salva</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- ========= Modal Vista Scrum ========= -->
+<div class="modal-scrum-bg" id="modalScrum">
+  <div class="modal-scrum">
+    <div class="modal-scrum-header">
+      <div>
+        <h2>🗂 Vista Scrum — TC per Reparto</h2>
+        <div class="sub" id="scrumSub">Ticket sollecitati raggruppati per reparto del figlio attivo</div>
+      </div>
+      <button type="button" class="btn btn-secondary" id="btnScrumClose">✕ Chiudi</button>
+    </div>
+    <div class="scrum-columns" id="scrumColumns"></div>
   </div>
 </div>
 
@@ -2728,6 +2843,9 @@
   // Bind handlers modali (una sola volta all'init)
   function bindSollecitiModalHandlers() {
     document.getElementById("btnAddSollecito")?.addEventListener("click", openAddSollecito);
+    document.getElementById("btnScrum")?.addEventListener("click", openScrumView);
+    document.getElementById("btnScrumClose")?.addEventListener("click", () => document.getElementById("modalScrum").classList.remove("open"));
+    document.getElementById("modalScrum")?.addEventListener("click", (ev) => { if (ev.target.id === "modalScrum") document.getElementById("modalScrum").classList.remove("open"); });
     document.getElementById("btnSollecitoCancel")?.addEventListener("click", closeSollecitoModal);
     document.getElementById("formSollecito")?.addEventListener("submit", saveSollecitoForm);
     document.getElementById("btnTimelineClose")?.addEventListener("click", () => document.getElementById("modalTimeline").classList.remove("open"));
@@ -3377,6 +3495,96 @@
         loadAppunti();
       } catch (e) { alert(e.message); }
     });
+  }
+
+  // ============================================================
+  //  Vista Scrum
+  // ============================================================
+  function openScrumView() {
+    const rows = _buildSollecitiRows();
+
+    // Mappa nome→reparto dall'organigramma per risolvere il reparto del leaf assignee
+    const repartoByNome = new Map();
+    for (const p of (currentOrganigramma || [])) {
+      if (p.nome) repartoByNome.set(p.nome.toLowerCase(), p.reparto || p.nome);
+    }
+
+    function resolveReparto(r) {
+      const assignee = r.leaf?.leafAssignee;
+      if (!assignee) return null; // nessun figlio → gruppo separato
+      const match = repartoByNome.get(assignee.toLowerCase());
+      return match || assignee; // fallback al nome se non in organigramma
+    }
+
+    // Raggruppa
+    const groups = new Map(); // reparto → []
+    const NO_LEAF = "__NO_LEAF__";
+    for (const r of rows) {
+      const key = resolveReparto(r) ?? NO_LEAF;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(r);
+    }
+
+    // Ordina: gruppi con leaf prima (alfabetici), poi il gruppo "senza figlio"
+    const sortedKeys = [...groups.keys()]
+      .filter(k => k !== NO_LEAF)
+      .sort((a, b) => a.localeCompare(b, "it"));
+    if (groups.has(NO_LEAF)) sortedKeys.push(NO_LEAF);
+
+    const today = new Date(); today.setHours(0,0,0,0);
+
+    function scrumEvas(r) {
+      const ev = r._sol.richiestaEvasione;
+      if (!ev || ev === "data_richiesta") return "";
+      const d = new Date(ev);
+      const diff = Math.round((d - today) / (24*3600*1000));
+      let cls = "ok", label = "";
+      if (diff < 0) { cls = "scaduta"; label = `Scad. ${formatDate(ev)}`; }
+      else if (diff <= 2) { cls = "imminente"; label = `Evas. ${formatDate(ev)}`; }
+      else { cls = "ok"; label = `Evas. ${formatDate(ev)}`; }
+      return `<span class="scrum-evas ${cls}">${escapeHtml(label)}</span>`;
+    }
+
+    function scrumCard(r) {
+      const closed = !r.isActive;
+      const leaf = r.leaf;
+      const leafHtml = leaf
+        ? `<span class="leaf-ref">▶ <a href="${escapeAttr(leaf.leafUrl || leaf.directChildUrl || "#")}" target="_blank" rel="noopener">${escapeHtml(leaf.leafKey || leaf.directChildKey || "—")}</a>${leaf.leafAssignee ? ` · ${escapeHtml(leaf.leafAssignee)}` : ""}</span>`
+        : `<span class="scrum-no-leaf-tag">nessun figlio attivo</span>`;
+      const n = r._sol.numSolleciti || 0;
+      const badgeCls = n >= 3 ? "high" : "";
+      return `<div class="scrum-card${closed ? " card-closed" : ""}">
+        <div class="scrum-card-top">
+          <a class="tc-key" href="${escapeAttr(r.url)}" target="_blank" rel="noopener">${escapeHtml(r.key)}</a>
+          <span class="customer-name" title="${escapeAttr(r.customer?.name || "")}">${escapeHtml(r.customer?.name || "—")}</span>
+        </div>
+        <div class="summary" title="${escapeAttr(r.summary)}">${escapeHtml(r.summary)}</div>
+        <div class="scrum-card-meta">
+          ${leafHtml}
+          <span class="scrum-sol-badge ${badgeCls}" title="Numero solleciti">${n} sol.</span>
+          ${scrumEvas(r)}
+        </div>
+      </div>`;
+    }
+
+    const total = rows.length;
+    let lanesHtml = "";
+    for (const k of sortedKeys) {
+      const laneRows = groups.get(k);
+      const isNoLeaf = k === NO_LEAF;
+      const laneTitle = isNoLeaf ? "Senza figlio attivo" : k;
+      lanesHtml += `<div class="scrum-lane${isNoLeaf ? " lane-no-leaf" : ""}">
+        <div class="scrum-lane-header">
+          <span class="lane-name">${escapeHtml(laneTitle)}</span>
+          <span class="lane-count">${laneRows.length}</span>
+        </div>
+        ${laneRows.map(scrumCard).join("")}
+      </div>`;
+    }
+
+    document.getElementById("scrumSub").textContent = `${total} TC sollecitati · ${sortedKeys.length} reparti/assegnatari`;
+    document.getElementById("scrumColumns").innerHTML = lanesHtml || `<p style="color:var(--archiva-grey-mid);padding:16px">Nessun TC sollecitato.</p>`;
+    document.getElementById("modalScrum").classList.add("open");
   }
 </script>
 </body>

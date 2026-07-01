@@ -3501,7 +3501,8 @@
   //  Vista Scrum
   // ============================================================
   function openScrumView() {
-    const rows = _buildSollecitiRows();
+    const allRows = _buildSollecitiRows();
+    const rows = allRows.filter(r => r.isActive && r.statusFamily !== "wfr");
 
     function resolveReparto(r) {
       return r.leaf?.leafReparto || null; // null → gruppo "Senza reparto / figlio attivo"
